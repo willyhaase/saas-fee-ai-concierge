@@ -20,6 +20,7 @@ type ConciergeResponse = {
 
 type InsertResult = {
   id: string | null;
+  table: string;
   data: Record<string, unknown> | null;
 };
 
@@ -52,6 +53,19 @@ function getSupabase() {
 
 function asOptionalString(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function unique(values: string[]) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function getTableCandidates(envName: string, defaults: string[]) {
+  const configured = process.env[envName]
+    ?.split(",")
+    .map((name) => name.trim())
+    .filter(Boolean);
+
+  return unique([...(configured ?? []), ...defaults]);
 }
 
 function parseOpenAIJson(content: string | null): ConciergeResponse {
@@ -131,30 +145,39 @@ async function getConciergeResponse(
 
 async function insertFirstMatching(
   supabase: SupabaseClient,
-  table: string,
+  tables: string[],
   candidates: Record<string, unknown>[]
 ): Promise<InsertResult> {
   let lastError: string | null = null;
+  const attempted: string[] = [];
 
-  for (const payload of candidates) {
-    const { data, error } = await supabase
-      .from(table)
-      .insert(payload)
-      .select("*")
-      .single();
+  for (const table of tables) {
+    for (const payload of candidates) {
+      attempted.push(table);
+      const { data, error } = await supabase
+        .from(table)
+        .insert(payload)
+        .select("*")
+        .single();
 
-    if (!error) {
-      const record = data as Record<string, unknown>;
-      return {
-        id: typeof record.id === "string" ? record.id : null,
-        data: record,
-      };
+      if (!error) {
+        const record = data as Record<string, unknown>;
+        return {
+          id: typeof record.id === "string" ? record.id : null,
+          table,
+          data: record,
+        };
+      }
+
+      lastError = error.message;
     }
-
-    lastError = error.message;
   }
 
-  throw new Error(`Could not insert into ${table}: ${lastError}`);
+  throw new Error(
+    `Could not insert into any matching table (${unique(attempted).join(
+      ", "
+    )}): ${lastError}`
+  );
 }
 
 async function updateConversationIncident(
@@ -201,9 +224,20 @@ export async function POST(req: Request) {
 
   try {
     const supabase = getSupabase();
-    const conversationsTable =
-      process.env.SUPABASE_CONVERSATIONS_TABLE || "conversations";
-    const incidentsTable = process.env.SUPABASE_INCIDENTS_TABLE || "incidents";
+    const conversationTables = getTableCandidates("SUPABASE_CONVERSATIONS_TABLE", [
+      "conversations",
+      "chat_conversations",
+      "conversation_logs",
+      "chat_logs",
+      "chat_messages",
+      "messages",
+    ]);
+    const incidentTables = getTableCandidates("SUPABASE_INCIDENTS_TABLE", [
+      "incidents",
+      "support_incidents",
+      "incident_reports",
+      "tickets",
+    ]);
     const customerName = asOptionalString(payload.customerName);
     const customerEmail = asOptionalString(payload.customerEmail);
     const requestConversationId = asOptionalString(payload.conversationId);
@@ -215,7 +249,7 @@ export async function POST(req: Request) {
       context: payload.context ?? null,
     };
 
-    const conversation = await insertFirstMatching(supabase, conversationsTable, [
+    const conversation = await insertFirstMatching(supabase, conversationTables, [
       {
         user_message: message,
         assistant_message: ai.reply,
@@ -253,7 +287,7 @@ export async function POST(req: Request) {
       const title = ai.incident_title || "Customer support incident";
       const description = ai.incident_description || message;
 
-      incident = await insertFirstMatching(supabase, incidentsTable, [
+      incident = await insertFirstMatching(supabase, incidentTables, [
         {
           title,
           description,
@@ -284,7 +318,7 @@ export async function POST(req: Request) {
 
       await updateConversationIncident(
         supabase,
-        conversationsTable,
+        conversation.table,
         conversation.id,
         incident.id
       );
@@ -294,8 +328,10 @@ export async function POST(req: Request) {
       success: true,
       reply: ai.reply,
       conversationId: conversation.id,
+      conversationTable: conversation.table,
       incidentCreated: Boolean(incident),
       incidentId: incident?.id ?? null,
+      incidentTable: incident?.table ?? null,
       priority: incident ? ai.priority : null,
     });
   } catch (error) {
