@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SaaS Fee AI Concierge
 
-## Getting Started
+Local Next.js app with a `POST /api/chat` endpoint that:
 
-First, run the development server:
+- calls OpenAI for a customer-facing concierge reply
+- connects to Supabase with server-side environment variables
+- logs each conversation
+- creates an incident when the message needs staff follow-up
+
+## Requirements
+
+- Node.js 20+
+- npm
+- an OpenAI API key
+- a Supabase project with the existing `conversations` and `incidents` tables
+
+## Environment Variables
+
+Create `.env.local` in this project directory:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini
+
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+SUPABASE_CONVERSATIONS_TABLE=conversations
+SUPABASE_INCIDENTS_TABLE=incidents
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Notes:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `SUPABASE_SERVICE_ROLE_KEY` is recommended because the API route writes server-side records. Keep it out of client code and do not commit `.env.local`.
+- `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_ANON_KEY`, and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are supported as fallbacks.
+- The table env vars are optional if your tables are named `conversations` and `incidents`.
+- The route uses the existing Supabase schema. It does not create or migrate tables.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Install and Run
 
-## Learn More
+```bash
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Test the Chat API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+curl -X POST http://localhost:3000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "Our billing import failed and customers are seeing wrong fees.",
+    "customerName": "Ada Lovelace",
+    "customerEmail": "ada@example.com"
+  }'
+```
 
-## Deploy on Vercel
+Expected response shape:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```json
+{
+  "success": true,
+  "reply": "Thanks for flagging this...",
+  "conversationId": "uuid-or-null",
+  "incidentCreated": true,
+  "incidentId": "uuid-or-null",
+  "priority": "high"
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## API Contract
+
+`POST /api/chat`
+
+Request body:
+
+```json
+{
+  "message": "Required customer message",
+  "customerName": "Optional customer name",
+  "customerEmail": "Optional customer email",
+  "conversationId": "Optional existing conversation id",
+  "context": { "plan": "enterprise" },
+  "createIncident": false
+}
+```
+
+`createIncident: true` forces incident creation. Otherwise OpenAI classifies whether an incident is required.
+
+## Supabase Writes
+
+By default, the route writes to:
+
+- `conversations`
+- `incidents`
+
+The insert payloads try common existing column names such as `user_message`, `assistant_message`, `message`, `response`, `title`, `description`, `priority`, `status`, and `conversation_id`. If your schema uses different required columns, add the matching payload shape in `src/app/api/chat/route.ts` or expose a database function/RPC that maps the API payload to your schema.

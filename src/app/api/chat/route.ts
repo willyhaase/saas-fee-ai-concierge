@@ -1,10 +1,308 @@
-import { NextResponse } from "next/server";
+import OpenAI from "openai";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+
+type ChatRequest = {
+  message?: unknown;
+  customerName?: unknown;
+  customerEmail?: unknown;
+  conversationId?: unknown;
+  context?: unknown;
+  createIncident?: unknown;
+};
+
+type ConciergeResponse = {
+  reply: string;
+  incident_required: boolean;
+  incident_title: string | null;
+  incident_description: string | null;
+  priority: "low" | "medium" | "high" | "urgent";
+};
+
+type InsertResult = {
+  id: string | null;
+  data: Record<string, unknown> | null;
+};
+
+export const runtime = "nodejs";
+
+function getEnv(name: string, fallback?: string) {
+  return process.env[name] || (fallback ? process.env[fallback] : undefined);
+}
+
+function getSupabase() {
+  const url = getEnv("SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL");
+  const key =
+    getEnv("SUPABASE_SERVICE_ROLE_KEY") ||
+    getEnv("SUPABASE_SERVICE_KEY") ||
+    getEnv("SUPABASE_ANON_KEY", "NEXT_PUBLIC_SUPABASE_ANON_KEY");
+
+  if (!url || !key) {
+    throw new Error(
+      "Missing Supabase env vars. Set SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL, plus SUPABASE_SERVICE_ROLE_KEY."
+    );
+  }
+
+  return createClient(url, key, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+}
+
+function asOptionalString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function parseOpenAIJson(content: string | null): ConciergeResponse {
+  if (!content) {
+    throw new Error("OpenAI returned an empty response.");
+  }
+
+  const parsed = JSON.parse(content) as Partial<ConciergeResponse>;
+
+  return {
+    reply:
+      typeof parsed.reply === "string" && parsed.reply.trim()
+        ? parsed.reply.trim()
+        : "Thanks. I captured that and the team will review it shortly.",
+    incident_required: Boolean(parsed.incident_required),
+    incident_title:
+      typeof parsed.incident_title === "string" && parsed.incident_title.trim()
+        ? parsed.incident_title.trim()
+        : null,
+    incident_description:
+      typeof parsed.incident_description === "string" &&
+      parsed.incident_description.trim()
+        ? parsed.incident_description.trim()
+        : null,
+    priority:
+      parsed.priority === "low" ||
+      parsed.priority === "medium" ||
+      parsed.priority === "high" ||
+      parsed.priority === "urgent"
+        ? parsed.priority
+        : "medium",
+  };
+}
+
+async function getConciergeResponse(
+  message: string,
+  payload: ChatRequest
+): Promise<ConciergeResponse> {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("Missing OPENAI_API_KEY.");
+  }
+
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+
+  const completion = await openai.chat.completions.create({
+    model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+    response_format: { type: "json_object" },
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are a concise SaaS fee AI concierge. Reply helpfully to the customer. Decide whether the message should become an operational incident. Create incidents for billing disputes, failed payments, outages, broken integrations, data loss, security concerns, escalations, or anything requiring staff follow-up. Return only JSON with keys: reply, incident_required, incident_title, incident_description, priority. Priority must be low, medium, high, or urgent.",
+      },
+      {
+        role: "user",
+        content: JSON.stringify({
+          message,
+          customerName: asOptionalString(payload.customerName),
+          customerEmail: asOptionalString(payload.customerEmail),
+          conversationId: asOptionalString(payload.conversationId),
+          context: payload.context ?? null,
+        }),
+      },
+    ],
+  });
+
+  const response = parseOpenAIJson(completion.choices[0]?.message.content);
+
+  if (payload.createIncident === true) {
+    response.incident_required = true;
+  }
+
+  return response;
+}
+
+async function insertFirstMatching(
+  supabase: SupabaseClient,
+  table: string,
+  candidates: Record<string, unknown>[]
+): Promise<InsertResult> {
+  let lastError: string | null = null;
+
+  for (const payload of candidates) {
+    const { data, error } = await supabase
+      .from(table)
+      .insert(payload)
+      .select("*")
+      .single();
+
+    if (!error) {
+      const record = data as Record<string, unknown>;
+      return {
+        id: typeof record.id === "string" ? record.id : null,
+        data: record,
+      };
+    }
+
+    lastError = error.message;
+  }
+
+  throw new Error(`Could not insert into ${table}: ${lastError}`);
+}
+
+async function updateConversationIncident(
+  supabase: SupabaseClient,
+  table: string,
+  conversationId: string | null,
+  incidentId: string | null
+) {
+  if (!conversationId || !incidentId) {
+    return;
+  }
+
+  const candidates = [
+    { incident_id: incidentId },
+    { linked_incident_id: incidentId },
+  ];
+
+  for (const payload of candidates) {
+    const { error } = await supabase
+      .from(table)
+      .update(payload)
+      .eq("id", conversationId);
+
+    if (!error) {
+      return;
+    }
+  }
+}
 
 export async function POST(req: Request) {
-  const body = await req.json();
+  let payload: ChatRequest;
 
-  return NextResponse.json({
-    success: true,
-    received: body.message,
-  });
+  try {
+    payload = (await req.json()) as ChatRequest;
+  } catch {
+    return Response.json({ error: "Request body must be valid JSON." }, { status: 400 });
+  }
+
+  const message = asOptionalString(payload.message);
+
+  if (!message) {
+    return Response.json({ error: "A non-empty message is required." }, { status: 400 });
+  }
+
+  try {
+    const supabase = getSupabase();
+    const conversationsTable =
+      process.env.SUPABASE_CONVERSATIONS_TABLE || "conversations";
+    const incidentsTable = process.env.SUPABASE_INCIDENTS_TABLE || "incidents";
+    const customerName = asOptionalString(payload.customerName);
+    const customerEmail = asOptionalString(payload.customerEmail);
+    const requestConversationId = asOptionalString(payload.conversationId);
+    const ai = await getConciergeResponse(message, payload);
+    const metadata = {
+      requestConversationId,
+      customerName,
+      customerEmail,
+      context: payload.context ?? null,
+    };
+
+    const conversation = await insertFirstMatching(supabase, conversationsTable, [
+      {
+        user_message: message,
+        assistant_message: ai.reply,
+        incident_required: ai.incident_required,
+        customer_name: customerName,
+        customer_email: customerEmail,
+        metadata,
+      },
+      {
+        message,
+        response: ai.reply,
+        incident_required: ai.incident_required,
+        customer_name: customerName,
+        customer_email: customerEmail,
+        metadata,
+      },
+      {
+        customer_message: message,
+        ai_response: ai.reply,
+        incident_required: ai.incident_required,
+        customer_name: customerName,
+        customer_email: customerEmail,
+        metadata,
+      },
+      {
+        input: message,
+        output: ai.reply,
+        metadata: { ...metadata, incident_required: ai.incident_required },
+      },
+    ]);
+
+    let incident: InsertResult | null = null;
+
+    if (ai.incident_required) {
+      const title = ai.incident_title || "Customer support incident";
+      const description = ai.incident_description || message;
+
+      incident = await insertFirstMatching(supabase, incidentsTable, [
+        {
+          title,
+          description,
+          priority: ai.priority,
+          status: "open",
+          conversation_id: conversation.id,
+          customer_name: customerName,
+          customer_email: customerEmail,
+          metadata,
+        },
+        {
+          title,
+          summary: description,
+          severity: ai.priority,
+          status: "open",
+          conversation_id: conversation.id,
+          metadata,
+        },
+        {
+          name: title,
+          details: description,
+          priority: ai.priority,
+          status: "open",
+          conversation_id: conversation.id,
+          metadata,
+        },
+      ]);
+
+      await updateConversationIncident(
+        supabase,
+        conversationsTable,
+        conversation.id,
+        incident.id
+      );
+    }
+
+    return Response.json({
+      success: true,
+      reply: ai.reply,
+      conversationId: conversation.id,
+      incidentCreated: Boolean(incident),
+      incidentId: incident?.id ?? null,
+      priority: incident ? ai.priority : null,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unexpected chat route error.";
+    console.error(message);
+
+    return Response.json({ error: message }, { status: 500 });
+  }
 }
