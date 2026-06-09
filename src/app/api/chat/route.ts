@@ -301,8 +301,36 @@ export async function POST(req: Request) {
     if (ai.incident_required) {
       const title = ai.incident_title || "Customer support incident";
       const description = ai.incident_description || message;
+      const incidentMetadata = {
+        ...metadata,
+        conversationId: conversation.id,
+        conversationTable: conversation.table,
+      };
 
       incident = await insertFirstMatching(supabase, incidentTables, [
+        {
+          title,
+          description,
+          priority: ai.priority,
+          status: "open",
+          customer_name: customerName,
+          customer_email: customerEmail,
+          metadata: incidentMetadata,
+        },
+        {
+          title,
+          summary: description,
+          severity: ai.priority,
+          status: "open",
+          metadata: incidentMetadata,
+        },
+        {
+          name: title,
+          details: description,
+          priority: ai.priority,
+          status: "open",
+          metadata: incidentMetadata,
+        },
         {
           title,
           description,
@@ -311,7 +339,7 @@ export async function POST(req: Request) {
           conversation_id: conversation.id,
           customer_name: customerName,
           customer_email: customerEmail,
-          metadata,
+          metadata: incidentMetadata,
         },
         {
           title,
@@ -319,7 +347,7 @@ export async function POST(req: Request) {
           severity: ai.priority,
           status: "open",
           conversation_id: conversation.id,
-          metadata,
+          metadata: incidentMetadata,
         },
         {
           name: title,
@@ -327,7 +355,7 @@ export async function POST(req: Request) {
           priority: ai.priority,
           status: "open",
           conversation_id: conversation.id,
-          metadata,
+          metadata: incidentMetadata,
         },
       ]);
 
