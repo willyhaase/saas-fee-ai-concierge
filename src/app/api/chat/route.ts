@@ -313,6 +313,32 @@ export async function POST(req: Request) {
           description,
           priority: ai.priority,
           status: "open",
+        },
+        {
+          title,
+          description,
+          status: "open",
+        },
+        {
+          title,
+          description,
+        },
+        {
+          title,
+          summary: description,
+          severity: ai.priority,
+          status: "open",
+        },
+        {
+          title,
+          summary: description,
+          status: "open",
+        },
+        {
+          title,
+          description,
+          priority: ai.priority,
+          status: "open",
           customer_name: customerName,
           customer_email: customerEmail,
           metadata: incidentMetadata,
