@@ -310,6 +310,27 @@ export async function POST(req: Request) {
       incident = await insertFirstMatching(supabase, incidentTables, [
         {
           title,
+        },
+        {
+          title,
+          status: "open",
+        },
+        {
+          title,
+          priority: ai.priority,
+        },
+        {
+          title,
+          priority: ai.priority,
+          status: "open",
+        },
+        {
+          title: `${title}: ${description}`,
+          priority: ai.priority,
+          status: "open",
+        },
+        {
+          title,
           description,
           priority: ai.priority,
           status: "open",
