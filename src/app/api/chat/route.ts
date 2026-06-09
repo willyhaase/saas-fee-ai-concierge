@@ -68,6 +68,10 @@ function getTableCandidates(envName: string, defaults: string[]) {
   return unique([...(configured ?? []), ...defaults]);
 }
 
+function isMissingTableError(message: string) {
+  return message.includes("Could not find the table");
+}
+
 function parseOpenAIJson(content: string | null): ConciergeResponse {
   if (!content) {
     throw new Error("OpenAI returned an empty response.");
@@ -152,6 +156,8 @@ async function insertFirstMatching(
   const attempted: string[] = [];
 
   for (const table of tables) {
+    const tableErrors: string[] = [];
+
     for (const payload of candidates) {
       attempted.push(table);
       const { data, error } = await supabase
@@ -170,6 +176,15 @@ async function insertFirstMatching(
       }
 
       lastError = error.message;
+      tableErrors.push(error.message);
+    }
+
+    if (tableErrors.some((message) => !isMissingTableError(message))) {
+      throw new Error(
+        `Could not insert into ${table}. Tried ${candidates.length} payload shape(s). Supabase errors: ${unique(
+          tableErrors
+        ).join(" | ")}`
+      );
     }
   }
 
