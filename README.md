@@ -1,22 +1,24 @@
 # SaaS Fee AI Concierge
 
-Local Next.js app with a `POST /api/chat` endpoint that:
+Next.js-приложение с endpoint `POST /api/chat`.
 
-- calls OpenAI for a customer-facing concierge reply
-- connects to Supabase with server-side environment variables
-- logs each conversation
-- creates an incident when the message needs staff follow-up
+Endpoint:
 
-## Requirements
+- вызывает OpenAI и возвращает ответ клиенту
+- подключается к Supabase через серверные переменные окружения
+- записывает каждый диалог
+- создаёт инцидент, если сообщение требует реакции команды
+
+## Требования
 
 - Node.js 20+
 - npm
-- an OpenAI API key
-- a Supabase project with the existing `conversations` and `incidents` tables
+- OpenAI API key
+- Supabase project
 
-## Environment Variables
+## Переменные окружения
 
-Create `.env.local` in this project directory:
+Создай `.env.local` локально или добавь эти переменные в Vercel:
 
 ```bash
 OPENAI_API_KEY=sk-...
@@ -29,23 +31,44 @@ SUPABASE_CONVERSATIONS_TABLE=conversations
 SUPABASE_INCIDENTS_TABLE=incidents
 ```
 
-Notes:
+Важно:
 
-- `SUPABASE_SERVICE_ROLE_KEY` is recommended because the API route writes server-side records. Keep it out of client code and do not commit `.env.local`.
-- `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_ANON_KEY`, and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are supported as fallbacks.
-- The table env vars are optional if your tables are named `conversations` and `incidents`.
-- The route uses the existing Supabase schema. It does not create or migrate tables.
+- `SUPABASE_SERVICE_ROLE_KEY` нужен только на сервере. Не используй его в клиентском коде.
+- `OPENAI_MODEL` можно не задавать. По умолчанию используется `gpt-4o-mini`.
+- Если таблицы называются `conversations` и `incidents`, переменные `SUPABASE_CONVERSATIONS_TABLE` и `SUPABASE_INCIDENTS_TABLE` можно не задавать.
+- Если таблицы называются иначе, укажи реальные имена в Vercel.
 
-## Install and Run
+## Supabase Schema
+
+Если в Supabase ещё нет таблиц для диалогов и инцидентов, выполни SQL из файла:
+
+```text
+supabase/schema.sql
+```
+
+Как применить:
+
+1. Открой Supabase Dashboard.
+2. Перейди в SQL Editor.
+3. Вставь содержимое `supabase/schema.sql`.
+4. Нажми Run.
+5. Сделай redeploy проекта в Vercel.
+
+Файл создаёт:
+
+- `public.conversations`
+- `public.incidents`
+
+## Локальный запуск
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Открой [http://localhost:3000](http://localhost:3000).
 
-## Test the Chat API
+## Проверка API
 
 ```bash
 curl -X POST http://localhost:3000/api/chat \
@@ -57,15 +80,29 @@ curl -X POST http://localhost:3000/api/chat \
   }'
 ```
 
-Expected response shape:
+Для Vercel замени URL на свой production domain:
+
+```bash
+curl -X POST https://your-vercel-domain.vercel.app/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "Our billing import failed and customers are seeing wrong fees.",
+    "customerName": "Ada Lovelace",
+    "customerEmail": "ada@example.com"
+  }'
+```
+
+Успешный ответ:
 
 ```json
 {
   "success": true,
   "reply": "Thanks for flagging this...",
-  "conversationId": "uuid-or-null",
+  "conversationId": "uuid",
+  "conversationTable": "conversations",
   "incidentCreated": true,
-  "incidentId": "uuid-or-null",
+  "incidentId": "uuid",
+  "incidentTable": "incidents",
   "priority": "high"
 }
 ```
@@ -74,7 +111,7 @@ Expected response shape:
 
 `POST /api/chat`
 
-Request body:
+Тело запроса:
 
 ```json
 {
@@ -87,13 +124,4 @@ Request body:
 }
 ```
 
-`createIncident: true` forces incident creation. Otherwise OpenAI classifies whether an incident is required.
-
-## Supabase Writes
-
-By default, the route writes to:
-
-- `conversations`
-- `incidents`
-
-The insert payloads try common existing column names such as `user_message`, `assistant_message`, `message`, `response`, `title`, `description`, `priority`, `status`, and `conversation_id`. If your schema uses different required columns, add the matching payload shape in `src/app/api/chat/route.ts` or expose a database function/RPC that maps the API payload to your schema.
+`createIncident: true` принудительно создаёт инцидент. Иначе OpenAI сам классифицирует, нужен ли инцидент.
