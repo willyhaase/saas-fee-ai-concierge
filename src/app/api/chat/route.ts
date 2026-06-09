@@ -24,6 +24,18 @@ type InsertResult = {
   data: Record<string, unknown> | null;
 };
 
+type PropertyContext = {
+  propertyId: string | null;
+  propertyName: string | null;
+  address: string | null;
+  hostName: string | null;
+  whatsapp: string | null;
+  emergencyMedical: string | null;
+  police: string | null;
+  fire: string | null;
+  taxi: string | null;
+};
+
 export const runtime = "nodejs";
 
 function getEnv(name: string, fallback?: string) {
@@ -68,6 +80,14 @@ function getTableCandidates(envName: string, defaults: string[]) {
   return unique([...(configured ?? []), ...defaults]);
 }
 
+function getPayloadContext(payload: ChatRequest) {
+  return payload.context &&
+    typeof payload.context === "object" &&
+    !Array.isArray(payload.context)
+    ? (payload.context as Record<string, unknown>)
+    : null;
+}
+
 function isMissingTableError(message: string) {
   return message.includes("Could not find the table");
 }
@@ -106,7 +126,8 @@ function parseOpenAIJson(content: string | null): ConciergeResponse {
 
 async function getConciergeResponse(
   message: string,
-  payload: ChatRequest
+  payload: ChatRequest,
+  propertyContext: PropertyContext | null
 ): Promise<ConciergeResponse> {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("Missing OPENAI_API_KEY.");
@@ -122,8 +143,14 @@ async function getConciergeResponse(
     messages: [
       {
         role: "system",
-        content:
-          "You are a concise SaaS fee AI concierge. Reply helpfully to the customer. Decide whether the message should become an operational incident. Create incidents for billing disputes, failed payments, outages, broken integrations, data loss, security concerns, escalations, or anything requiring staff follow-up. Return only JSON with keys: reply, incident_required, incident_title, incident_description, priority. Priority must be low, medium, high, or urgent.",
+        content: [
+          "You are a concise Saas-Fee guest AI concierge for a holiday rental.",
+          "Use the supplied property context as the source of truth. Never invent contact details.",
+          "If the guest asks for WhatsApp, support contact, host contact, or how to reach the property team, provide the WhatsApp number from propertyContext when available.",
+          "If a fact is not present in propertyContext, say that you do not have it and offer to notify the host.",
+          "Create incidents for broken heating, appliances, access issues, safety concerns, urgent maintenance, guest escalations, or anything requiring staff follow-up.",
+          "Return only JSON with keys: reply, incident_required, incident_title, incident_description, priority. Priority must be low, medium, high, or urgent.",
+        ].join(" "),
       },
       {
         role: "user",
@@ -133,6 +160,7 @@ async function getConciergeResponse(
           customerEmail: asOptionalString(payload.customerEmail),
           conversationId: asOptionalString(payload.conversationId),
           context: payload.context ?? null,
+          propertyContext,
         }),
       },
     ],
@@ -145,6 +173,46 @@ async function getConciergeResponse(
   }
 
   return response;
+}
+
+async function getPropertyContext(
+  supabase: SupabaseClient,
+  requestedPropertyId: string | null
+): Promise<PropertyContext | null> {
+  const query = supabase
+    .from("properties")
+    .select(
+      "id, name, address, property_contacts(host_name, whatsapp, emergency_medical, police, fire, taxi)"
+    );
+
+  const { data, error } = requestedPropertyId
+    ? await query.eq("id", requestedPropertyId).limit(1).maybeSingle()
+    : await query.order("created_at", { ascending: true }).limit(1).maybeSingle();
+
+  if (error || !data) {
+    if (error) {
+      console.error(`Could not load property context: ${error.message}`);
+    }
+    return null;
+  }
+
+  const property = data as Record<string, unknown>;
+  const contactsValue = property.property_contacts;
+  const contact = Array.isArray(contactsValue)
+    ? (contactsValue[0] as Record<string, unknown> | undefined)
+    : (contactsValue as Record<string, unknown> | null);
+
+  return {
+    propertyId: asOptionalString(property.id),
+    propertyName: asOptionalString(property.name),
+    address: asOptionalString(property.address),
+    hostName: asOptionalString(contact?.host_name),
+    whatsapp: asOptionalString(contact?.whatsapp),
+    emergencyMedical: asOptionalString(contact?.emergency_medical),
+    police: asOptionalString(contact?.police),
+    fire: asOptionalString(contact?.fire),
+    taxi: asOptionalString(contact?.taxi),
+  };
 }
 
 async function insertFirstMatching(
@@ -256,12 +324,16 @@ export async function POST(req: Request) {
     const customerName = asOptionalString(payload.customerName);
     const customerEmail = asOptionalString(payload.customerEmail);
     const requestConversationId = asOptionalString(payload.conversationId);
-    const ai = await getConciergeResponse(message, payload);
+    const requestContext = getPayloadContext(payload);
+    const requestPropertyId = asOptionalString(requestContext?.propertyId);
+    const propertyContext = await getPropertyContext(supabase, requestPropertyId);
+    const ai = await getConciergeResponse(message, payload, propertyContext);
     const metadata = {
       requestConversationId,
       customerName,
       customerEmail,
       context: payload.context ?? null,
+      propertyContext,
     };
 
     const conversation = await insertFirstMatching(supabase, conversationTables, [
