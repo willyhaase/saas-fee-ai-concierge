@@ -122,6 +122,29 @@ from token, inserted;
 
 `raw_token` показывается только в результате этого запроса. Его нужно вставить в ссылку гостя, а в базе останется только hash.
 
+## Общая информация о Saas-Fee
+
+Чтобы чат отвечал на вопросы про рестораны, активности, горные подъёмники/дороги и погоду, выполни в Supabase SQL Editor файл:
+
+```text
+supabase/seed_saas_fee_global_knowledge.sql
+```
+
+Он создаёт `public.global_knowledge`, если таблицы ещё нет, и добавляет общий слой знаний:
+
+- рестораны и mountain restaurants
+- culinary trail
+- летние и зимние активности
+- hiking, biking, climbing/mountaineering
+- открытые подъёмники и расписания cable cars
+- SaastalCard
+- погода, webcams и mountain safety
+- контакт туристического офиса
+
+Файл можно запускать повторно. Он обновляет только свои записи с теми же `category` и `title`.
+
+Погода не хранится как статичный прогноз в базе. `/api/chat` добавляет в контекст live weather snapshot для Saas-Fee через Open-Meteo, а для точной проверки рекомендует официальные страницы Saas-Fee weather/webcams.
+
 ## Локальный запуск
 
 ```bash

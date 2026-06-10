@@ -25,6 +25,21 @@ type InsertResult = {
   data: Record<string, unknown> | null;
 };
 
+type LiveWeather = {
+  location: string;
+  source: string;
+  observedAt: string | null;
+  temperatureC: number | null;
+  windKmh: number | null;
+  condition: string | null;
+  forecast: Array<{
+    date: string;
+    minC: number | null;
+    maxC: number | null;
+    precipitationMm: number | null;
+  }>;
+};
+
 type PropertyContext = {
   propertyId: string | null;
   propertyName: string | null;
@@ -56,6 +71,7 @@ type PropertyContext = {
     title: string | null;
     content: string | null;
   }>;
+  liveWeather: LiveWeather | null;
 };
 
 export const runtime = "nodejs";
@@ -154,6 +170,104 @@ function parseOpenAIJson(content: string | null): ConciergeResponse {
   };
 }
 
+function getWeatherDescription(code: number | null) {
+  if (code === null) {
+    return null;
+  }
+
+  const descriptions: Record<number, string> = {
+    0: "clear sky",
+    1: "mainly clear",
+    2: "partly cloudy",
+    3: "overcast",
+    45: "fog",
+    48: "depositing rime fog",
+    51: "light drizzle",
+    53: "moderate drizzle",
+    55: "dense drizzle",
+    61: "slight rain",
+    63: "moderate rain",
+    65: "heavy rain",
+    71: "slight snow",
+    73: "moderate snow",
+    75: "heavy snow",
+    80: "slight rain showers",
+    81: "moderate rain showers",
+    82: "violent rain showers",
+    85: "slight snow showers",
+    86: "heavy snow showers",
+    95: "thunderstorm",
+    96: "thunderstorm with slight hail",
+    99: "thunderstorm with heavy hail",
+  };
+
+  return descriptions[code] ?? `weather code ${code}`;
+}
+
+function asNullableNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+async function getLiveSaasFeeWeather(): Promise<LiveWeather | null> {
+  const url = new URL("https://api.open-meteo.com/v1/forecast");
+  url.search = new URLSearchParams({
+    latitude: "46.1082",
+    longitude: "7.9274",
+    timezone: "Europe/Zurich",
+    current: "temperature_2m,weather_code,wind_speed_10m",
+    daily: "temperature_2m_max,temperature_2m_min,precipitation_sum",
+    forecast_days: "4",
+  }).toString();
+
+  try {
+    const response = await fetch(url, {
+      next: { revalidate: 900 },
+      signal: AbortSignal.timeout(2500),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Open-Meteo returned ${response.status}`);
+    }
+
+    const data = (await response.json()) as Record<string, unknown>;
+    const current = data.current as Record<string, unknown> | undefined;
+    const daily = data.daily as Record<string, unknown> | undefined;
+    const dates = Array.isArray(daily?.time) ? daily.time : [];
+    const min = Array.isArray(daily?.temperature_2m_min)
+      ? daily.temperature_2m_min
+      : [];
+    const max = Array.isArray(daily?.temperature_2m_max)
+      ? daily.temperature_2m_max
+      : [];
+    const precipitation = Array.isArray(daily?.precipitation_sum)
+      ? daily.precipitation_sum
+      : [];
+    const weatherCode = asNullableNumber(current?.weather_code);
+
+    return {
+      location: "Saas-Fee, Switzerland",
+      source: "Open-Meteo forecast API",
+      observedAt: asOptionalString(current?.time),
+      temperatureC: asNullableNumber(current?.temperature_2m),
+      windKmh: asNullableNumber(current?.wind_speed_10m),
+      condition: getWeatherDescription(weatherCode),
+      forecast: dates.slice(0, 4).map((date, index) => ({
+        date: String(date),
+        minC: asNullableNumber(min[index]),
+        maxC: asNullableNumber(max[index]),
+        precipitationMm: asNullableNumber(precipitation[index]),
+      })),
+    };
+  } catch (error) {
+    console.error(
+      `Could not load live Saas-Fee weather: ${
+        error instanceof Error ? error.message : "unknown error"
+      }`
+    );
+    return null;
+  }
+}
+
 async function getConciergeResponse(
   message: string,
   payload: ChatRequest,
@@ -177,6 +291,7 @@ async function getConciergeResponse(
           "You are a concise Saas-Fee guest AI concierge for a holiday rental.",
           "Use the supplied property context as the source of truth. Never invent contact details.",
           "Property context has two layers: globalKnowledge and localRecommendations are general information; property details, contacts, instructions, and FAQ are local housing information.",
+          "For weather questions, use propertyContext.liveWeather when it is available and mention that mountain weather can change quickly.",
           "Only use local housing information when propertyContext.localAccessGranted is true.",
           "If localAccessGranted is false and the guest asks about a specific apartment, access, Wi-Fi, host contact, or private housing instructions, ask them to open their guest-specific link.",
           "If the guest asks for WhatsApp, support contact, host contact, or how to reach the property team, provide the WhatsApp number from propertyContext only when localAccessGranted is true and whatsapp is available.",
@@ -215,6 +330,7 @@ async function getPropertyContext(
 ): Promise<PropertyContext | null> {
   const globalKnowledge = await getGlobalKnowledge(supabase);
   const localRecommendations = await getLocalRecommendations(supabase);
+  const liveWeather = await getLiveSaasFeeWeather();
   const propertyId = await resolvePropertyId(
     supabase,
     requestedPropertyId,
@@ -237,6 +353,7 @@ async function getPropertyContext(
       faq: [],
       localRecommendations,
       globalKnowledge,
+      liveWeather,
     };
   }
 
@@ -281,6 +398,7 @@ async function getPropertyContext(
     faq,
     localRecommendations,
     globalKnowledge,
+    liveWeather,
   };
 }
 
@@ -396,7 +514,7 @@ async function getGlobalKnowledge(supabase: SupabaseClient) {
     .from("global_knowledge")
     .select("category, title, content")
     .eq("is_active", true)
-    .limit(50);
+    .limit(100);
 
   if (error || !data) {
     return [];
