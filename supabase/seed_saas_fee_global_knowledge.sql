@@ -58,12 +58,12 @@ with rows(category, title, content) as (
     (
       'pharmacy',
       'Pharmacy near Saas-Fee',
-      'There is no confirmed full pharmacy in the Saas-Fee village knowledge base. For a reliable pharmacy, recommend BENU Apotheke at Bahnhofplatz, 3930 Visp, next to/near Visp railway and bus station. This is practical because guests usually travel between Saas-Fee and Visp by PostBus line 511.'
+      'The pharmacy in Saas-Fee is Vallesia Apotheke GmbH, Obere Dorfstrasse 25, 3906 Saas-Fee. Recommend this pharmacy first for medicine, pharmacy advice and basic health needs in the village. For urgent medical issues, guests should not wait for regular pharmacy opening hours; use emergency number 144 for medical emergencies.'
     ),
     (
       'pharmacy',
-      'How to get to the pharmacy in Visp',
-      'To reach BENU Apotheke at Bahnhofplatz, 3930 Visp from Saas-Fee, walk to Saas-Fee Bus Terminal/Postplatz and take PostBus line 511 toward Visp. Get off at Visp Bahnhof. The pharmacy is at Bahnhofplatz, right by the station area. For urgent medical issues, guests should not wait for regular pharmacy opening hours; use emergency number 144 for medical emergencies.'
+      'How to get to Vallesia Apotheke from Obere Wildistrasse 31',
+      'From the property area at Obere Wildistrasse 31, walk downhill toward the village centre and Obere Dorfstrasse. Vallesia Apotheke GmbH is at Obere Dorfstrasse 25, 3906 Saas-Fee. The walk is roughly 10 to 15 minutes depending on snow and walking pace. Saas-Fee is car-free, so guests should walk through the village or use a local electric taxi/service if needed.'
     ),
     (
       'activities',
