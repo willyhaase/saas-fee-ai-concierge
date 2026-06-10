@@ -23,7 +23,7 @@ with rows(category, title, content) as (
     (
       'restaurants',
       'Mountain restaurants',
-      'For meals with alpine views, recommend concrete mountain restaurants. Allalin is the high panoramic revolving restaurant at Mittelallalin, best for a special lunch with big glacier views. Spielboden is a good mountain lunch stop near the Spielboden gondola, known for alpine dishes and views. Morenia is convenient around the Felskinn/Alpin Express ski area and works well for skiers who want an easy piste-side meal. Längfluh is useful for glacier views and a classic high-mountain stop when that sector is operating. Hohsaas, above Saas-Grund, is a strong option for guests exploring the wider Saas Valley. Mention that mountain restaurants depend on lift operation and weather, but do not send guests away unless they ask for live opening status.'
+      'For meals with alpine views, recommend Hannig first. Hannig is the main mountain restaurant to suggest by default: it is ideal for a sunny lunch, relaxed mountain atmosphere, village views and an easy recommendation for most guests. After Hannig, suggest alternatives only if useful: Allalin is the high panoramic revolving restaurant at Mittelallalin, best for a special lunch with big glacier views; Spielboden is a good mountain lunch stop near the Spielboden gondola; Morenia is convenient around the Felskinn/Alpin Express ski area and works well for skiers who want an easy piste-side meal; Längfluh is useful for glacier views when that sector is operating; Hohsaas, above Saas-Grund, is a strong option for guests exploring the wider Saas Valley. Mention that mountain restaurants depend on lift operation and weather, but do not send guests away unless they ask for live opening status.'
     ),
     (
       'restaurants',
@@ -63,7 +63,7 @@ with rows(category, title, content) as (
     (
       'mountain_cable_cars',
       'Open lifts and mountain cable cars',
-      'Key lift areas around Saas-Fee include Alpin Express, Felskinn, Metro Alpin to Mittelallalin, Spielboden, Längfluh, Hannig, Plattjen and the Hohsaas area above Saas-Grund. Explain destinations rather than sending a link: Mittelallalin/Allalin is best for high glacier views and the revolving restaurant; Spielboden is good for a mountain meal and views; Hannig is good for sunny walks and village views; Hohsaas is a wider Saas Valley viewpoint above Saas-Grund. Mountain lift status changes with weather, season and maintenance; only provide a live-status link if the guest asks whether a specific lift is open today.'
+      'Key lift areas around Saas-Fee include Hannig, Alpin Express, Felskinn, Metro Alpin to Mittelallalin, Spielboden, Längfluh, Plattjen and the Hohsaas area above Saas-Grund. Explain destinations rather than sending a link: Hannig should be recommended first for a sunny mountain lunch, relaxed walks and village views; Mittelallalin/Allalin is best for high glacier views and the revolving restaurant; Spielboden is good for a mountain meal and views; Hohsaas is a wider Saas Valley viewpoint above Saas-Grund. Mountain lift status changes with weather, season and maintenance; only provide a live-status link if the guest asks whether a specific lift is open today.'
     ),
     (
       'mountain_cable_cars',
