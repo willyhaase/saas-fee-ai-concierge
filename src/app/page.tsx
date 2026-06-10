@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 type ChatMessage = {
   id: string;
@@ -16,6 +16,13 @@ type ChatResponse = {
   incidentCreated?: boolean;
   incidentId?: string | null;
   priority?: string | null;
+  error?: string;
+};
+
+type GuestContextResponse = {
+  propertyId?: string | null;
+  propertyName?: string | null;
+  localAccessGranted?: boolean;
   error?: string;
 };
 
@@ -48,15 +55,23 @@ function getGuestContextFromUrl() {
   return { propertyId, guestAccessToken };
 }
 
+function getWelcomeMessage(propertyName?: string | null) {
+  if (propertyName) {
+    return `Welcome to ${propertyName}. I am your Saas-Fee AI concierge. Ask me about the apartment, restaurants, activities, mountain lifts, weather, or anything you need during your stay.`;
+  }
+
+  return "Hello, I am the Saas-Fee AI concierge. Ask me about restaurants, activities, mountain lifts, weather, or anything you need during your stay.";
+}
+
 export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
       role: "assistant",
-      content:
-        "Hello, I am the Saas-Fee AI concierge. Tell me what happened and I will help or notify the team.",
+      content: getWelcomeMessage(),
     },
   ]);
+  const [propertyName, setPropertyName] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -72,6 +87,50 @@ export default function Home() {
     () => message.trim().length > 0 && !isSending,
     [isSending, message]
   );
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (guestContext.propertyId) {
+      params.set("propertyId", guestContext.propertyId);
+    }
+
+    if (guestContext.guestAccessToken) {
+      params.set("access", guestContext.guestAccessToken);
+    }
+
+    fetch(`/api/guest-context${params.size ? `?${params}` : ""}`)
+      .then(async (response) => {
+        if (!response.ok) {
+          return null;
+        }
+
+        return (await response.json()) as GuestContextResponse;
+      })
+      .then((data) => {
+        const loadedPropertyName = data?.propertyName?.trim();
+
+        if (!loadedPropertyName) {
+          return;
+        }
+
+        setPropertyName(loadedPropertyName);
+        setMessages((current) =>
+          current.map((item) =>
+            item.id === "welcome"
+              ? { ...item, content: getWelcomeMessage(loadedPropertyName) }
+              : item
+          )
+        );
+      })
+      .catch((loadError) => {
+        console.error(
+          loadError instanceof Error
+            ? loadError.message
+            : "Could not load guest context."
+        );
+      });
+  }, [guestContext]);
 
   async function sendMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -175,7 +234,7 @@ export default function Home() {
               Saas-Fee
             </p>
             <h1 className="mt-2 text-3xl font-semibold tracking-normal text-[#151815] sm:text-4xl">
-              AI Concierge
+              {propertyName ? `${propertyName} Concierge` : "AI Concierge"}
             </h1>
           </div>
           <div className="flex items-center gap-2 text-sm text-[#5b6b5f]">
