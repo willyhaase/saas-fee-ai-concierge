@@ -18,52 +18,57 @@ with rows(category, title, content) as (
     (
       'restaurants',
       'Restaurants in Saas-Fee',
-      'Saas-Fee has village restaurants, hotel restaurants, mountain restaurants and culinary trails. When guests ask where to eat, ask about budget, cuisine, party size and whether they want village dining or mountain views. Recommend checking current opening times and reservations on the official restaurant list: https://www.saas-fee.ch/en/culinary/restaurants'
+      'When guests ask where to eat in Saas-Fee, answer with concrete options. Good village choices: Schäferstube for a cosy traditional Valais/Swiss dinner in a wooden chalet atmosphere; Zer Schlucht for regional mountain food and gorge/forest views; Brasserie 1809 for relaxed comfort food such as pasta, burgers and rösti; The Capra wine cellar for a classic fondue experience; Walliserhof restaurants for a polished hotel dinner in the village centre. Ask about budget, cuisine, party size and whether they prefer a mountain view or village dinner.'
     ),
     (
       'restaurants',
       'Mountain restaurants',
-      'For meals with alpine views, suggest checking the official mountain restaurant list. Opening depends on season, lift status and weather, so guests should verify the same day before going up. Official page: https://www.saas-fee.ch/en/culinary/mountain-restaurants'
+      'For meals with alpine views, recommend concrete mountain restaurants. Allalin is the high panoramic revolving restaurant at Mittelallalin, best for a special lunch with big glacier views. Spielboden is a good mountain lunch stop near the Spielboden gondola, known for alpine dishes and views. Morenia is convenient around the Felskinn/Alpin Express ski area and works well for skiers who want an easy piste-side meal. Längfluh is useful for glacier views and a classic high-mountain stop when that sector is operating. Hohsaas, above Saas-Grund, is a strong option for guests exploring the wider Saas Valley. Mention that mountain restaurants depend on lift operation and weather, but do not send guests away unless they ask for live opening status.'
     ),
     (
       'restaurants',
       'Culinary trail',
-      'The Saas-Fee/Saastal culinary trail is a food-focused route between selected restaurants and is useful for guests who want a relaxed tasting experience rather than one single restaurant. Current offers and booking details are on the official page: https://www.saas-fee.ch/en/culinary/culinary-trail'
+      'The Saas-Fee/Saastal culinary trail is a food-focused route between selected restaurants and is useful for guests who want a relaxed tasting experience rather than one single restaurant. Present it as an experience idea: several stops, small tastings or drinks, and a scenic walk through the destination. If the guest asks for booking details, offer to provide the booking link.'
+    ),
+    (
+      'restaurants',
+      'Restaurant recommendation style',
+      'Do not answer restaurant questions with only a link. Start with 3 to 5 suitable restaurants and a one-line reason for each. Then ask one short follow-up if needed, for example: "Do you prefer traditional Swiss, casual comfort food, fondue, or a mountain lunch?" Only mention checking opening times when timing matters, such as same-day mountain restaurants or late dinner.'
     ),
     (
       'activities',
       'Summer activities',
-      'Popular warm-season activities in Saas-Fee/Saastal include hiking, biking, climbing and mountaineering, gorge/alpine canyon experiences, glacier experience tours, trail running and summer skiing. For current activity options, use the official summer activities page: https://www.saas-fee.ch/en/summer-activities'
+      'Popular warm-season activities in Saas-Fee/Saastal include hiking, biking, climbing and mountaineering, gorge/alpine canyon experiences, glacier experience tours, trail running and summer skiing. For an easy day, suggest a village walk plus a gentle hike or cable-car viewpoint. For active guests, suggest hiking, biking or a guided glacier experience. For families, suggest easier hikes, cable-car viewpoints and summer mountain experiences.'
     ),
     (
       'activities',
       'Hiking',
-      'Saas-Fee/Saastal offers about 350 km of hiking trails with routes from easy walks to high-alpine tours around the 4000 m peaks. Guests should check trail status, wear sturdy shoes and respect mountain trail difficulty. Official hiking page: https://www.saas-fee.ch/en/summer-activities/hiking'
+      'Saas-Fee/Saastal offers about 350 km of hiking trails with routes from easy walks to high-alpine tours around the 4000 m peaks. Good answer pattern: for relaxed hikers, suggest scenic village and forest walks or easier routes reached by cable car; for fit hikers, suggest panoramic trails and high routes; for experienced alpine hikers, explain that white-red-white and white-blue-white trails require sure-footedness, good shoes, weather awareness and mountain experience.'
     ),
     (
       'activities',
       'Biking',
-      'Saas-Fee/Saastal has mountain bike and e-bike routes. Guests should check route status, lift transport rules and weather before starting. Official biking page: https://www.saas-fee.ch/en/summer-activities/biking'
+      'Saas-Fee/Saastal has mountain bike and e-bike routes. For casual guests, suggest e-bike routes and valley rides. For sportier guests, suggest mountain bike routes with cable-car access where permitted. Remind guests to check weather, brakes, helmet, route difficulty and whether bikes are allowed on the intended lift.'
     ),
     (
       'activities',
       'Climbing and mountaineering',
-      'For climbing, mountaineering, glacier routes and high-alpine tours, guests should use qualified guides and check current conditions. Official climbing and mountaineering page: https://www.saas-fee.ch/en/summer-activities/climbing-mountaineering'
+      'For climbing, mountaineering, glacier routes and high-alpine tours, recommend qualified local guides. Good options to describe: guided glacier experience for first-timers; Allalinhorn as a classic guided 4000 m objective for fit guests; climbing and mountaineering routes for experienced guests only. Always mention equipment, acclimatisation and current conditions.'
     ),
     (
       'activities',
       'Winter activities',
-      'Popular winter activities include ski and snowboard, winter hiking, snowshoe hiking, glacier tours, cross-country skiing and sledging. For current winter options and booking links, use the official winter activities page: https://www.saas-fee.ch/en/winter-activities'
+      'Popular winter activities include ski and snowboard, winter hiking, snowshoe hiking, glacier tours, cross-country skiing and sledging. For non-skiers, suggest winter hiking, snowshoeing, sledging, village cafés and mountain viewpoints. For skiers, mention Saas-Fee glacier skiing and the wider Saas Valley ski areas. For adventure guests, suggest a guided glacier tour or canyon/gorge experience when available.'
     ),
     (
       'mountain_cable_cars',
       'Open lifts and mountain cable cars',
-      'Mountain lift status changes with weather, season and maintenance. For any question about whether a lift, cable car, gondola or mountain railway is open, tell guests to check the live official open-lifts page before travelling: https://www.saas-fee.ch/en/services-informationen/prices-timetables-cable-cars/timetables-cable-cars/open-lifts'
+      'Key lift areas around Saas-Fee include Alpin Express, Felskinn, Metro Alpin to Mittelallalin, Spielboden, Längfluh, Hannig, Plattjen and the Hohsaas area above Saas-Grund. Explain destinations rather than sending a link: Mittelallalin/Allalin is best for high glacier views and the revolving restaurant; Spielboden is good for a mountain meal and views; Hannig is good for sunny walks and village views; Hohsaas is a wider Saas Valley viewpoint above Saas-Grund. Mountain lift status changes with weather, season and maintenance; only provide a live-status link if the guest asks whether a specific lift is open today.'
     ),
     (
       'mountain_cable_cars',
       'Cable car timetables',
-      'For exact operating times, first and last uphill/downhill journeys, use the official cable car timetable page. Timetables vary by season and route: https://www.saas-fee.ch/en/services-informationen/prices-timetables-cable-cars/timetables-cable-cars'
+      'Cable car timetables vary by season, route and weather. In chat, answer conceptually first: recommend leaving enough buffer for the last descent, checking the last downhill time before lunch or hiking, and choosing lower/village activities if wind or storms affect lifts. Provide official timetable links only when the guest asks for exact times or live status.'
     ),
     (
       'mountain_cable_cars',
@@ -73,7 +78,7 @@ with rows(category, title, content) as (
     (
       'weather',
       'Weather in Saas-Fee',
-      'Mountain weather can change quickly. The chat may have a live weather snapshot, but guests should check the official Saas-Fee weather page and webcams before mountain activities: https://www.saas-fee.ch/en/weather and https://www.saas-fee.ch/en/webcams'
+      'Mountain weather can change quickly. The chat receives a live weather snapshot when available; answer with the current temperature, condition, wind and short forecast from liveWeather. For planning, explain what the weather means: clear/calm is better for viewpoints and hiking; rain or storms favour village restaurants, cafés, museums and wellness; strong wind can affect lifts; fresh snow or ice changes hiking and driving conditions. Do not send a weather link unless the guest asks for webcams or official live status.'
     ),
     (
       'weather',
@@ -83,7 +88,7 @@ with rows(category, title, content) as (
     (
       'tourist_information',
       'Saas-Fee tourist office',
-      'For official destination information, guests can contact Saastal Tourismus AG, Obere Dorfstrasse 2, CH-3906 Saas-Fee, phone +41 27 958 18 58, email info@saas-fee.ch. Official website: https://www.saas-fee.ch/en'
+      'For official destination information, guests can contact Saastal Tourismus AG, Obere Dorfstrasse 2, CH-3906 Saas-Fee, phone +41 27 958 18 58, email info@saas-fee.ch. Use this contact directly in chat when a guest needs tourist-office help.'
     )
 ),
 deleted as (
