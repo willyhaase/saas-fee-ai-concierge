@@ -36,6 +36,36 @@ with rows(category, title, content) as (
       'Do not answer restaurant questions with only a link. Start with 3 to 5 suitable restaurants and a one-line reason for each. Then ask one short follow-up if needed, for example: "Do you prefer traditional Swiss, casual comfort food, fondue, or a mountain lunch?" Only mention checking opening times when timing matters, such as same-day mountain restaurants or late dinner.'
     ),
     (
+      'groceries',
+      'Grocery stores in Saas-Fee',
+      'For groceries in Saas-Fee, recommend two main options. Coop, Obere Dorfstrasse, 3906 Saas-Fee: a convenient central supermarket for everyday groceries, fresh food, drinks and household basics. VDI Migros, Untere Dorfstrasse 41, 3906 Saas-Fee: another central supermarket, useful for everyday groceries and Swiss supermarket basics. Saas-Fee is car-free, so guests should walk through the village or use local electric taxi/service if they have heavy bags.'
+    ),
+    (
+      'groceries',
+      'How to get to Coop from Obere Wildistrasse 31',
+      'From the property area at Obere Wildistrasse 31, walk downhill toward the village centre and Obere Dorfstrasse. Coop is on Obere Dorfstrasse in the central village area. The walk is roughly 10 to 15 minutes depending on snow, luggage and walking pace. For heavy shopping, recommend going with backpacks or asking a local electric taxi/service for transport, because private cars are not allowed inside Saas-Fee.'
+    ),
+    (
+      'groceries',
+      'How to get to Migros from Obere Wildistrasse 31',
+      'From the property area at Obere Wildistrasse 31, walk downhill toward the village centre, then continue toward Untere Dorfstrasse. VDI Migros is at Untere Dorfstrasse 41, 3906 Saas-Fee. The walk is roughly 15 minutes depending on route, snow and bags. It is a good option if guests are already near the lower village or bus terminal side.'
+    ),
+    (
+      'groceries',
+      'Grocery recommendation style',
+      'When guests ask where to buy food, answer directly with Coop and Migros, including addresses and walking guidance. Do not send only a map link. Suggest Coop first for the easiest central option from most village routes, and Migros as a second option on Untere Dorfstrasse. Mention that opening hours can vary by season and holidays only if timing matters.'
+    ),
+    (
+      'pharmacy',
+      'Pharmacy near Saas-Fee',
+      'There is no confirmed full pharmacy in the Saas-Fee village knowledge base. For a reliable pharmacy, recommend BENU Apotheke at Bahnhofplatz, 3930 Visp, next to/near Visp railway and bus station. This is practical because guests usually travel between Saas-Fee and Visp by PostBus line 511.'
+    ),
+    (
+      'pharmacy',
+      'How to get to the pharmacy in Visp',
+      'To reach BENU Apotheke at Bahnhofplatz, 3930 Visp from Saas-Fee, walk to Saas-Fee Bus Terminal/Postplatz and take PostBus line 511 toward Visp. Get off at Visp Bahnhof. The pharmacy is at Bahnhofplatz, right by the station area. For urgent medical issues, guests should not wait for regular pharmacy opening hours; use emergency number 144 for medical emergencies.'
+    ),
+    (
       'activities',
       'Summer activities',
       'Popular warm-season activities in Saas-Fee/Saastal include hiking, biking, climbing and mountaineering, gorge/alpine canyon experiences, glacier experience tours, trail running and summer skiing. For an easy day, suggest a village walk plus a gentle hike or cable-car viewpoint. For active guests, suggest hiking, biking or a guided glacier experience. For families, suggest easier hikes, cable-car viewpoints and summer mountain experiences.'
