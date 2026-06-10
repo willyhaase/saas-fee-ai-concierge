@@ -35,6 +35,19 @@ function getVisitorErrorMessage(message: string) {
   return message;
 }
 
+function getGuestContextFromUrl() {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const propertyId = params.get("propertyId") || undefined;
+  const guestAccessToken =
+    params.get("access") || params.get("guestAccessToken") || undefined;
+
+  return { propertyId, guestAccessToken };
+}
+
 export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -49,6 +62,10 @@ export default function Home() {
   const [customerEmail, setCustomerEmail] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [guestContext] = useState<{
+    propertyId?: string;
+    guestAccessToken?: string;
+  }>(() => getGuestContextFromUrl());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const canSend = useMemo(
@@ -88,6 +105,7 @@ export default function Home() {
           customerEmail: customerEmail.trim() || undefined,
           context: {
             source: "website-chat",
+            ...guestContext,
           },
         }),
       });
@@ -162,7 +180,9 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2 text-sm text-[#5b6b5f]">
             <span className="h-2.5 w-2.5 rounded-full bg-[#2f7d59]" />
-            Online
+            {guestContext.propertyId && guestContext.guestAccessToken
+              ? "Guest link active"
+              : "Online"}
           </div>
         </header>
 

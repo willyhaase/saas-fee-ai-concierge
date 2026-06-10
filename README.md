@@ -29,6 +29,9 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 SUPABASE_CONVERSATIONS_TABLE=conversations
 SUPABASE_INCIDENTS_TABLE=incidents
+
+# Optional: require guest links for property-local data
+REQUIRE_GUEST_ACCESS_TOKEN=false
 ```
 
 Важно:
@@ -37,6 +40,7 @@ SUPABASE_INCIDENTS_TABLE=incidents
 - `OPENAI_MODEL` можно не задавать. По умолчанию используется `gpt-4o-mini`.
 - Если таблицы называются `conversations` и `incidents`, переменные `SUPABASE_CONVERSATIONS_TABLE` и `SUPABASE_INCIDENTS_TABLE` можно не задавать.
 - Если таблицы называются иначе, укажи реальные имена в Vercel.
+- `REQUIRE_GUEST_ACCESS_TOKEN=true` включает строгий режим: локальная информация жилья выдаётся только по гостевой ссылке с access token.
 
 ## Supabase Schema
 
@@ -58,6 +62,65 @@ supabase/schema.sql
 
 - `public.conversations`
 - `public.incidents`
+
+## Разделение базы знаний
+
+База делится на два слоя:
+
+- **Общий слой**: информация, доступная всем гостям и всем объектам. Таблица `public.global_knowledge`.
+- **Локальный слой жилья**: информация конкретного объекта. Это `properties`, `property_contacts`, `property_instructions`, `property_faq`, `conversation_logs`, `incidents`. В строгом режиме чат использует этот слой только при наличии валидной гостевой ссылки.
+
+Миграция для этой модели:
+
+```text
+supabase/migrations/20260610_split_global_and_property_knowledge.sql
+```
+
+Она добавляет:
+
+- `public.global_knowledge`
+- `public.guest_property_access`
+- `public.conversations.property_id`
+- индексы
+- RLS для общего и локального слоёв
+
+Гостевая ссылка должна передавать:
+
+```text
+https://your-domain.vercel.app/?propertyId=<PROPERTY_ID>&access=<RAW_GUEST_TOKEN>
+```
+
+API хэширует `access` через SHA-256 и ищет его в `guest_property_access.access_token_hash`. Сырой token не хранится в базе.
+
+Пример создания гостевого token в Supabase SQL Editor:
+
+```sql
+with token as (
+  select encode(gen_random_bytes(24), 'hex') as raw_token
+),
+inserted as (
+  insert into public.guest_property_access (
+    property_id,
+    access_token_hash,
+    label,
+    valid_until
+  )
+  select
+    '<PROPERTY_ID>'::uuid,
+    encode(digest(raw_token, 'sha256'), 'hex'),
+    'Guest stay',
+    now() + interval '14 days'
+  from token
+  returning id, property_id, label, valid_until
+)
+select
+  token.raw_token,
+  inserted.property_id,
+  inserted.valid_until
+from token, inserted;
+```
+
+`raw_token` показывается только в результате этого запроса. Его нужно вставить в ссылку гостя, а в базе останется только hash.
 
 ## Локальный запуск
 

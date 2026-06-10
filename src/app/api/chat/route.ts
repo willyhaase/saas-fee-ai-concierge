@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import OpenAI from "openai";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
@@ -28,12 +29,33 @@ type PropertyContext = {
   propertyId: string | null;
   propertyName: string | null;
   address: string | null;
+  localAccessGranted: boolean;
   hostName: string | null;
   whatsapp: string | null;
   emergencyMedical: string | null;
   police: string | null;
   fire: string | null;
   taxi: string | null;
+  instructions: Array<{
+    category: string | null;
+    title: string | null;
+    content: string | null;
+  }>;
+  faq: Array<{
+    question: string | null;
+    answer: string | null;
+  }>;
+  localRecommendations: Array<{
+    category: string | null;
+    name: string | null;
+    address: string | null;
+    notes: string | null;
+  }>;
+  globalKnowledge: Array<{
+    category: string | null;
+    title: string | null;
+    content: string | null;
+  }>;
 };
 
 export const runtime = "nodejs";
@@ -86,6 +108,14 @@ function getPayloadContext(payload: ChatRequest) {
     !Array.isArray(payload.context)
     ? (payload.context as Record<string, unknown>)
     : null;
+}
+
+function getBooleanEnv(name: string) {
+  return process.env[name]?.toLowerCase() === "true";
+}
+
+function hashAccessToken(token: string) {
+  return createHash("sha256").update(token).digest("hex");
 }
 
 function isMissingTableError(message: string) {
@@ -146,7 +176,10 @@ async function getConciergeResponse(
         content: [
           "You are a concise Saas-Fee guest AI concierge for a holiday rental.",
           "Use the supplied property context as the source of truth. Never invent contact details.",
-          "If the guest asks for WhatsApp, support contact, host contact, or how to reach the property team, provide the WhatsApp number from propertyContext when available.",
+          "Property context has two layers: globalKnowledge and localRecommendations are general information; property details, contacts, instructions, and FAQ are local housing information.",
+          "Only use local housing information when propertyContext.localAccessGranted is true.",
+          "If localAccessGranted is false and the guest asks about a specific apartment, access, Wi-Fi, host contact, or private housing instructions, ask them to open their guest-specific link.",
+          "If the guest asks for WhatsApp, support contact, host contact, or how to reach the property team, provide the WhatsApp number from propertyContext only when localAccessGranted is true and whatsapp is available.",
           "If a fact is not present in propertyContext, say that you do not have it and offer to notify the host.",
           "Create incidents for broken heating, appliances, access issues, safety concerns, urgent maintenance, guest escalations, or anything requiring staff follow-up.",
           "Return only JSON with keys: reply, incident_required, incident_title, incident_description, priority. Priority must be low, medium, high, or urgent.",
@@ -177,17 +210,44 @@ async function getConciergeResponse(
 
 async function getPropertyContext(
   supabase: SupabaseClient,
-  requestedPropertyId: string | null
+  requestedPropertyId: string | null,
+  guestAccessToken: string | null
 ): Promise<PropertyContext | null> {
+  const globalKnowledge = await getGlobalKnowledge(supabase);
+  const localRecommendations = await getLocalRecommendations(supabase);
+  const propertyId = await resolvePropertyId(
+    supabase,
+    requestedPropertyId,
+    guestAccessToken
+  );
+
+  if (!propertyId) {
+    return {
+      propertyId: null,
+      propertyName: null,
+      address: null,
+      localAccessGranted: false,
+      hostName: null,
+      whatsapp: null,
+      emergencyMedical: null,
+      police: null,
+      fire: null,
+      taxi: null,
+      instructions: [],
+      faq: [],
+      localRecommendations,
+      globalKnowledge,
+    };
+  }
+
   const query = supabase
     .from("properties")
     .select(
       "id, name, address, property_contacts(host_name, whatsapp, emergency_medical, police, fire, taxi)"
-    );
+    )
+    .eq("id", propertyId);
 
-  const { data, error } = requestedPropertyId
-    ? await query.eq("id", requestedPropertyId).limit(1).maybeSingle()
-    : await query.order("created_at", { ascending: true }).limit(1).maybeSingle();
+  const { data, error } = await query.limit(1).maybeSingle();
 
   if (error || !data) {
     if (error) {
@@ -201,18 +261,152 @@ async function getPropertyContext(
   const contact = Array.isArray(contactsValue)
     ? (contactsValue[0] as Record<string, unknown> | undefined)
     : (contactsValue as Record<string, unknown> | null);
+  const [instructions, faq] = await Promise.all([
+    getPropertyInstructions(supabase, propertyId),
+    getPropertyFaq(supabase, propertyId),
+  ]);
 
   return {
     propertyId: asOptionalString(property.id),
     propertyName: asOptionalString(property.name),
     address: asOptionalString(property.address),
+    localAccessGranted: true,
     hostName: asOptionalString(contact?.host_name),
     whatsapp: asOptionalString(contact?.whatsapp),
     emergencyMedical: asOptionalString(contact?.emergency_medical),
     police: asOptionalString(contact?.police),
     fire: asOptionalString(contact?.fire),
     taxi: asOptionalString(contact?.taxi),
+    instructions,
+    faq,
+    localRecommendations,
+    globalKnowledge,
   };
+}
+
+async function resolvePropertyId(
+  supabase: SupabaseClient,
+  requestedPropertyId: string | null,
+  guestAccessToken: string | null
+) {
+  if (guestAccessToken) {
+    const tokenHash = hashAccessToken(guestAccessToken);
+    const { data, error } = await supabase
+      .from("guest_property_access")
+      .select("property_id, active, valid_from, valid_until")
+      .eq("access_token_hash", tokenHash)
+      .eq("active", true)
+      .limit(1)
+      .maybeSingle();
+
+    if (!error && data) {
+      const access = data as Record<string, unknown>;
+      const now = Date.now();
+      const validFrom = asOptionalString(access.valid_from);
+      const validUntil = asOptionalString(access.valid_until);
+      const startsOk = !validFrom || Date.parse(validFrom) <= now;
+      const endsOk = !validUntil || Date.parse(validUntil) >= now;
+
+      if (startsOk && endsOk) {
+        return asOptionalString(access.property_id);
+      }
+    }
+  }
+
+  if (getBooleanEnv("REQUIRE_GUEST_ACCESS_TOKEN")) {
+    return null;
+  }
+
+  if (requestedPropertyId) {
+    return requestedPropertyId;
+  }
+
+  const { data, error } = await supabase
+    .from("properties")
+    .select("id")
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return asOptionalString((data as Record<string, unknown>).id);
+}
+
+async function getPropertyInstructions(
+  supabase: SupabaseClient,
+  propertyId: string
+) {
+  const { data, error } = await supabase
+    .from("property_instructions")
+    .select("category, title, content")
+    .eq("property_id", propertyId)
+    .limit(30);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as Record<string, unknown>[]).map((item) => ({
+    category: asOptionalString(item.category),
+    title: asOptionalString(item.title),
+    content: asOptionalString(item.content),
+  }));
+}
+
+async function getPropertyFaq(supabase: SupabaseClient, propertyId: string) {
+  const { data, error } = await supabase
+    .from("property_faq")
+    .select("question, answer")
+    .eq("property_id", propertyId)
+    .limit(30);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as Record<string, unknown>[]).map((item) => ({
+    question: asOptionalString(item.question),
+    answer: asOptionalString(item.answer),
+  }));
+}
+
+async function getLocalRecommendations(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from("local_recommendations")
+    .select("category, name, address, notes")
+    .limit(30);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as Record<string, unknown>[]).map((item) => ({
+    category: asOptionalString(item.category),
+    name: asOptionalString(item.name),
+    address: asOptionalString(item.address),
+    notes: asOptionalString(item.notes),
+  }));
+}
+
+async function getGlobalKnowledge(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from("global_knowledge")
+    .select("category, title, content")
+    .eq("is_active", true)
+    .limit(50);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as Record<string, unknown>[]).map((item) => ({
+    category: asOptionalString(item.category),
+    title: asOptionalString(item.title),
+    content: asOptionalString(item.content),
+  }));
 }
 
 async function insertFirstMatching(
@@ -326,7 +520,14 @@ export async function POST(req: Request) {
     const requestConversationId = asOptionalString(payload.conversationId);
     const requestContext = getPayloadContext(payload);
     const requestPropertyId = asOptionalString(requestContext?.propertyId);
-    const propertyContext = await getPropertyContext(supabase, requestPropertyId);
+    const guestAccessToken =
+      asOptionalString(requestContext?.guestAccessToken) ||
+      asOptionalString(requestContext?.access);
+    const propertyContext = await getPropertyContext(
+      supabase,
+      requestPropertyId,
+      guestAccessToken
+    );
     const ai = await getConciergeResponse(message, payload, propertyContext);
     const metadata = {
       requestConversationId,
@@ -337,6 +538,15 @@ export async function POST(req: Request) {
     };
 
     const conversation = await insertFirstMatching(supabase, conversationTables, [
+      {
+        user_message: message,
+        assistant_message: ai.reply,
+        incident_required: ai.incident_required,
+        property_id: propertyContext?.propertyId,
+        customer_name: customerName,
+        customer_email: customerEmail,
+        metadata,
+      },
       {
         user_message: message,
         assistant_message: ai.reply,
@@ -386,6 +596,7 @@ export async function POST(req: Request) {
           priority: ai.priority,
           status: "open",
           notify_host: true,
+          property_id: propertyContext?.propertyId,
         },
         {
           type: title,
