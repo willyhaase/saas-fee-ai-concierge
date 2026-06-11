@@ -91,6 +91,16 @@ with rows(category, title, content) as (
       'Popular winter activities include ski and snowboard, winter hiking, snowshoe hiking, glacier tours, cross-country skiing and sledging. For non-skiers, suggest winter hiking, snowshoeing, sledging, village cafés and mountain viewpoints. For skiers, mention Saas-Fee glacier skiing and the wider Saas Valley ski areas. For adventure guests, suggest a guided glacier tour or canyon/gorge experience when available.'
     ),
     (
+      'activities',
+      'Saas Valley experience worlds',
+      'Use the Saas Valley Erlebniswelten as a structured way to recommend activities. The main worlds are: Allalin for summer skiing, world records, glacier views and first 4000 m ambitions; Längfluh for glacier trekking, glacier views and the glacier lake; Spielboden for marmots and family-friendly wildlife encounters; Hannig for sunny walking, animals and relaxed mountain time; Kreuzboden for families, a large playground, water games and Bike Skills Park; Hohsaas for mountain biking, adrenaline and big 4000 m views; Furggstalden and Heidbodmen for relaxation, sun and adventure paths; Mattmark for hiking and biking by the water and border hikes toward Italy. When guests ask what to do, pick the experience world that matches their mood instead of giving a generic list.'
+    ),
+    (
+      'activities',
+      'Experience world matching',
+      'Match guests to activities like this: families with children -> Kreuzboden, Spielboden, Hannig; relaxed sunny mountain day -> Hannig or Furggstalden/Heidbodmen; glacier views or high-alpine wow factor -> Allalin or Längfluh; biking/adrenaline -> Hohsaas or Kreuzboden Bike Skills Park; water and quiet valley scenery -> Mattmark; wildlife -> Spielboden/Hannig; summer skiing -> Allalin. Mention opening dates only when known and relevant, because mountain areas depend on season and lift status.'
+    ),
+    (
       'mountain_cable_cars',
       'Open lifts and mountain cable cars',
       'Key lift areas around Saas-Fee include Hannig, Alpin Express, Felskinn, Metro Alpin to Mittelallalin, Spielboden, Längfluh, Plattjen and the Hohsaas area above Saas-Grund. Explain destinations rather than sending a link: Hannig should be recommended first for a sunny mountain lunch, relaxed walks and village views; Mittelallalin/Allalin is best for high glacier views and the revolving restaurant; Spielboden is good for a mountain meal and views; Hohsaas is a wider Saas Valley viewpoint above Saas-Grund. Mountain lift status changes with weather, season and maintenance; only provide a live-status link if the guest asks whether a specific lift is open today.'

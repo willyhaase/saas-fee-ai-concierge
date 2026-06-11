@@ -40,6 +40,19 @@ type LiveWeather = {
   }>;
 };
 
+type LocalEvent = {
+  location: string | null;
+  title: string | null;
+  category: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  timeText: string | null;
+  venue: string | null;
+  description: string | null;
+  price: string | null;
+  registration: string | null;
+};
+
 type PropertyContext = {
   propertyId: string | null;
   propertyName: string | null;
@@ -71,6 +84,7 @@ type PropertyContext = {
     title: string | null;
     content: string | null;
   }>;
+  localEvents: LocalEvent[];
   liveWeather: LiveWeather | null;
 };
 
@@ -294,6 +308,7 @@ async function getConciergeResponse(
           "Do not include source links in normal replies unless the guest explicitly asks for a link, booking page, live status page, or official source.",
           "If several options fit, recommend 3-5 concrete choices and briefly explain who each option is good for.",
           "Property context has two layers: globalKnowledge and localRecommendations are general information; property details, contacts, instructions, and FAQ are local housing information.",
+          "For event questions, use propertyContext.localEvents first. Mention dates, village/location, time, price or registration details when available. Do not recommend events whose endDate is before today.",
           "For weather questions, use propertyContext.liveWeather when it is available and mention that mountain weather can change quickly.",
           "Only use local housing information when propertyContext.localAccessGranted is true.",
           "If localAccessGranted is false and the guest asks about a specific apartment, access, Wi-Fi, host contact, or private housing instructions, ask them to open their guest-specific link.",
@@ -333,6 +348,7 @@ async function getPropertyContext(
 ): Promise<PropertyContext | null> {
   const globalKnowledge = await getGlobalKnowledge(supabase);
   const localRecommendations = await getLocalRecommendations(supabase);
+  const localEvents = await getLocalEvents(supabase);
   const liveWeather = await getLiveSaasFeeWeather();
   const propertyId = await resolvePropertyId(
     supabase,
@@ -356,6 +372,7 @@ async function getPropertyContext(
       faq: [],
       localRecommendations,
       globalKnowledge,
+      localEvents,
       liveWeather,
     };
   }
@@ -401,6 +418,7 @@ async function getPropertyContext(
     faq,
     localRecommendations,
     globalKnowledge,
+    localEvents,
     liveWeather,
   };
 }
@@ -527,6 +545,36 @@ async function getGlobalKnowledge(supabase: SupabaseClient) {
     category: asOptionalString(item.category),
     title: asOptionalString(item.title),
     content: asOptionalString(item.content),
+  }));
+}
+
+async function getLocalEvents(supabase: SupabaseClient) {
+  const today = new Date().toISOString().slice(0, 10);
+  const { data, error } = await supabase
+    .from("local_events")
+    .select(
+      "location, title, category, start_date, end_date, time_text, venue, description, price, registration"
+    )
+    .eq("is_active", true)
+    .or(`end_date.is.null,end_date.gte.${today}`)
+    .order("start_date", { ascending: true, nullsFirst: false })
+    .limit(30);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as Record<string, unknown>[]).map((item) => ({
+    location: asOptionalString(item.location),
+    title: asOptionalString(item.title),
+    category: asOptionalString(item.category),
+    startDate: asOptionalString(item.start_date),
+    endDate: asOptionalString(item.end_date),
+    timeText: asOptionalString(item.time_text),
+    venue: asOptionalString(item.venue),
+    description: asOptionalString(item.description),
+    price: asOptionalString(item.price),
+    registration: asOptionalString(item.registration),
   }));
 }
 
