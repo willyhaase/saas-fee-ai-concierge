@@ -242,6 +242,29 @@ function normalizeLookup(value: string | null | undefined) {
     .trim();
 }
 
+function getKnownRestaurantCandidates(propertyContext: PropertyContext | null) {
+  return unique([
+    ...(propertyContext?.restaurantContacts ?? [])
+      .map((item) => item.restaurantName)
+      .filter((item): item is string => Boolean(item)),
+    ...(propertyContext?.restaurantMenus ?? [])
+      .map((item) => item.restaurantName)
+      .filter((item): item is string => Boolean(item)),
+    "Hannig",
+    "Allalin",
+    "Spielboden",
+    "Längfluh",
+    "Langfluh",
+    "Morenia",
+    "Schäferstube",
+    "Schaferstube",
+    "Zer Schlucht",
+    "Brasserie 1809",
+    "The Capra",
+    "Walliserhof",
+  ]);
+}
+
 function includesAny(text: string, keywords: string[]) {
   return keywords.some((keyword) => text.includes(keyword));
 }
@@ -1295,7 +1318,31 @@ async function handleRestaurantReservation(
   const missingFields = getReservationMissingFields(draft);
 
   if (!draft.readyToSend || missingFields.length > 0) {
-    return null;
+    const messageBody = buildReservationMessage(draft, propertyContext);
+    const reservationId = await insertRestaurantReservation(supabase, {
+      conversation_id: conversationId,
+      property_id: propertyContext?.propertyId ?? null,
+      restaurant_name: draft.restaurantName ?? "Unbekannt",
+      restaurant_whatsapp: null,
+      guest_name: draft.guestName,
+      guest_contact: draft.guestContact,
+      party_size: draft.partySize,
+      reservation_date: draft.reservationDate,
+      reservation_time: draft.reservationTime,
+      special_requests: draft.specialRequests,
+      status: "requested",
+      whatsapp_message_body: messageBody,
+      whatsapp_message_id: null,
+      whatsapp_error: `Missing reservation fields: ${missingFields.join(", ")}`,
+    });
+
+    return {
+      id: reservationId,
+      status: "requested",
+      whatsappMessageId: null,
+      guestNotice:
+        "Ich habe Ihre Reservierungsanfrage aufgenommen, brauche aber noch fehlende Angaben, bevor ich sie an das Restaurant senden kann.",
+    };
   }
 
   const contact = findRestaurantContact(
@@ -1370,6 +1417,229 @@ function appendReservationNotice(reply: string, notice: string) {
   return `${reply}\n\n${notice}`;
 }
 
+function isReservationRequest(message: string) {
+  const text = message.toLowerCase();
+
+  return includesAny(text, [
+    "reserviere",
+    "reservieren",
+    "reservierung",
+    "tisch",
+    "reservation",
+    "reserve",
+    "book",
+    "table",
+    "заброни",
+    "резерв",
+    "столик",
+  ]);
+}
+
+function addDaysIso(days: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+function parseReservationDate(message: string) {
+  const text = message.toLowerCase();
+
+  if (includesAny(text, ["übermorgen", "uebermorgen", "day after tomorrow"])) {
+    return addDaysIso(2);
+  }
+
+  if (includesAny(text, ["morgen", "tomorrow", "завтра"])) {
+    return addDaysIso(1);
+  }
+
+  if (includesAny(text, ["heute", "today", "сегодня"])) {
+    return addDaysIso(0);
+  }
+
+  const isoMatch = message.match(/\b(20\d{2})-(\d{2})-(\d{2})\b/);
+  if (isoMatch) {
+    return isoMatch[0];
+  }
+
+  const dottedMatch = message.match(/\b(\d{1,2})[./](\d{1,2})(?:[./](20\d{2}))?\b/);
+  if (dottedMatch) {
+    const day = dottedMatch[1].padStart(2, "0");
+    const month = dottedMatch[2].padStart(2, "0");
+    const year = dottedMatch[3] ?? String(new Date().getFullYear());
+    return `${year}-${month}-${day}`;
+  }
+
+  return null;
+}
+
+function parseReservationTime(message: string) {
+  const timeMatch = message.match(/\b(?:um\s*)?([01]?\d|2[0-3])[:.](\d{2})\b/i);
+  if (timeMatch) {
+    return `${timeMatch[1].padStart(2, "0")}:${timeMatch[2]}`;
+  }
+
+  const hourMatch = message.match(/\b(?:um\s*)?([01]?\d|2[0-3])\s*(?:uhr|h)\b/i);
+  if (hourMatch) {
+    return `${hourMatch[1].padStart(2, "0")}:00`;
+  }
+
+  return null;
+}
+
+function parsePartySize(message: string) {
+  const numericMatch = message.match(
+    /\b(?:für|for|на)?\s*(\d{1,2})\s*(?:personen|person|people|gäste|gaste|persons|человек|гост)/i
+  );
+
+  if (numericMatch) {
+    return Number(numericMatch[1]);
+  }
+
+  const words: Record<string, number> = {
+    eins: 1,
+    eine: 1,
+    einer: 1,
+    zwei: 2,
+    drei: 3,
+    vier: 4,
+    fünf: 5,
+    fuenf: 5,
+    sechs: 6,
+    sieben: 7,
+    acht: 8,
+    neun: 9,
+    zehn: 10,
+    one: 1,
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7,
+    eight: 8,
+    nine: 9,
+    ten: 10,
+  };
+  const text = normalizeLookup(message);
+
+  for (const [word, value] of Object.entries(words)) {
+    if (text.includes(`${word} personen`) || text.includes(`fur ${word}`)) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
+function parseGuestContact(message: string) {
+  const phoneMatch = message.match(/\+?\d[\d\s().-]{7,}\d/);
+  if (phoneMatch) {
+    return phoneMatch[0].trim();
+  }
+
+  const emailMatch = message.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  return emailMatch?.[0] ?? null;
+}
+
+function parseGuestName(message: string) {
+  const namePatterns = [
+    /(?:mein name ist|name ist|ich heiße|ich heisse)\s+([^.,\n]+)/i,
+    /(?:my name is|name is)\s+([^.,\n]+)/i,
+    /(?:меня зовут|имя)\s+([^.,\n]+)/i,
+  ];
+
+  for (const pattern of namePatterns) {
+    const match = message.match(pattern);
+    const value = asOptionalString(match?.[1]);
+
+    if (value) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
+function parseRestaurantName(
+  message: string,
+  propertyContext: PropertyContext | null
+) {
+  const normalizedMessage = normalizeLookup(message);
+
+  return (
+    getKnownRestaurantCandidates(propertyContext).find((name) =>
+      normalizedMessage.includes(normalizeLookup(name))
+    ) ?? null
+  );
+}
+
+function localReservationDraft(
+  message: string,
+  propertyContext: PropertyContext | null,
+  customerName: string | null,
+  customerEmail: string | null
+): RestaurantReservationDraft | null {
+  if (!isReservationRequest(message)) {
+    return null;
+  }
+
+  const draft: RestaurantReservationDraft = {
+    requested: true,
+    readyToSend: false,
+    restaurantName: parseRestaurantName(message, propertyContext),
+    reservationDate: parseReservationDate(message),
+    reservationTime: parseReservationTime(message),
+    partySize: parsePartySize(message),
+    guestName: parseGuestName(message) ?? customerName,
+    guestContact: parseGuestContact(message) ?? customerEmail,
+    specialRequests: null,
+    missingFields: [],
+  };
+  const missingFields = getReservationMissingFields(draft);
+
+  return {
+    ...draft,
+    readyToSend: missingFields.length === 0,
+    missingFields,
+  };
+}
+
+function mergeReservationDrafts(
+  primary: RestaurantReservationDraft | null,
+  fallback: RestaurantReservationDraft | null
+) {
+  if (!primary?.requested) {
+    return fallback;
+  }
+
+  if (!fallback) {
+    return primary;
+  }
+
+  const merged: RestaurantReservationDraft = {
+    requested: true,
+    readyToSend: false,
+    restaurantName: primary.restaurantName ?? fallback.restaurantName,
+    reservationDate: primary.reservationDate ?? fallback.reservationDate,
+    reservationTime: primary.reservationTime ?? fallback.reservationTime,
+    partySize: primary.partySize ?? fallback.partySize,
+    guestName: primary.guestName ?? fallback.guestName,
+    guestContact: primary.guestContact ?? fallback.guestContact,
+    specialRequests: primary.specialRequests ?? fallback.specialRequests,
+    missingFields: unique([
+      ...primary.missingFields,
+      ...fallback.missingFields,
+    ]),
+  };
+  const missingFields = getReservationMissingFields(merged);
+
+  return {
+    ...merged,
+    readyToSend: missingFields.length === 0,
+    missingFields,
+  };
+}
+
 export async function POST(req: Request) {
   let payload: ChatRequest;
 
@@ -1415,6 +1685,15 @@ export async function POST(req: Request) {
       guestAccessToken
     );
     const ai = await getConciergeResponse(message, payload, propertyContext);
+    const reservationDraft = mergeReservationDrafts(
+      ai.restaurant_reservation,
+      localReservationDraft(
+        message,
+        propertyContext,
+        customerName,
+        customerEmail
+      )
+    );
     const analytics = classifyQuery(message);
     const metadata = {
       requestConversationId,
@@ -1422,6 +1701,7 @@ export async function POST(req: Request) {
       customerEmail,
       context: payload.context ?? null,
       analytics,
+      reservationDraft,
       propertyContext,
     };
 
@@ -1470,7 +1750,7 @@ export async function POST(req: Request) {
       supabase,
       conversation.id,
       propertyContext,
-      ai.restaurant_reservation
+      reservationDraft
     );
     const finalReply = reservation
       ? appendReservationNotice(ai.reply, reservation.guestNotice)

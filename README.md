@@ -270,6 +270,7 @@ supabase/seed_restaurant_contacts_template.sql
 
 Статусы:
 
+- `requested` — заявка записана, но не отправлена. Проверь `whatsapp_error`: если там `Missing reservation fields`, не хватило данных для отправки.
 - `sent_to_restaurant` — WhatsApp-сообщение отправлено
 - `needs_restaurant_contact` — у ресторана нет WhatsApp-номера в базе
 - `pending_whatsapp_config` — не заданы WhatsApp env-переменные
@@ -280,6 +281,25 @@ supabase/seed_restaurant_contacts_template.sql
 
 ```text
 restaurantName, reservationDate, reservationTime, partySize, guestName, guestContact, propertyName, specialRequests
+```
+
+Быстрая диагностика:
+
+```sql
+select
+  created_at,
+  restaurant_name,
+  guest_name,
+  guest_contact,
+  party_size,
+  reservation_date,
+  reservation_time,
+  status,
+  whatsapp_message_id,
+  whatsapp_error
+from public.restaurant_reservations
+order by created_at desc
+limit 20;
 ```
 
 ## Статистика запросов
