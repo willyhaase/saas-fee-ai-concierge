@@ -167,6 +167,24 @@ supabase/seed_saas_fee_events_2026.sql
 
 `/api/chat` читает только активные и будущие события, поэтому прошедшие мероприятия не должны попадать в ответы гостям.
 
+## Карта впечатлений лето 2026
+
+Для данных из PDF `Erlebniskarte-Sommer-2026-EN.pdf` выполни:
+
+```text
+supabase/seed_summer_2026_attractions_map.sql
+```
+
+Файл добавляет в базу:
+
+- family, outdoor, adventure и indoor активности
+- hiking и biking маршруты
+- музеи, wellness, sports grounds, mountain guides
+- цены парковки, канаток и bike tickets
+- расписание основных канаток летом/осенью 2026
+- emergency contacts и mountain restaurants/huts
+- top events из карты
+
 ## Меню ресторанов
 
 Для меню, цен и среднего чека используется таблица `public.restaurant_menus`.
