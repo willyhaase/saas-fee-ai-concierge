@@ -167,6 +167,27 @@ supabase/seed_saas_fee_events_2026.sql
 
 `/api/chat` читает только активные и будущие события, поэтому прошедшие мероприятия не должны попадать в ответы гостям.
 
+## Меню ресторанов
+
+Для меню, цен и среднего чека используется таблица `public.restaurant_menus`.
+
+Чтобы создать таблицу и добавить стартовые карточки ресторанов, выполни в Supabase SQL Editor:
+
+```text
+supabase/seed_restaurant_menus_template.sql
+```
+
+Шаблон создаёт строки для:
+
+- Hannig
+- Schäferstube
+- Zer Schlucht
+- Brasserie 1809
+- The Capra
+- Walliserhof
+
+В шаблоне нет выдуманных цен. Заполни `average_check_min_chf`, `average_check_max_chf`, `price_chf`, `price_text`, `source_url` и `source_updated_at` по актуальному меню/PDF/фото. После этого `/api/chat` сможет отвечать на вопросы вроде “что поесть в Hannig и сколько примерно стоит”.
+
 ## Локальный запуск
 
 ```bash

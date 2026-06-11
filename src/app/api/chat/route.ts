@@ -53,6 +53,21 @@ type LocalEvent = {
   registration: string | null;
 };
 
+type RestaurantMenuItem = {
+  restaurantName: string | null;
+  location: string | null;
+  cuisine: string | null;
+  averageCheckMinChf: number | null;
+  averageCheckMaxChf: number | null;
+  menuCategory: string | null;
+  itemName: string | null;
+  description: string | null;
+  priceChf: number | null;
+  priceText: string | null;
+  dietaryTags: string | null;
+  sourceUpdatedAt: string | null;
+};
+
 type LiveExchangeRates = {
   source: string;
   sourceUrl: string;
@@ -93,6 +108,7 @@ type PropertyContext = {
     content: string | null;
   }>;
   localEvents: LocalEvent[];
+  restaurantMenus: RestaurantMenuItem[];
   liveWeather: LiveWeather | null;
   liveExchangeRates: LiveExchangeRates | null;
 };
@@ -375,6 +391,7 @@ async function getConciergeResponse(
           "If several options fit, recommend 3-5 concrete choices and briefly explain who each option is good for.",
           "Property context has two layers: globalKnowledge and localRecommendations are general information; property details, contacts, instructions, and FAQ are local housing information.",
           "For event questions, use propertyContext.localEvents first. Mention dates, village/location, time, price or registration details when available. Do not recommend events whose endDate is before today.",
+          "For restaurant menu and price questions, use propertyContext.restaurantMenus first. Mention the sourceUpdatedAt date when available. If no menu price is present for a restaurant or dish, say that the current menu price is not in the chat data yet; never invent menu prices or average checks.",
           "For weather questions, use propertyContext.liveWeather when it is available and mention that mountain weather can change quickly.",
           "For currency exchange questions, use propertyContext.liveExchangeRates when rates are present. If rates are missing, provide the bank address and explain that the live exchange-rate table is not available in chat right now; never invent exchange rates.",
           "Only use local housing information when propertyContext.localAccessGranted is true.",
@@ -416,6 +433,7 @@ async function getPropertyContext(
   const globalKnowledge = await getGlobalKnowledge(supabase);
   const localRecommendations = await getLocalRecommendations(supabase);
   const localEvents = await getLocalEvents(supabase);
+  const restaurantMenus = await getRestaurantMenus(supabase);
   const [liveWeather, liveExchangeRates] = await Promise.all([
     getLiveSaasFeeWeather(),
     getLiveExchangeRates(),
@@ -443,6 +461,7 @@ async function getPropertyContext(
       localRecommendations,
       globalKnowledge,
       localEvents,
+      restaurantMenus,
       liveWeather,
       liveExchangeRates,
     };
@@ -490,6 +509,7 @@ async function getPropertyContext(
     localRecommendations,
     globalKnowledge,
     localEvents,
+    restaurantMenus,
     liveWeather,
     liveExchangeRates,
   };
@@ -647,6 +667,37 @@ async function getLocalEvents(supabase: SupabaseClient) {
     description: asOptionalString(item.description),
     price: asOptionalString(item.price),
     registration: asOptionalString(item.registration),
+  }));
+}
+
+async function getRestaurantMenus(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from("restaurant_menus")
+    .select(
+      "restaurant_name, location, cuisine, average_check_min_chf, average_check_max_chf, menu_category, item_name, description, price_chf, price_text, dietary_tags, source_updated_at"
+    )
+    .eq("is_active", true)
+    .order("restaurant_name", { ascending: true })
+    .order("menu_category", { ascending: true })
+    .limit(120);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as Record<string, unknown>[]).map((item) => ({
+    restaurantName: asOptionalString(item.restaurant_name),
+    location: asOptionalString(item.location),
+    cuisine: asOptionalString(item.cuisine),
+    averageCheckMinChf: asNullableNumber(item.average_check_min_chf),
+    averageCheckMaxChf: asNullableNumber(item.average_check_max_chf),
+    menuCategory: asOptionalString(item.menu_category),
+    itemName: asOptionalString(item.item_name),
+    description: asOptionalString(item.description),
+    priceChf: asNullableNumber(item.price_chf),
+    priceText: asOptionalString(item.price_text),
+    dietaryTags: asOptionalString(item.dietary_tags),
+    sourceUpdatedAt: asOptionalString(item.source_updated_at),
   }));
 }
 
