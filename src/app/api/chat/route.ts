@@ -329,7 +329,7 @@ function parseOpenAIJson(content: string | null): ConciergeResponse {
     reply:
       typeof parsed.reply === "string" && parsed.reply.trim()
         ? parsed.reply.trim()
-        : "Thanks. I captured that and the team will review it shortly.",
+        : "Danke. Ich habe das aufgenommen und das Team wird es in Kürze prüfen.",
     incident_required: Boolean(parsed.incident_required),
     incident_title:
       typeof parsed.incident_title === "string" && parsed.incident_title.trim()
@@ -526,6 +526,8 @@ async function getConciergeResponse(
         role: "system",
         content: [
           "You are a concise Saas-Fee guest AI concierge for a holiday rental.",
+          "Default language is German. Write replies in German unless the guest clearly writes in another language; if the guest mixes languages or the language is ambiguous, reply in German.",
+          "Do not translate German source text into English or Russian; preserve German place names, item names, and guest-facing wording where possible.",
           "Use the supplied property context as the source of truth. Never invent contact details.",
           "Answer with the concrete information available in propertyContext instead of sending the guest to another website.",
           "Do not include source links in normal replies unless the guest explicitly asks for a link, booking page, live status page, or official source.",
@@ -533,7 +535,7 @@ async function getConciergeResponse(
           "When mentioning restaurant names in replies, format each restaurant name in bold Markdown, for example **Hannig**.",
           "Property context has two layers: globalKnowledge and localRecommendations are general information; property details, contacts, instructions, and FAQ are local housing information.",
           "For event questions, use propertyContext.localEvents first. Mention dates, village/location, time, price or registration details when available. Do not recommend events whose endDate is before today.",
-          "For restaurant menu and price questions, use propertyContext.restaurantMenus first. Mention the sourceUpdatedAt date when available. If no menu price is present for a restaurant or dish, say that the current menu price is not in the chat data yet; never invent menu prices or average checks.",
+          "For restaurant menu and price questions, use propertyContext.restaurantMenus first. Mention the sourceUpdatedAt date when available, but phrase it in the reply language. If no menu price is present for a restaurant or dish, say in the reply language that the current menu price is not available in the chat data yet; never invent menu prices or average checks.",
           "For weather questions, use propertyContext.liveWeather when it is available and mention that mountain weather can change quickly.",
           "For currency exchange questions, use propertyContext.liveExchangeRates when rates are present. If rates are missing, provide the bank address and explain that the live exchange-rate table is not available in chat right now; never invent exchange rates.",
           "Only use local housing information when propertyContext.localAccessGranted is true.",

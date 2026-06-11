@@ -83,7 +83,7 @@ function getVisitorErrorMessage(message: string) {
     message.includes("Missing OPENAI") ||
     message.includes("env vars")
   ) {
-    return "The concierge is temporarily unavailable. Please try again later.";
+    return "Der Concierge ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.";
   }
 
   return message;
@@ -104,10 +104,10 @@ function getGuestContextFromUrl() {
 
 function getWelcomeMessage(propertyName?: string | null) {
   if (propertyName) {
-    return `Welcome to ${propertyName}. I am your Saas-Fee AI concierge. Ask me about the apartment, restaurants, activities, mountain lifts, weather, or anything you need during your stay.`;
+    return `Willkommen in ${propertyName}. Ich bin Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zur Unterkunft, zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.`;
   }
 
-  return "Hello, I am the Saas-Fee AI concierge. Ask me about restaurants, activities, mountain lifts, weather, or anything you need during your stay.";
+  return "Guten Tag, ich bin Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.";
 }
 
 function MessageContent({
@@ -148,7 +148,7 @@ function MessageContent({
         disabled={isSending}
         key={`${restaurant.name}-${matchIndex}`}
         onClick={() => onRestaurantClick(restaurant.name)}
-        title={`Показать меню и цены: ${restaurant.name}`}
+        title={`Menü und Preise anzeigen: ${restaurant.name}`}
         type="button"
       >
         {restaurant.name}
@@ -276,12 +276,14 @@ export default function Home() {
       } catch {
         data = {
           error:
-            "The concierge returned an unexpected response. Please try again.",
+            "Der Concierge hat eine unerwartete Antwort zurückgegeben. Bitte versuchen Sie es erneut.",
         };
       }
 
       if (!response.ok || data.error) {
-        throw new Error(data.error || "The concierge is unavailable right now.");
+        throw new Error(
+          data.error || "Der Concierge ist im Moment nicht verfügbar."
+        );
       }
 
       setMessages((current) => [
@@ -291,13 +293,13 @@ export default function Home() {
           role: "assistant",
           content:
             data.reply ||
-            "Thanks. I captured that and the team will review it shortly.",
+            "Danke. Ich habe Ihre Nachricht aufgenommen und das Team wird sie in Kürze prüfen.",
           meta: data.incidentCreated
-            ? `Incident ${data.incidentId ?? "created"}${
-                data.priority ? `, ${data.priority} priority` : ""
+            ? `Vorgang ${data.incidentId ?? "erstellt"}${
+                data.priority ? `, Priorität: ${data.priority}` : ""
               }`
             : data.conversationId
-              ? `Conversation ${data.conversationId}`
+              ? `Konversation ${data.conversationId}`
               : undefined,
         },
       ]);
@@ -305,7 +307,7 @@ export default function Home() {
       const errorMessage =
         sendError instanceof Error
           ? sendError.message
-          : "The concierge is unavailable right now.";
+          : "Der Concierge ist im Moment nicht verfügbar.";
       const visitorMessage = getVisitorErrorMessage(errorMessage);
 
       console.error(errorMessage);
@@ -315,7 +317,8 @@ export default function Home() {
         {
           id: createMessageId(),
           role: "assistant",
-          content: "I could not send that message. Please try again.",
+          content:
+            "Ich konnte diese Nachricht nicht senden. Bitte versuchen Sie es erneut.",
         },
       ]);
     } finally {
@@ -330,7 +333,9 @@ export default function Home() {
   }
 
   async function requestRestaurantMenu(restaurantName: string) {
-    await sendChatMessage(`Покажи меню ресторана ${restaurantName} с ценами.`);
+    await sendChatMessage(
+      `Zeige mir das Menü von ${restaurantName} mit Preisen.`
+    );
   }
 
   return (
@@ -342,13 +347,13 @@ export default function Home() {
               Saas-Fee
             </p>
             <h1 className="mt-2 text-3xl font-semibold tracking-normal text-[#151815] sm:text-4xl">
-              {propertyName ? `${propertyName} Concierge` : "AI Concierge"}
+              {propertyName ? `${propertyName} Concierge` : "KI-Concierge"}
             </h1>
           </div>
           <div className="flex items-center gap-2 text-sm text-[#5b6b5f]">
             <span className="h-2.5 w-2.5 rounded-full bg-[#2f7d59]" />
             {guestContext.propertyId && guestContext.guestAccessToken
-              ? "Guest link active"
+              ? "Gästelink aktiv"
               : "Online"}
           </div>
         </header>
@@ -387,7 +392,7 @@ export default function Home() {
               {isSending ? (
                 <div className="flex justify-start">
                   <div className="rounded-lg border border-[#d8d8ce] bg-[#fbfbf7] px-4 py-3 text-sm text-[#5b6b5f]">
-                    Thinking...
+                    Ich denke nach...
                   </div>
                 </div>
               ) : null}
@@ -409,14 +414,14 @@ export default function Home() {
                   onChange={(event) => setMessage(event.target.value)}
                   rows={2}
                   className="min-h-12 flex-1 resize-none rounded-md border border-[#c8c8bc] bg-white px-3 py-3 text-base text-[#1f2421] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
-                  placeholder="Type your message..."
+                  placeholder="Ihre Nachricht..."
                 />
                 <button
                   type="submit"
                   disabled={!canSend}
                   className="h-12 shrink-0 rounded-md bg-[#1f5f46] px-5 text-sm font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
                 >
-                  {isSending ? "Sending" : "Send"}
+                  {isSending ? "Senden..." : "Senden"}
                 </button>
               </div>
             </form>
@@ -424,7 +429,7 @@ export default function Home() {
 
           <aside className="rounded-lg border border-[#d8d8ce] bg-white p-4 shadow-sm lg:self-start">
             <h2 className="text-base font-semibold text-[#151815]">
-              Guest details
+              Gästedaten
             </h2>
             <div className="mt-4 space-y-3">
               <label className="block">
@@ -438,7 +443,7 @@ export default function Home() {
               </label>
               <label className="block">
                 <span className="text-sm font-medium text-[#4f5b52]">
-                  Email
+                  E-Mail
                 </span>
                 <input
                   value={customerEmail}
