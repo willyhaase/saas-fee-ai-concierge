@@ -25,6 +25,14 @@ type InsertResult = {
   data: Record<string, unknown> | null;
 };
 
+type QueryAnalytics = {
+  category: string;
+  intent: string;
+  restaurants: string[];
+  activities: string[];
+  entities: string[];
+};
+
 type LiveWeather = {
   location: string;
   source: string;
@@ -175,6 +183,139 @@ function hashAccessToken(token: string) {
 
 function isMissingTableError(message: string) {
   return message.includes("Could not find the table");
+}
+
+function includesAny(text: string, keywords: string[]) {
+  return keywords.some((keyword) => text.includes(keyword));
+}
+
+function extractNamedMatches(
+  text: string,
+  candidates: Array<{ name: string; keywords: string[] }>
+) {
+  return candidates
+    .filter((candidate) =>
+      candidate.keywords.some((keyword) => text.includes(keyword))
+    )
+    .map((candidate) => candidate.name);
+}
+
+function classifyQuery(message: string): QueryAnalytics {
+  const text = message.toLowerCase();
+  const restaurants = extractNamedMatches(text, [
+    { name: "Hannig", keywords: ["hannig", "ханниг"] },
+    { name: "Schäferstube", keywords: ["schäferstube", "schaferstube"] },
+    { name: "Zer Schlucht", keywords: ["zer schlucht", "zur schlucht", "schlucht"] },
+    { name: "Brasserie 1809", keywords: ["brasserie 1809", "1809"] },
+    { name: "The Capra", keywords: ["capra", "the capra"] },
+    { name: "Walliserhof", keywords: ["walliserhof"] },
+    { name: "Allalin", keywords: ["allalin", "алалин"] },
+    { name: "Spielboden", keywords: ["spielboden"] },
+    { name: "Morenia", keywords: ["morenia"] },
+    { name: "Längfluh", keywords: ["längfluh", "langfluh"] },
+    { name: "Hohsaas", keywords: ["hohsaas"] },
+    { name: "Felskinn", keywords: ["felskinn"] },
+    { name: "Gletschergrotte", keywords: ["gletschergrotte"] },
+    { name: "Alpenblick", keywords: ["alpenblick"] },
+    { name: "Almagelleralp", keywords: ["almagelleralp"] },
+    { name: "Kreuzboden", keywords: ["kreuzboden"] },
+    { name: "Furggstalden", keywords: ["furggstalden"] },
+  ]);
+  const activities = extractNamedMatches(text, [
+    { name: "Hiking", keywords: ["hiking", "hike", "trail", "walk", "поход", "маршрут", "тропа"] },
+    { name: "Biking", keywords: ["bike", "biking", "e-bike", "велосипед", "байк"] },
+    { name: "Mountaincarts", keywords: ["mountaincart", "mountain cart"] },
+    { name: "Feeblitz", keywords: ["feeblitz", "toboggan"] },
+    { name: "Via ferrata", keywords: ["via ferrata", "феррата", "klettersteig"] },
+    { name: "Glacier tour", keywords: ["glacier", "ледник", "глетчер"] },
+    { name: "Husky trekking", keywords: ["husky", "хаски"] },
+    { name: "Summer skiing", keywords: ["summer ski", "skiing", "ski", "лыжи"] },
+    { name: "Marmots", keywords: ["marmot", "murmeli", "сурок", "сурки"] },
+    { name: "Spielboden", keywords: ["spielboden"] },
+    { name: "Kreuzboden", keywords: ["kreuzboden"] },
+    { name: "Mattmark", keywords: ["mattmark"] },
+    { name: "SaasFeestival", keywords: ["saasfeestival", "festival", "концерт"] },
+    { name: "Wellness", keywords: ["wellness", "spa", "сауна", "спа"] },
+    { name: "Aqua Allalin", keywords: ["aqua allalin", "pool", "swimming", "бассейн"] },
+    { name: "Museums", keywords: ["museum", "museums", "музей"] },
+  ]);
+
+  let category = "other";
+  if (
+    includesAny(text, [
+      "restaurant",
+      "menu",
+      "food",
+      "eat",
+      "lunch",
+      "dinner",
+      "fondue",
+      "ресторан",
+      "меню",
+      "еда",
+      "поесть",
+      "обед",
+      "ужин",
+    ]) ||
+    restaurants.length > 0
+  ) {
+    category = "restaurants";
+  } else if (
+    includesAny(text, [
+      "activity",
+      "activities",
+      "things to do",
+      "hiking",
+      "bike",
+      "trail",
+      "ski",
+      "event",
+      "festival",
+      "актив",
+      "чем заняться",
+      "мероприят",
+      "событ",
+      "маршрут",
+    ]) ||
+    activities.length > 0
+  ) {
+    category = "activities";
+  } else if (includesAny(text, ["weather", "forecast", "погода", "прогноз"])) {
+    category = "weather";
+  } else if (includesAny(text, ["bus", "taxi", "parking", "car", "transport", "парков", "автобус", "такси"])) {
+    category = "transport";
+  } else if (includesAny(text, ["wifi", "wi-fi", "key", "check-in", "checkout", "apartment", "квартира", "ключ", "заезд", "выезд"])) {
+    category = "property";
+  } else if (includesAny(text, ["pharmacy", "doctor", "emergency", "аптек", "врач", "экстр", "больниц"])) {
+    category = "health";
+  } else if (includesAny(text, ["bank", "atm", "exchange", "currency", "банк", "банкомат", "обмен", "валют"])) {
+    category = "banking";
+  } else if (includesAny(text, ["grocery", "supermarket", "coop", "migros", "магазин", "продукт"])) {
+    category = "groceries";
+  }
+
+  let intent = "general_question";
+  if (includesAny(text, ["price", "cost", "how much", "цена", "стоимость", "сколько стоит"])) {
+    intent = "price";
+  } else if (includesAny(text, ["where", "address", "how to get", "directions", "где", "адрес", "как добраться"])) {
+    intent = "location_directions";
+  } else if (includesAny(text, ["open", "hours", "time", "when", "работает", "открыт", "время", "когда"])) {
+    intent = "opening_hours";
+  } else if (includesAny(text, ["recommend", "best", "which", "посовет", "лучше", "какой"])) {
+    intent = "recommendation";
+  } else if (includesAny(text, ["book", "reserve", "reservation", "заброни", "резерв"])) {
+    intent = "booking";
+  } else if (includesAny(text, ["menu", "dish", "eat", "food", "меню", "блюдо", "поесть"])) {
+    intent = "menu_food";
+  }
+
+  return {
+    category,
+    intent,
+    restaurants,
+    activities,
+    entities: unique([...restaurants, ...activities]),
+  };
 }
 
 function parseOpenAIJson(content: string | null): ConciergeResponse {
@@ -776,6 +917,31 @@ async function updateConversationIncident(
   }
 }
 
+async function insertQueryAnalytics(
+  supabase: SupabaseClient,
+  conversationId: string | null,
+  propertyId: string | null | undefined,
+  guestMessage: string,
+  assistantReply: string,
+  analytics: QueryAnalytics
+) {
+  const { error } = await supabase.from("query_analytics").insert({
+    conversation_id: conversationId,
+    property_id: propertyId ?? null,
+    category: analytics.category,
+    intent: analytics.intent,
+    guest_message: guestMessage,
+    assistant_reply: assistantReply,
+    detected_restaurants: analytics.restaurants,
+    detected_activities: analytics.activities,
+    detected_entities: analytics.entities,
+  });
+
+  if (error && !isMissingTableError(error.message)) {
+    console.error(`Could not insert query analytics: ${error.message}`);
+  }
+}
+
 export async function POST(req: Request) {
   let payload: ChatRequest;
 
@@ -821,11 +987,13 @@ export async function POST(req: Request) {
       guestAccessToken
     );
     const ai = await getConciergeResponse(message, payload, propertyContext);
+    const analytics = classifyQuery(message);
     const metadata = {
       requestConversationId,
       customerName,
       customerEmail,
       context: payload.context ?? null,
+      analytics,
       propertyContext,
     };
 
@@ -1008,6 +1176,15 @@ export async function POST(req: Request) {
         incident.id
       );
     }
+
+    await insertQueryAnalytics(
+      supabase,
+      conversation.id,
+      propertyContext?.propertyId,
+      message,
+      ai.reply,
+      analytics
+    );
 
     return Response.json({
       success: true,

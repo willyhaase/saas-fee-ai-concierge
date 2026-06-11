@@ -32,6 +32,9 @@ SUPABASE_INCIDENTS_TABLE=incidents
 
 # Optional: require guest links for property-local data
 REQUIRE_GUEST_ACCESS_TOKEN=false
+
+# Optional: protect /api/stats and /stats
+STATS_ACCESS_TOKEN=change-me
 ```
 
 Важно:
@@ -41,6 +44,7 @@ REQUIRE_GUEST_ACCESS_TOKEN=false
 - Если таблицы называются `conversations` и `incidents`, переменные `SUPABASE_CONVERSATIONS_TABLE` и `SUPABASE_INCIDENTS_TABLE` можно не задавать.
 - Если таблицы называются иначе, укажи реальные имена в Vercel.
 - `REQUIRE_GUEST_ACCESS_TOKEN=true` включает строгий режим: локальная информация жилья выдаётся только по гостевой ссылке с access token.
+- `STATS_ACCESS_TOKEN` включает защиту статистики. Если переменная задана, открывай `/stats?token=<STATS_ACCESS_TOKEN>`.
 
 ## Supabase Schema
 
@@ -219,6 +223,36 @@ supabase/seed_hannig_menu.sql
 - Walliserhof
 
 В шаблоне нет выдуманных цен. Заполни `average_check_min_chf`, `average_check_max_chf`, `price_chf`, `price_text`, `source_url` и `source_updated_at` по актуальному меню/PDF/фото. После этого `/api/chat` сможет отвечать на вопросы вроде “что поесть в Hannig и сколько примерно стоит”.
+
+## Статистика запросов
+
+Для статистики используется таблица `public.query_analytics`. Чтобы создать её, выполни в Supabase SQL Editor:
+
+```text
+supabase/migrations/20260611_add_query_analytics.sql
+```
+
+После этого новые запросы в `/api/chat` будут сохранять:
+
+- категорию вопроса
+- тип намерения: рекомендация, цена, меню, маршрут, часы работы и т.д.
+- интересующие рестораны
+- интересующие активности
+- другие найденные сущности
+
+Статистика доступна:
+
+```text
+/stats
+/api/stats
+```
+
+Если задан `STATS_ACCESS_TOKEN`, используй:
+
+```text
+/stats?token=<STATS_ACCESS_TOKEN>
+/api/stats?token=<STATS_ACCESS_TOKEN>
+```
 
 ## Локальный запуск
 
