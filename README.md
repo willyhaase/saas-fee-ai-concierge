@@ -177,6 +177,12 @@ supabase/seed_saas_fee_events_2026.sql
 supabase/seed_restaurant_menus_template.sql
 ```
 
+Для меню Hannig с ценами выполни:
+
+```text
+supabase/seed_hannig_menu.sql
+```
+
 Шаблон создаёт строки для:
 
 - Hannig
