@@ -53,6 +53,14 @@ type LocalEvent = {
   registration: string | null;
 };
 
+type LiveExchangeRates = {
+  source: string;
+  sourceUrl: string;
+  checkedAt: string;
+  rates: string[];
+  note: string;
+};
+
 type PropertyContext = {
   propertyId: string | null;
   propertyName: string | null;
@@ -86,6 +94,7 @@ type PropertyContext = {
   }>;
   localEvents: LocalEvent[];
   liveWeather: LiveWeather | null;
+  liveExchangeRates: LiveExchangeRates | null;
 };
 
 export const runtime = "nodejs";
@@ -282,6 +291,63 @@ async function getLiveSaasFeeWeather(): Promise<LiveWeather | null> {
   }
 }
 
+function stripHtml(value: string) {
+  return value
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function getLiveExchangeRates(): Promise<LiveExchangeRates | null> {
+  const sourceUrl =
+    "https://www.erlebnisbank.ch/uber-uns/bankstellen/saas-fee";
+
+  try {
+    const response = await fetch(sourceUrl, {
+      headers: {
+        "user-agent": "Mozilla/5.0 Saas-Fee AI Concierge",
+      },
+      next: { revalidate: 1800 },
+      signal: AbortSignal.timeout(2500),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erlebnisbank returned ${response.status}`);
+    }
+
+    const pageText = stripHtml(await response.text());
+    const currencyPattern =
+      /\b(?:EUR|USD|GBP|CHF|CAD|AUD|JPY|SEK|NOK|DKK)\b.{0,80}?(?:\d+[.,]\d{2,5})/gi;
+    const rates = [...pageText.matchAll(currencyPattern)]
+      .map((match) => match[0].replace(/\s+/g, " ").trim())
+      .filter((line) => /(?:EUR|USD|GBP|CAD|AUD|JPY|SEK|NOK|DKK)/i.test(line))
+      .slice(0, 12);
+
+    return {
+      source: "Raiffeisenbank Mischabel-Matterhorn Erlebnisbank Saas-Fee",
+      sourceUrl,
+      checkedAt: new Date().toISOString(),
+      rates,
+      note: rates.length
+        ? "Rates were extracted from the bank page text. Confirm at the bank before exchanging cash."
+        : "No machine-readable exchange-rate table was found on the bank page during this request. Do not invent rates.",
+    };
+  } catch (error) {
+    console.error(
+      `Could not load Erlebnisbank exchange rates: ${
+        error instanceof Error ? error.message : "unknown error"
+      }`
+    );
+    return null;
+  }
+}
+
 async function getConciergeResponse(
   message: string,
   payload: ChatRequest,
@@ -310,6 +376,7 @@ async function getConciergeResponse(
           "Property context has two layers: globalKnowledge and localRecommendations are general information; property details, contacts, instructions, and FAQ are local housing information.",
           "For event questions, use propertyContext.localEvents first. Mention dates, village/location, time, price or registration details when available. Do not recommend events whose endDate is before today.",
           "For weather questions, use propertyContext.liveWeather when it is available and mention that mountain weather can change quickly.",
+          "For currency exchange questions, use propertyContext.liveExchangeRates when rates are present. If rates are missing, provide the bank address and explain that the live exchange-rate table is not available in chat right now; never invent exchange rates.",
           "Only use local housing information when propertyContext.localAccessGranted is true.",
           "If localAccessGranted is false and the guest asks about a specific apartment, access, Wi-Fi, host contact, or private housing instructions, ask them to open their guest-specific link.",
           "If the guest asks for WhatsApp, support contact, host contact, or how to reach the property team, provide the WhatsApp number from propertyContext only when localAccessGranted is true and whatsapp is available.",
@@ -349,7 +416,10 @@ async function getPropertyContext(
   const globalKnowledge = await getGlobalKnowledge(supabase);
   const localRecommendations = await getLocalRecommendations(supabase);
   const localEvents = await getLocalEvents(supabase);
-  const liveWeather = await getLiveSaasFeeWeather();
+  const [liveWeather, liveExchangeRates] = await Promise.all([
+    getLiveSaasFeeWeather(),
+    getLiveExchangeRates(),
+  ]);
   const propertyId = await resolvePropertyId(
     supabase,
     requestedPropertyId,
@@ -374,6 +444,7 @@ async function getPropertyContext(
       globalKnowledge,
       localEvents,
       liveWeather,
+      liveExchangeRates,
     };
   }
 
@@ -420,6 +491,7 @@ async function getPropertyContext(
     globalKnowledge,
     localEvents,
     liveWeather,
+    liveExchangeRates,
   };
 }
 

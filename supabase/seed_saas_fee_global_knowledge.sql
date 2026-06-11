@@ -66,6 +66,31 @@ with rows(category, title, content) as (
       'From the property area at Obere Wildistrasse 31, walk downhill toward the village centre and Obere Dorfstrasse. Vallesia Apotheke GmbH is at Obere Dorfstrasse 25, 3906 Saas-Fee. The walk is roughly 10 to 15 minutes depending on snow and walking pace. Saas-Fee is car-free, so guests should walk through the village or use a local electric taxi/service if needed.'
     ),
     (
+      'banking',
+      'Bank in Saas-Fee',
+      'The bank in Saas-Fee is Raiffeisenbank Mischabel-Matterhorn / Erlebnisbank, Obere Dorfstrasse 65, 3906 Saas-Fee. It is useful for banking services, cash withdrawal information and currency exchange questions. Bank coordinates: Bankenclearing 80808, SWIFT-Code RAIFCH22. Contact phone: +41 27 955 19 00, email erlebnisbank@raiffeisen.ch.'
+    ),
+    (
+      'banking',
+      'ATM in Saas-Fee',
+      'The Erlebnisbank/Raiffeisen ATM location in Saas-Fee is at the village square, Haus Nicoletta. For guests who only need cash, recommend the ATM first. Saas-Fee is car-free, so guests should walk through the village.'
+    ),
+    (
+      'banking',
+      'Erlebnisbank Saas-Fee opening hours',
+      'Erlebnisbank/Raiffeisen Saas-Fee ordinary opening hours: Monday 08:30-11:30 and 14:30-17:30; Tuesday 08:30-11:30 and 14:30-17:30; Wednesday 08:30-11:30 and consulting afternoon; Thursday 08:30-11:30 and 14:30-17:30; Friday 08:30-11:30 and 14:30-17:30; Saturday and Sunday closed. Telephone and live online consultation are listed as 08:30-12:00 and 13:30-20:00.'
+    ),
+    (
+      'banking',
+      'How to get to Erlebnisbank from Obere Wildistrasse 31',
+      'From the property area at Obere Wildistrasse 31, walk downhill toward the village centre and continue along Obere Dorfstrasse. Erlebnisbank/Raiffeisen Saas-Fee is at Obere Dorfstrasse 65, 3906 Saas-Fee. The walk is roughly 10 to 15 minutes depending on snow and walking pace.'
+    ),
+    (
+      'banking',
+      'Currency exchange in Saas-Fee',
+      'For currency exchange, use Erlebnisbank/Raiffeisen Saas-Fee at Obere Dorfstrasse 65. Exchange rates can change, so answer with propertyContext.liveExchangeRates if current rates are available in chat. If liveExchangeRates has no rates, do not invent a rate; tell guests that the live rate is not available in chat right now and recommend confirming directly with the bank before exchanging cash.'
+    ),
+    (
       'activities',
       'Summer activities',
       'Popular warm-season activities in Saas-Fee/Saastal include hiking, biking, climbing and mountaineering, gorge/alpine canyon experiences, glacier experience tours, trail running and summer skiing. For an easy day, suggest a village walk plus a gentle hike or cable-car viewpoint. For active guests, suggest hiking, biking or a guided glacier experience. For families, suggest easier hikes, cable-car viewpoints and summer mountain experiences.'
