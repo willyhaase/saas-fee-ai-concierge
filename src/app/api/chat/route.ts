@@ -530,6 +530,7 @@ async function getConciergeResponse(
           "Answer with the concrete information available in propertyContext instead of sending the guest to another website.",
           "Do not include source links in normal replies unless the guest explicitly asks for a link, booking page, live status page, or official source.",
           "If several options fit, recommend 3-5 concrete choices and briefly explain who each option is good for.",
+          "When mentioning restaurant names in replies, format each restaurant name in bold Markdown, for example **Hannig**.",
           "Property context has two layers: globalKnowledge and localRecommendations are general information; property details, contacts, instructions, and FAQ are local housing information.",
           "For event questions, use propertyContext.localEvents first. Mention dates, village/location, time, price or registration details when available. Do not recommend events whose endDate is before today.",
           "For restaurant menu and price questions, use propertyContext.restaurantMenus first. Mention the sourceUpdatedAt date when available. If no menu price is present for a restaurant or dish, say that the current menu price is not in the chat data yet; never invent menu prices or average checks.",

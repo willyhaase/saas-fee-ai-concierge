@@ -1,6 +1,13 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FormEvent,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 type ChatMessage = {
   id: string;
@@ -26,8 +33,48 @@ type GuestContextResponse = {
   error?: string;
 };
 
+const RESTAURANT_ACTIONS = [
+  { name: "Hannig", aliases: ["Hannig", "Ханниг"] },
+  { name: "Allalin", aliases: ["Allalin", "Алалин"] },
+  { name: "Spielboden", aliases: ["Spielboden"] },
+  { name: "Längfluh", aliases: ["Längfluh", "Langfluh"] },
+  { name: "Morenia", aliases: ["Morenia"] },
+  { name: "Schäferstube", aliases: ["Schäferstube", "Schaferstube"] },
+  { name: "Zer Schlucht", aliases: ["Zer Schlucht", "Zur Schlucht"] },
+  { name: "Brasserie 1809", aliases: ["Brasserie 1809"] },
+  { name: "The Capra", aliases: ["The Capra", "Capra"] },
+  { name: "Walliserhof", aliases: ["Walliserhof"] },
+  { name: "Hohsaas", aliases: ["Hohsaas"] },
+  { name: "Felskinn", aliases: ["Felskinn"] },
+  { name: "Gletschergrotte", aliases: ["Gletschergrotte"] },
+  { name: "Alpenblick", aliases: ["Alpenblick"] },
+  { name: "Almagelleralp", aliases: ["Almagelleralp"] },
+  { name: "Kreuzboden", aliases: ["Kreuzboden"] },
+  { name: "Furggstalden", aliases: ["Furggstalden"] },
+];
+
 function createMessageId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getRestaurantByAlias(value: string) {
+  const normalized = value.toLowerCase();
+
+  return RESTAURANT_ACTIONS.find((restaurant) =>
+    restaurant.aliases.some((alias) => alias.toLowerCase() === normalized)
+  );
+}
+
+function getRestaurantMatcher() {
+  const aliases = RESTAURANT_ACTIONS.flatMap((restaurant) => restaurant.aliases)
+    .sort((a, b) => b.length - a.length)
+    .map(escapeRegex);
+
+  return new RegExp(`(\\*\\*)?(${aliases.join("|")})(\\*\\*)?`, "giu");
 }
 
 function getVisitorErrorMessage(message: string) {
@@ -61,6 +108,61 @@ function getWelcomeMessage(propertyName?: string | null) {
   }
 
   return "Hello, I am the Saas-Fee AI concierge. Ask me about restaurants, activities, mountain lifts, weather, or anything you need during your stay.";
+}
+
+function MessageContent({
+  content,
+  isAssistant,
+  isSending,
+  onRestaurantClick,
+}: {
+  content: string;
+  isAssistant: boolean;
+  isSending: boolean;
+  onRestaurantClick: (restaurantName: string) => void;
+}) {
+  if (!isAssistant) {
+    return <p className="whitespace-pre-wrap break-words">{content}</p>;
+  }
+
+  const matcher = getRestaurantMatcher();
+  const nodes: ReactNode[] = [];
+  let lastIndex = 0;
+
+  for (const match of content.matchAll(matcher)) {
+    const matchIndex = match.index ?? 0;
+    const alias = match[2];
+    const restaurant = getRestaurantByAlias(alias);
+
+    if (!restaurant) {
+      continue;
+    }
+
+    if (matchIndex > lastIndex) {
+      nodes.push(content.slice(lastIndex, matchIndex));
+    }
+
+    nodes.push(
+      <button
+        className="inline rounded-sm font-semibold text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d] disabled:cursor-wait disabled:opacity-60"
+        disabled={isSending}
+        key={`${restaurant.name}-${matchIndex}`}
+        onClick={() => onRestaurantClick(restaurant.name)}
+        title={`Показать меню и цены: ${restaurant.name}`}
+        type="button"
+      >
+        {restaurant.name}
+      </button>
+    );
+
+    lastIndex = matchIndex + match[0].length;
+  }
+
+  if (lastIndex < content.length) {
+    nodes.push(content.slice(lastIndex));
+  }
+
+  return <p className="whitespace-pre-wrap break-words">{nodes}</p>;
 }
 
 export default function Home() {
@@ -132,10 +234,7 @@ export default function Home() {
       });
   }, [guestContext]);
 
-  async function sendMessage(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const text = message.trim();
+  async function sendChatMessage(text: string) {
     if (!text || isSending) {
       return;
     }
@@ -225,6 +324,15 @@ export default function Home() {
     }
   }
 
+  async function sendMessage(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await sendChatMessage(message.trim());
+  }
+
+  async function requestRestaurantMenu(restaurantName: string) {
+    await sendChatMessage(`Покажи меню ресторана ${restaurantName} с ценами.`);
+  }
+
   return (
     <main className="min-h-screen bg-[#f7f7f2] text-[#1f2421]">
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-5 sm:px-6 lg:px-8">
@@ -262,9 +370,12 @@ export default function Home() {
                         : "border border-[#d8d8ce] bg-[#fbfbf7] text-[#1f2421]"
                     }`}
                   >
-                    <p className="whitespace-pre-wrap break-words">
-                      {item.content}
-                    </p>
+                    <MessageContent
+                      content={item.content}
+                      isAssistant={item.role === "assistant"}
+                      isSending={isSending}
+                      onRestaurantClick={requestRestaurantMenu}
+                    />
                     {item.meta ? (
                       <p className="mt-2 border-t border-current/20 pt-2 text-xs opacity-75">
                         {item.meta}
