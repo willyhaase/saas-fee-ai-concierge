@@ -627,7 +627,7 @@ async function getGlobalKnowledge(supabase: SupabaseClient) {
     .from("global_knowledge")
     .select("category, title, content")
     .eq("is_active", true)
-    .limit(220);
+    .limit(300);
 
   if (error || !data) {
     return [];

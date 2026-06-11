@@ -185,6 +185,14 @@ supabase/seed_summer_2026_attractions_map.sql
 - emergency contacts и mountain restaurants/huts
 - top events из карты
 
+Для интерактивной Genially-карты Saas-Fee/Saastal выполни:
+
+```text
+supabase/seed_genially_interactive_map.sql
+```
+
+Этот файл добавляет более подробные описания интерактивных точек: Allalin, Längfluh, Spielboden, Hannig, Plattjen, Mattmark, Furggstalden, via ferrata, mountain huts, themed trails, Mountaincarts, Glacier Tour и другие объекты.
+
 ## Меню ресторанов
 
 Для меню, цен и среднего чека используется таблица `public.restaurant_menus`.
