@@ -35,6 +35,13 @@ REQUIRE_GUEST_ACCESS_TOKEN=false
 
 # Optional: protect /api/stats and /stats
 STATS_ACCESS_TOKEN=change-me
+
+# Optional: WhatsApp Business Platform for restaurant reservations
+WHATSAPP_ACCESS_TOKEN=EA...
+WHATSAPP_PHONE_NUMBER_ID=1234567890
+WHATSAPP_GRAPH_API_VERSION=v23.0
+WHATSAPP_RESERVATION_TEMPLATE_NAME=restaurant_reservation_request
+WHATSAPP_RESERVATION_TEMPLATE_LANGUAGE=de
 ```
 
 Важно:
@@ -45,6 +52,8 @@ STATS_ACCESS_TOKEN=change-me
 - Если таблицы называются иначе, укажи реальные имена в Vercel.
 - `REQUIRE_GUEST_ACCESS_TOKEN=true` включает строгий режим: локальная информация жилья выдаётся только по гостевой ссылке с access token.
 - `STATS_ACCESS_TOKEN` включает защиту статистики. Если переменная задана, открывай `/stats?token=<STATS_ACCESS_TOKEN>`.
+- `WHATSAPP_ACCESS_TOKEN` и `WHATSAPP_PHONE_NUMBER_ID` включают отправку заявок на бронирование в рестораны через WhatsApp Business Platform.
+- `WHATSAPP_RESERVATION_TEMPLATE_NAME` рекомендуется для первого исходящего сообщения ресторану. Если template не задан, приложение попробует отправить обычное text-сообщение, но WhatsApp может отклонить его вне разрешённого окна переписки.
 
 ## Supabase Schema
 
@@ -223,6 +232,55 @@ supabase/seed_hannig_menu.sql
 - Walliserhof
 
 В шаблоне нет выдуманных цен. Заполни `average_check_min_chf`, `average_check_max_chf`, `price_chf`, `price_text`, `source_url` и `source_updated_at` по актуальному меню/PDF/фото. После этого `/api/chat` сможет отвечать на вопросы вроде “что поесть в Hannig и сколько примерно стоит”.
+
+## Резервирование столика
+
+Для автоматической отправки заявок в рестораны через WhatsApp Business Platform выполни миграцию:
+
+```text
+supabase/migrations/20260611_add_restaurant_reservations.sql
+```
+
+Она создаёт:
+
+- `public.restaurant_contacts` — WhatsApp/phone/email ресторанов
+- `public.restaurant_reservations` — заявки на бронирование и статус WhatsApp-отправки
+
+Затем добавь шаблон контактов:
+
+```text
+supabase/seed_restaurant_contacts_template.sql
+```
+
+После запуска шаблона замени `whatsapp_phone` на реальные WhatsApp-enabled номера ресторанов в международном формате, например `+41790000000`.
+
+Когда гость просит забронировать столик, `/api/chat` собирает:
+
+- ресторан
+- дату
+- время
+- количество гостей
+- имя гостя
+- телефон или WhatsApp гостя
+- особые пожелания
+
+Если данных не хватает, чат задаёт уточняющий вопрос на немецком. Если данные есть, создаётся запись в `restaurant_reservations` и отправляется WhatsApp-сообщение в ресторан.
+
+Важно: чат говорит гостю только о `Reservierungsanfrage`. Бронь считается подтверждённой только после ответа ресторана.
+
+Статусы:
+
+- `sent_to_restaurant` — WhatsApp-сообщение отправлено
+- `needs_restaurant_contact` — у ресторана нет WhatsApp-номера в базе
+- `pending_whatsapp_config` — не заданы WhatsApp env-переменные
+- `whatsapp_failed` — WhatsApp API вернул ошибку
+- `confirmed`, `declined`, `cancelled` — статусы для ручного обновления после ответа ресторана
+
+Если используется WhatsApp template, создай approved template с именем из `WHATSAPP_RESERVATION_TEMPLATE_NAME`. Текущий код передаёт 8 body-параметров:
+
+```text
+restaurantName, reservationDate, reservationTime, partySize, guestName, guestContact, propertyName, specialRequests
+```
 
 ## Статистика запросов
 

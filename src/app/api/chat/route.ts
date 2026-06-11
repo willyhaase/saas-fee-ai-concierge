@@ -17,6 +17,7 @@ type ConciergeResponse = {
   incident_title: string | null;
   incident_description: string | null;
   priority: "low" | "medium" | "high" | "urgent";
+  restaurant_reservation: RestaurantReservationDraft | null;
 };
 
 type InsertResult = {
@@ -76,6 +77,35 @@ type RestaurantMenuItem = {
   sourceUpdatedAt: string | null;
 };
 
+type RestaurantContact = {
+  restaurantName: string | null;
+  whatsappPhone: string | null;
+  phone: string | null;
+  email: string | null;
+  acceptsWhatsappReservations: boolean;
+  reservationNotes: string | null;
+};
+
+type RestaurantReservationDraft = {
+  requested: boolean;
+  readyToSend: boolean;
+  restaurantName: string | null;
+  reservationDate: string | null;
+  reservationTime: string | null;
+  partySize: number | null;
+  guestName: string | null;
+  guestContact: string | null;
+  specialRequests: string | null;
+  missingFields: string[];
+};
+
+type ReservationResult = {
+  id: string | null;
+  status: string;
+  whatsappMessageId: string | null;
+  guestNotice: string;
+};
+
 type LiveExchangeRates = {
   source: string;
   sourceUrl: string;
@@ -117,6 +147,7 @@ type PropertyContext = {
   }>;
   localEvents: LocalEvent[];
   restaurantMenus: RestaurantMenuItem[];
+  restaurantContacts: RestaurantContact[];
   liveWeather: LiveWeather | null;
   liveExchangeRates: LiveExchangeRates | null;
 };
@@ -156,6 +187,23 @@ function unique(values: string[]) {
   return [...new Set(values.filter(Boolean))];
 }
 
+function asOptionalBoolean(value: unknown) {
+  return typeof value === "boolean" ? value : false;
+}
+
+function asOptionalInteger(value: unknown) {
+  if (typeof value === "number" && Number.isInteger(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value);
+    return Number.isInteger(parsed) ? parsed : null;
+  }
+
+  return null;
+}
+
 function getTableCandidates(envName: string, defaults: string[]) {
   const configured = process.env[envName]
     ?.split(",")
@@ -183,6 +231,15 @@ function hashAccessToken(token: string) {
 
 function isMissingTableError(message: string) {
   return message.includes("Could not find the table");
+}
+
+function normalizeLookup(value: string | null | undefined) {
+  return (value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 }
 
 function includesAny(text: string, keywords: string[]) {
@@ -324,6 +381,11 @@ function parseOpenAIJson(content: string | null): ConciergeResponse {
   }
 
   const parsed = JSON.parse(content) as Partial<ConciergeResponse>;
+  const reservation =
+    parsed.restaurant_reservation &&
+    typeof parsed.restaurant_reservation === "object"
+      ? (parsed.restaurant_reservation as Record<string, unknown>)
+      : null;
 
   return {
     reply:
@@ -347,6 +409,24 @@ function parseOpenAIJson(content: string | null): ConciergeResponse {
       parsed.priority === "urgent"
         ? parsed.priority
         : "medium",
+    restaurant_reservation: reservation
+      ? {
+          requested: asOptionalBoolean(reservation.requested),
+          readyToSend: asOptionalBoolean(reservation.readyToSend),
+          restaurantName: asOptionalString(reservation.restaurantName),
+          reservationDate: asOptionalString(reservation.reservationDate),
+          reservationTime: asOptionalString(reservation.reservationTime),
+          partySize: asOptionalInteger(reservation.partySize),
+          guestName: asOptionalString(reservation.guestName),
+          guestContact: asOptionalString(reservation.guestContact),
+          specialRequests: asOptionalString(reservation.specialRequests),
+          missingFields: Array.isArray(reservation.missingFields)
+            ? reservation.missingFields
+                .map((item) => asOptionalString(item))
+                .filter((item): item is string => Boolean(item))
+            : [],
+        }
+      : null,
   };
 }
 
@@ -536,6 +616,9 @@ async function getConciergeResponse(
           "Property context has two layers: globalKnowledge and localRecommendations are general information; property details, contacts, instructions, and FAQ are local housing information.",
           "For event questions, use propertyContext.localEvents first. Mention dates, village/location, time, price or registration details when available. Do not recommend events whose endDate is before today.",
           "For restaurant menu and price questions, use propertyContext.restaurantMenus first. Mention the sourceUpdatedAt date when available, but phrase it in the reply language. If no menu price is present for a restaurant or dish, say in the reply language that the current menu price is not available in the chat data yet; never invent menu prices or average checks.",
+          "For restaurant table reservation requests, collect restaurant name, date, time, party size, guest name, and guest phone or WhatsApp contact. Do not say the table is confirmed. Say it is a reservation request until the restaurant confirms.",
+          "If reservation details are missing, ask a concise follow-up question in German by default.",
+          "When the guest wants a restaurant reservation, include restaurant_reservation in the JSON. Use requested=true. Set readyToSend=true only when restaurantName, reservationDate as YYYY-MM-DD, reservationTime, partySize, guestName, and guestContact are all present. Otherwise set readyToSend=false and list missingFields.",
           "For weather questions, use propertyContext.liveWeather when it is available and mention that mountain weather can change quickly.",
           "For currency exchange questions, use propertyContext.liveExchangeRates when rates are present. If rates are missing, provide the bank address and explain that the live exchange-rate table is not available in chat right now; never invent exchange rates.",
           "Only use local housing information when propertyContext.localAccessGranted is true.",
@@ -543,7 +626,7 @@ async function getConciergeResponse(
           "If the guest asks for WhatsApp, support contact, host contact, or how to reach the property team, provide the WhatsApp number from propertyContext only when localAccessGranted is true and whatsapp is available.",
           "If a fact is not present in propertyContext, say that you do not have it and offer to notify the host.",
           "Create incidents for broken heating, appliances, access issues, safety concerns, urgent maintenance, guest escalations, or anything requiring staff follow-up.",
-          "Return only JSON with keys: reply, incident_required, incident_title, incident_description, priority. Priority must be low, medium, high, or urgent.",
+          "Return only JSON with keys: reply, incident_required, incident_title, incident_description, priority, restaurant_reservation. Priority must be low, medium, high, or urgent. restaurant_reservation must be null unless the guest is asking to reserve a restaurant table.",
         ].join(" "),
       },
       {
@@ -578,6 +661,7 @@ async function getPropertyContext(
   const localRecommendations = await getLocalRecommendations(supabase);
   const localEvents = await getLocalEvents(supabase);
   const restaurantMenus = await getRestaurantMenus(supabase);
+  const restaurantContacts = await getRestaurantContacts(supabase);
   const [liveWeather, liveExchangeRates] = await Promise.all([
     getLiveSaasFeeWeather(),
     getLiveExchangeRates(),
@@ -606,6 +690,7 @@ async function getPropertyContext(
       globalKnowledge,
       localEvents,
       restaurantMenus,
+      restaurantContacts,
       liveWeather,
       liveExchangeRates,
     };
@@ -654,6 +739,7 @@ async function getPropertyContext(
     globalKnowledge,
     localEvents,
     restaurantMenus,
+    restaurantContacts,
     liveWeather,
     liveExchangeRates,
   };
@@ -845,6 +931,33 @@ async function getRestaurantMenus(supabase: SupabaseClient) {
   }));
 }
 
+async function getRestaurantContacts(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from("restaurant_contacts")
+    .select(
+      "restaurant_name, whatsapp_phone, phone, email, accepts_whatsapp_reservations, reservation_notes"
+    )
+    .eq("is_active", true)
+    .limit(100);
+
+  if (error || !data) {
+    if (error && !isMissingTableError(error.message)) {
+      console.error(`Could not load restaurant contacts: ${error.message}`);
+    }
+    return [];
+  }
+
+  return (data as Record<string, unknown>[]).map((item) => ({
+    restaurantName: asOptionalString(item.restaurant_name),
+    whatsappPhone: asOptionalString(item.whatsapp_phone),
+    phone: asOptionalString(item.phone),
+    email: asOptionalString(item.email),
+    acceptsWhatsappReservations:
+      item.accepts_whatsapp_reservations !== false,
+    reservationNotes: asOptionalString(item.reservation_notes),
+  }));
+}
+
 async function insertFirstMatching(
   supabase: SupabaseClient,
   tables: string[],
@@ -945,6 +1058,318 @@ async function insertQueryAnalytics(
   }
 }
 
+function getReservationMissingFields(draft: RestaurantReservationDraft) {
+  const missing = new Set(draft.missingFields);
+
+  if (!draft.restaurantName) missing.add("restaurantName");
+  if (!draft.reservationDate) missing.add("reservationDate");
+  if (!draft.reservationTime) missing.add("reservationTime");
+  if (!draft.partySize) missing.add("partySize");
+  if (!draft.guestName) missing.add("guestName");
+  if (!draft.guestContact) missing.add("guestContact");
+
+  return [...missing];
+}
+
+function findRestaurantContact(
+  contacts: RestaurantContact[],
+  restaurantName: string
+) {
+  const normalized = normalizeLookup(restaurantName);
+
+  if (!normalized) {
+    return undefined;
+  }
+
+  return contacts.find((contact) => {
+    const contactName = normalizeLookup(contact.restaurantName);
+
+    return (
+      Boolean(contactName) &&
+      (contactName === normalized ||
+        contactName.includes(normalized) ||
+        normalized.includes(contactName))
+    );
+  });
+}
+
+function normalizeWhatsAppPhone(phone: string | null | undefined) {
+  if (!phone) {
+    return null;
+  }
+
+  const cleaned = phone.replace(/[^\d+]/g, "");
+
+  if (cleaned.startsWith("+")) {
+    return cleaned.slice(1);
+  }
+
+  return cleaned || null;
+}
+
+function getWhatsAppConfig() {
+  return {
+    accessToken: process.env.WHATSAPP_ACCESS_TOKEN,
+    phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID,
+    graphApiVersion: process.env.WHATSAPP_GRAPH_API_VERSION || "v23.0",
+    templateName: process.env.WHATSAPP_RESERVATION_TEMPLATE_NAME,
+    templateLanguage:
+      process.env.WHATSAPP_RESERVATION_TEMPLATE_LANGUAGE || "de",
+  };
+}
+
+function isWhatsAppConfigured() {
+  const config = getWhatsAppConfig();
+  return Boolean(config.accessToken && config.phoneNumberId);
+}
+
+function buildReservationMessage(
+  draft: RestaurantReservationDraft,
+  propertyContext: PropertyContext | null
+) {
+  return [
+    "Guten Tag",
+    "",
+    "wir möchten eine Reservierungsanfrage senden:",
+    "",
+    `Restaurant: ${draft.restaurantName}`,
+    `Datum: ${draft.reservationDate}`,
+    `Uhrzeit: ${draft.reservationTime}`,
+    `Personen: ${draft.partySize}`,
+    `Name: ${draft.guestName}`,
+    `Kontakt: ${draft.guestContact}`,
+    propertyContext?.propertyName
+      ? `Unterkunft: ${propertyContext.propertyName}`
+      : null,
+    draft.specialRequests
+      ? `Besondere Wünsche: ${draft.specialRequests}`
+      : "Besondere Wünsche: keine",
+    "",
+    "Bitte bestätigen Sie die Verfügbarkeit. Vielen Dank.",
+  ]
+    .filter((line): line is string => line !== null)
+    .join("\n");
+}
+
+async function sendWhatsAppReservationMessage(
+  toPhone: string,
+  draft: RestaurantReservationDraft,
+  propertyContext: PropertyContext | null,
+  body: string
+) {
+  const config = getWhatsAppConfig();
+
+  if (!config.accessToken || !config.phoneNumberId) {
+    throw new Error(
+      "Missing WHATSAPP_ACCESS_TOKEN or WHATSAPP_PHONE_NUMBER_ID."
+    );
+  }
+
+  const url = `https://graph.facebook.com/${config.graphApiVersion}/${config.phoneNumberId}/messages`;
+  const payload = config.templateName
+    ? {
+        messaging_product: "whatsapp",
+        to: toPhone,
+        type: "template",
+        template: {
+          name: config.templateName,
+          language: { code: config.templateLanguage },
+          components: [
+            {
+              type: "body",
+              parameters: [
+                { type: "text", text: draft.restaurantName ?? "-" },
+                { type: "text", text: draft.reservationDate ?? "-" },
+                { type: "text", text: draft.reservationTime ?? "-" },
+                { type: "text", text: String(draft.partySize ?? "-") },
+                { type: "text", text: draft.guestName ?? "-" },
+                { type: "text", text: draft.guestContact ?? "-" },
+                { type: "text", text: propertyContext?.propertyName ?? "-" },
+                { type: "text", text: draft.specialRequests ?? "-" },
+              ],
+            },
+          ],
+        },
+      }
+    : {
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: toPhone,
+        type: "text",
+        text: {
+          preview_url: false,
+          body,
+        },
+      };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${config.accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(8000),
+  });
+  const responseText = await response.text();
+  const data = responseText
+    ? (JSON.parse(responseText) as Record<string, unknown>)
+    : {};
+
+  if (!response.ok) {
+    const error = data.error as Record<string, unknown> | undefined;
+    throw new Error(
+      typeof error?.message === "string"
+        ? error.message
+        : `WhatsApp returned ${response.status}`
+    );
+  }
+
+  const messages = Array.isArray(data.messages) ? data.messages : [];
+  const firstMessage = messages[0] as Record<string, unknown> | undefined;
+
+  return typeof firstMessage?.id === "string" ? firstMessage.id : null;
+}
+
+async function insertRestaurantReservation(
+  supabase: SupabaseClient,
+  payload: Record<string, unknown>
+) {
+  const { data, error } = await supabase
+    .from("restaurant_reservations")
+    .insert(payload)
+    .select("id")
+    .single();
+
+  if (error) {
+    if (isMissingTableError(error.message)) {
+      console.error("restaurant_reservations table is missing.");
+      return null;
+    }
+
+    throw new Error(`Could not insert restaurant reservation: ${error.message}`);
+  }
+
+  return asOptionalString((data as Record<string, unknown>).id);
+}
+
+async function updateConversationReply(
+  supabase: SupabaseClient,
+  table: string,
+  conversationId: string | null,
+  reply: string
+) {
+  if (!conversationId) {
+    return;
+  }
+
+  const candidates = [
+    { assistant_message: reply },
+    { response: reply },
+    { ai_response: reply },
+    { output: reply },
+  ];
+
+  for (const payload of candidates) {
+    const { error } = await supabase
+      .from(table)
+      .update(payload)
+      .eq("id", conversationId);
+
+    if (!error) {
+      return;
+    }
+  }
+}
+
+async function handleRestaurantReservation(
+  supabase: SupabaseClient,
+  conversationId: string | null,
+  propertyContext: PropertyContext | null,
+  draft: RestaurantReservationDraft | null
+): Promise<ReservationResult | null> {
+  if (!draft?.requested) {
+    return null;
+  }
+
+  const missingFields = getReservationMissingFields(draft);
+
+  if (!draft.readyToSend || missingFields.length > 0) {
+    return null;
+  }
+
+  const contact = findRestaurantContact(
+    propertyContext?.restaurantContacts ?? [],
+    draft.restaurantName ?? ""
+  );
+  const restaurantWhatsapp = normalizeWhatsAppPhone(contact?.whatsappPhone);
+  const messageBody = buildReservationMessage(draft, propertyContext);
+  let status = "requested";
+  let whatsappMessageId: string | null = null;
+  let whatsappError: string | null = null;
+  let guestNotice = "";
+
+  if (!contact || !contact.acceptsWhatsappReservations || !restaurantWhatsapp) {
+    status = "needs_restaurant_contact";
+    whatsappError =
+      "Restaurant WhatsApp contact is missing or not enabled for reservations.";
+    guestNotice = `Ich habe die Reservierungsanfrage vorbereitet, aber für **${draft.restaurantName}** ist noch kein WhatsApp-Kontakt für Reservierungen in der Datenbank hinterlegt. Die Anfrage wurde noch nicht an das Restaurant gesendet.`;
+  } else if (!isWhatsAppConfigured()) {
+    status = "pending_whatsapp_config";
+    whatsappError = "WhatsApp Business Platform env vars are missing.";
+    guestNotice = `Ich habe die Reservierungsanfrage vorbereitet, aber der WhatsApp-Versand ist noch nicht vollständig konfiguriert. Die Anfrage wurde noch nicht an **${draft.restaurantName}** gesendet.`;
+  } else {
+    try {
+      whatsappMessageId = await sendWhatsAppReservationMessage(
+        restaurantWhatsapp,
+        draft,
+        propertyContext,
+        messageBody
+      );
+      status = "sent_to_restaurant";
+      guestNotice = `Ich habe die Reservierungsanfrage per WhatsApp an **${draft.restaurantName}** gesendet. Wichtig: Die Reservierung ist erst verbindlich, wenn das Restaurant sie bestätigt.`;
+    } catch (error) {
+      status = "whatsapp_failed";
+      whatsappError =
+        error instanceof Error ? error.message : "Unknown WhatsApp error.";
+      guestNotice = `Ich habe die Reservierungsanfrage gespeichert, aber der WhatsApp-Versand an **${draft.restaurantName}** ist fehlgeschlagen. Die Reservierung ist noch nicht bestätigt.`;
+      console.error(`WhatsApp reservation send failed: ${whatsappError}`);
+    }
+  }
+
+  const reservationId = await insertRestaurantReservation(supabase, {
+    conversation_id: conversationId,
+    property_id: propertyContext?.propertyId ?? null,
+    restaurant_name: draft.restaurantName,
+    restaurant_whatsapp: restaurantWhatsapp,
+    guest_name: draft.guestName,
+    guest_contact: draft.guestContact,
+    party_size: draft.partySize,
+    reservation_date: draft.reservationDate,
+    reservation_time: draft.reservationTime,
+    special_requests: draft.specialRequests,
+    status,
+    whatsapp_message_body: messageBody,
+    whatsapp_message_id: whatsappMessageId,
+    whatsapp_error: whatsappError,
+  });
+
+  return {
+    id: reservationId,
+    status,
+    whatsappMessageId,
+    guestNotice,
+  };
+}
+
+function appendReservationNotice(reply: string, notice: string) {
+  if (!notice || reply.includes(notice)) {
+    return reply;
+  }
+
+  return `${reply}\n\n${notice}`;
+}
+
 export async function POST(req: Request) {
   let payload: ChatRequest;
 
@@ -1040,6 +1465,25 @@ export async function POST(req: Request) {
         metadata: { ...metadata, incident_required: ai.incident_required },
       },
     ]);
+
+    const reservation = await handleRestaurantReservation(
+      supabase,
+      conversation.id,
+      propertyContext,
+      ai.restaurant_reservation
+    );
+    const finalReply = reservation
+      ? appendReservationNotice(ai.reply, reservation.guestNotice)
+      : ai.reply;
+
+    if (finalReply !== ai.reply) {
+      await updateConversationReply(
+        supabase,
+        conversation.table,
+        conversation.id,
+        finalReply
+      );
+    }
 
     let incident: InsertResult | null = null;
 
@@ -1185,19 +1629,23 @@ export async function POST(req: Request) {
       conversation.id,
       propertyContext?.propertyId,
       message,
-      ai.reply,
+      finalReply,
       analytics
     );
 
     return Response.json({
       success: true,
-      reply: ai.reply,
+      reply: finalReply,
       conversationId: conversation.id,
       conversationTable: conversation.table,
       incidentCreated: Boolean(incident),
       incidentId: incident?.id ?? null,
       incidentTable: incident?.table ?? null,
       priority: incident ? ai.priority : null,
+      reservationCreated: Boolean(reservation?.id),
+      reservationId: reservation?.id ?? null,
+      reservationStatus: reservation?.status ?? null,
+      whatsappMessageId: reservation?.whatsappMessageId ?? null,
     });
   } catch (error) {
     const message =
