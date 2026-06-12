@@ -42,6 +42,7 @@ WHATSAPP_PHONE_NUMBER_ID=1234567890
 WHATSAPP_GRAPH_API_VERSION=v23.0
 WHATSAPP_RESERVATION_TEMPLATE_NAME=restaurant_reservation_request
 WHATSAPP_RESERVATION_TEMPLATE_LANGUAGE=de
+WHATSAPP_WEBHOOK_VERIFY_TOKEN=make-a-long-random-string
 ```
 
 Важно:
@@ -54,6 +55,7 @@ WHATSAPP_RESERVATION_TEMPLATE_LANGUAGE=de
 - `STATS_ACCESS_TOKEN` включает защиту статистики. Если переменная задана, открывай `/stats?token=<STATS_ACCESS_TOKEN>`.
 - `WHATSAPP_ACCESS_TOKEN` и `WHATSAPP_PHONE_NUMBER_ID` включают отправку заявок на бронирование в рестораны через WhatsApp Business Platform.
 - `WHATSAPP_RESERVATION_TEMPLATE_NAME` рекомендуется для первого исходящего сообщения ресторану. Если template не задан, приложение попробует отправить обычное text-сообщение, но WhatsApp может отклонить его вне разрешённого окна переписки.
+- `WHATSAPP_WEBHOOK_VERIFY_TOKEN` нужен для настройки Webhooks в Meta. Это не access token, а любая длинная секретная строка, которую ты сам задаёшь одинаково в Vercel и Meta.
 
 ## Supabase Schema
 
@@ -335,6 +337,28 @@ npm run whatsapp:diagnose
 - использовать именно WhatsApp **phone number ID**, не WABA ID, Business ID или App ID
 
 Если диагностика падает уже на чтении `WHATSAPP_PHONE_NUMBER_ID`, исправь доступы в Meta Business Manager: Business Settings → Users → System users → нужный system user → Assigned assets → WhatsApp Accounts → включить нужный WABA и права Manage/Full control, затем сгенерировать новый token с `whatsapp_business_messaging`.
+
+### Настройка WhatsApp Webhooks
+
+На экране Meta “Настроить Webhooks” заполни:
+
+```text
+URL обратного вызова:
+https://<your-vercel-domain>/api/whatsapp/webhook
+
+Подтверждение маркера:
+значение WHATSAPP_WEBHOOK_VERIFY_TOKEN из Vercel
+```
+
+Например:
+
+```text
+https://willyhaase-saas-fee-ai-concierge.vercel.app/api/whatsapp/webhook
+```
+
+После добавления `WHATSAPP_WEBHOOK_VERIFY_TOKEN` в Vercel сделай redeploy. Только после этого Meta сможет нажать “Подтвердить и сохранить”.
+
+Важно: Webhooks нужны для входящих сообщений и статусов. Они не исправляют ошибку `(#200)` при отправке; для неё нужны правильные права токена и правильный `WHATSAPP_PHONE_NUMBER_ID`.
 
 Если используется WhatsApp template, создай approved template с именем из `WHATSAPP_RESERVATION_TEMPLATE_NAME`. Текущий код передаёт 8 body-параметров:
 
