@@ -17,9 +17,10 @@ export const metadata: Metadata = {
   description: "Guest concierge chat for Saas-Fee stays.",
   icons: {
     icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon.png", type: "image/png", sizes: "1024x1024" },
       { url: "/favicon.ico", sizes: "any" },
     ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
 

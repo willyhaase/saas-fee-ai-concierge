@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <rect width="128" height="128" rx="28" fill="#1f5f46"/>
-  <path d="M22 82 50 34l15 25 12-18 29 41H22Z" fill="#f7f7f2"/>
-  <path d="M50 34 65 59l-9-4-8 8-9-8 11-21Z" fill="#d8e7dd"/>
-  <path d="M77 41 106 82H75l10-12-12-9 4-20Z" fill="#d8e7dd"/>
-  <path d="M31 91h66" stroke="#f7f7f2" stroke-width="8" stroke-linecap="round"/>
-  <text x="64" y="107" text-anchor="middle" fill="#f7f7f2" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">SF</text>
-</svg>
