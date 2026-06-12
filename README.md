@@ -311,6 +311,31 @@ supabase/seed_restaurant_contacts_template.sql
 - `whatsapp_failed` — WhatsApp API вернул ошибку
 - `confirmed`, `declined`, `cancelled` — статусы для ручного обновления после ответа ресторана
 
+### Диагностика WhatsApp `(#200)`
+
+Ошибка Meta `(#200) You do not have the necessary permissions to send messages on behalf of this WhatsApp Business Account` почти всегда означает проблему не в тексте сообщения, а в связке:
+
+```text
+WHATSAPP_ACCESS_TOKEN -> system user/app -> WhatsApp Business Account -> WHATSAPP_PHONE_NUMBER_ID
+```
+
+Проверь локально или в окружении, где есть реальные WhatsApp env vars:
+
+```bash
+npm run whatsapp:diagnose
+```
+
+Скрипт не печатает токен. Он проверяет, может ли токен прочитать `WHATSAPP_PHONE_NUMBER_ID`, показывает привязанный WABA ID и, если задан `META_APP_ACCESS_TOKEN` или `META_APP_ID` + `META_APP_SECRET`, проверяет scopes токена.
+
+Для отправки сообщений токен должен:
+
+- быть токеном system user или подходящим permanent token для того же Meta app
+- иметь permission `whatsapp_business_messaging`
+- быть выдан system user, которому назначен нужный WhatsApp Business Account
+- использовать именно WhatsApp **phone number ID**, не WABA ID, Business ID или App ID
+
+Если диагностика падает уже на чтении `WHATSAPP_PHONE_NUMBER_ID`, исправь доступы в Meta Business Manager: Business Settings → Users → System users → нужный system user → Assigned assets → WhatsApp Accounts → включить нужный WABA и права Manage/Full control, затем сгенерировать новый token с `whatsapp_business_messaging`.
+
 Если используется WhatsApp template, создай approved template с именем из `WHATSAPP_RESERVATION_TEMPLATE_NAME`. Текущий код передаёт 8 body-параметров:
 
 ```text

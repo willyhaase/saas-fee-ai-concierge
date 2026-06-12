@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "whatsapp:diagnose": "node scripts/diagnose-whatsapp.mjs",
     "start": "next start",
     "lint": "eslint"
   },
