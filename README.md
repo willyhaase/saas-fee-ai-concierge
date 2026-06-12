@@ -180,6 +180,25 @@ supabase/seed_saas_fee_events_2026.sql
 
 `/api/chat` читает только активные и будущие события, поэтому прошедшие мероприятия не должны попадать в ответы гостям.
 
+## Общественные туалеты
+
+Для общественных туалетов в Saas-Fee выполни в Supabase SQL Editor:
+
+```text
+supabase/seed_saas_fee_public_toilets.sql
+```
+
+Файл добавляет в `public.global_knowledge` WC-точки из OpenStreetMap/Overpass:
+
+- Postplatz / Bus Terminal
+- westlicher Dorfbereich / Parking-Seite
+- unterer Dorfbereich / Bergbahnseite
+- südlicher Dorfbereich
+- östlicher Dorfbereich
+- südwestlicher Bereich
+
+Если у точки нет официального названия или гарантированных часов работы, чат должен говорить это честно и использовать координаты/ориентир.
+
 ## Карта впечатлений лето 2026
 
 Для данных из PDF `Erlebniskarte-Sommer-2026-EN.pdf` выполни:

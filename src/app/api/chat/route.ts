@@ -372,6 +372,8 @@ function classifyQuery(message: string): QueryAnalytics {
     category = "banking";
   } else if (includesAny(text, ["grocery", "supermarket", "coop", "migros", "магазин", "продукт"])) {
     category = "groceries";
+  } else if (includesAny(text, ["toilet", "toilets", "wc", "restroom", "bathroom", "toilette", "toiletten", "туалет"])) {
+    category = "public_toilets";
   }
 
   let intent = "general_question";
