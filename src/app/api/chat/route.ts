@@ -1212,7 +1212,8 @@ function formatTwilioWhatsAppAddress(phone: string) {
 
 function getTwilioReservationContentVariables(
   draft: RestaurantReservationDraft,
-  propertyContext: PropertyContext | null
+  propertyContext: PropertyContext | null,
+  reservationId: string | null
 ) {
   return {
     "1": draft.restaurantName ?? "-",
@@ -1223,6 +1224,7 @@ function getTwilioReservationContentVariables(
     "6": draft.guestContact ?? "-",
     "7": propertyContext?.propertyName ?? "-",
     "8": draft.specialRequests ?? "-",
+    "9": reservationId ?? "-",
   };
 }
 
@@ -1310,7 +1312,8 @@ async function sendTwilioWhatsAppReservationMessage(
   toPhone: string,
   draft: RestaurantReservationDraft,
   propertyContext: PropertyContext | null,
-  body: string
+  body: string,
+  reservationId: string | null
 ) {
   const config = getWhatsAppConfig();
 
@@ -1350,7 +1353,11 @@ async function sendTwilioWhatsAppReservationMessage(
     params.set(
       "ContentVariables",
       JSON.stringify(
-        getTwilioReservationContentVariables(draft, propertyContext)
+        getTwilioReservationContentVariables(
+          draft,
+          propertyContext,
+          reservationId
+        )
       )
     );
   } else {
@@ -1393,7 +1400,8 @@ async function sendWhatsAppReservationMessage(
   toPhone: string,
   draft: RestaurantReservationDraft,
   propertyContext: PropertyContext | null,
-  body: string
+  body: string,
+  reservationId: string | null
 ) {
   const config = getWhatsAppConfig();
 
@@ -1402,7 +1410,8 @@ async function sendWhatsAppReservationMessage(
       toPhone,
       draft,
       propertyContext,
-      body
+      body,
+      reservationId
     );
   }
 
@@ -1434,6 +1443,28 @@ async function insertRestaurantReservation(
   }
 
   return asOptionalString((data as Record<string, unknown>).id);
+}
+
+async function updateRestaurantReservation(
+  supabase: SupabaseClient,
+  reservationId: string | null,
+  payload: Record<string, unknown>
+) {
+  if (!reservationId) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("restaurant_reservations")
+    .update({
+      ...payload,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", reservationId);
+
+  if (error && !isMissingTableError(error.message)) {
+    throw new Error(`Could not update restaurant reservation: ${error.message}`);
+  }
 }
 
 async function updateConversationReply(
@@ -1511,40 +1542,7 @@ async function handleRestaurantReservation(
   );
   const restaurantWhatsapp = normalizeWhatsAppPhone(contact?.whatsappPhone);
   const messageBody = buildReservationMessage(draft, propertyContext);
-  let status = "requested";
-  let whatsappMessageId: string | null = null;
-  let whatsappError: string | null = null;
-  let guestNotice = "";
-
-  if (!contact || !contact.acceptsWhatsappReservations || !restaurantWhatsapp) {
-    status = "needs_restaurant_contact";
-    whatsappError =
-      "Restaurant WhatsApp contact is missing or not enabled for reservations.";
-    guestNotice = `Ich habe die Reservierungsanfrage vorbereitet, aber für **${draft.restaurantName}** ist noch kein WhatsApp-Kontakt für Reservierungen in der Datenbank hinterlegt. Die Anfrage wurde noch nicht an das Restaurant gesendet.`;
-  } else if (!isWhatsAppConfigured()) {
-    status = "pending_whatsapp_config";
-    whatsappError = "WhatsApp Business Platform env vars are missing.";
-    guestNotice = `Ich habe die Reservierungsanfrage vorbereitet, aber der WhatsApp-Versand ist noch nicht vollständig konfiguriert. Die Anfrage wurde noch nicht an **${draft.restaurantName}** gesendet.`;
-  } else {
-    try {
-      whatsappMessageId = await sendWhatsAppReservationMessage(
-        restaurantWhatsapp,
-        draft,
-        propertyContext,
-        messageBody
-      );
-      status = "sent_to_restaurant";
-      guestNotice = `Ich habe die Reservierungsanfrage per WhatsApp an **${draft.restaurantName}** gesendet. Wichtig: Die Reservierung ist erst verbindlich, wenn das Restaurant sie bestätigt.`;
-    } catch (error) {
-      status = "whatsapp_failed";
-      whatsappError =
-        error instanceof Error ? error.message : "Unknown WhatsApp error.";
-      guestNotice = `Ich habe die Reservierungsanfrage gespeichert, aber der WhatsApp-Versand an **${draft.restaurantName}** ist fehlgeschlagen. Die Reservierung ist noch nicht bestätigt.`;
-      console.error(`WhatsApp reservation send failed: ${whatsappError}`);
-    }
-  }
-
-  const reservationId = await insertRestaurantReservation(supabase, {
+  const baseReservationPayload = {
     conversation_id: conversationId,
     property_id: propertyContext?.propertyId ?? null,
     restaurant_name: draft.restaurantName,
@@ -1555,15 +1553,83 @@ async function handleRestaurantReservation(
     reservation_date: draft.reservationDate,
     reservation_time: draft.reservationTime,
     special_requests: draft.specialRequests,
-    status,
     whatsapp_message_body: messageBody,
-    whatsapp_message_id: whatsappMessageId,
-    whatsapp_error: whatsappError,
+  };
+  let whatsappMessageId: string | null = null;
+  let whatsappError: string | null = null;
+  let guestNotice = "";
+
+  if (!contact || !contact.acceptsWhatsappReservations || !restaurantWhatsapp) {
+    whatsappError =
+      "Restaurant WhatsApp contact is missing or not enabled for reservations.";
+    guestNotice = `Ich habe die Reservierungsanfrage vorbereitet, aber für **${draft.restaurantName}** ist noch kein WhatsApp-Kontakt für Reservierungen in der Datenbank hinterlegt. Die Anfrage wurde noch nicht an das Restaurant gesendet.`;
+    const reservationId = await insertRestaurantReservation(supabase, {
+      ...baseReservationPayload,
+      status: "needs_restaurant_contact",
+      whatsapp_message_id: null,
+      whatsapp_error: whatsappError,
+    });
+
+    return {
+      id: reservationId,
+      status: "needs_restaurant_contact",
+      whatsappMessageId: null,
+      guestNotice,
+    };
+  } else if (!isWhatsAppConfigured()) {
+    whatsappError = "WhatsApp Business Platform env vars are missing.";
+    guestNotice = `Ich habe die Reservierungsanfrage vorbereitet, aber der WhatsApp-Versand ist noch nicht vollständig konfiguriert. Die Anfrage wurde noch nicht an **${draft.restaurantName}** gesendet.`;
+    const reservationId = await insertRestaurantReservation(supabase, {
+      ...baseReservationPayload,
+      status: "pending_whatsapp_config",
+      whatsapp_message_id: null,
+      whatsapp_error: whatsappError,
+    });
+
+    return {
+      id: reservationId,
+      status: "pending_whatsapp_config",
+      whatsappMessageId: null,
+      guestNotice,
+    };
+  }
+
+  const reservationId = await insertRestaurantReservation(supabase, {
+    ...baseReservationPayload,
+    status: "requested",
+    whatsapp_message_id: null,
+    whatsapp_error: null,
   });
+
+  try {
+    whatsappMessageId = await sendWhatsAppReservationMessage(
+      restaurantWhatsapp,
+      draft,
+      propertyContext,
+      messageBody,
+      reservationId
+    );
+    await updateRestaurantReservation(supabase, reservationId, {
+      status: "sent_to_restaurant",
+      whatsapp_message_id: whatsappMessageId,
+      whatsapp_error: null,
+    });
+    guestNotice = `Ich habe die Reservierungsanfrage per WhatsApp an **${draft.restaurantName}** gesendet. Wichtig: Die Reservierung ist erst verbindlich, wenn das Restaurant sie bestätigt.`;
+  } catch (error) {
+    whatsappError =
+      error instanceof Error ? error.message : "Unknown WhatsApp error.";
+    await updateRestaurantReservation(supabase, reservationId, {
+      status: "whatsapp_failed",
+      whatsapp_message_id: whatsappMessageId,
+      whatsapp_error: whatsappError,
+    });
+    guestNotice = `Ich habe die Reservierungsanfrage gespeichert, aber der WhatsApp-Versand an **${draft.restaurantName}** ist fehlgeschlagen. Die Reservierung ist noch nicht bestätigt.`;
+    console.error(`WhatsApp reservation send failed: ${whatsappError}`);
+  }
 
   return {
     id: reservationId,
-    status,
+    status: whatsappError ? "whatsapp_failed" : "sent_to_restaurant",
     whatsappMessageId,
     guestNotice,
   };

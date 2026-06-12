@@ -42,6 +42,9 @@ TWILIO_ACCOUNT_SID=AC...
 TWILIO_AUTH_TOKEN=...
 TWILIO_WHATSAPP_FROM=whatsapp:+15559671989
 TWILIO_RESERVATION_CONTENT_SID=HX...
+TWILIO_GUEST_CONFIRMATION_CONTENT_SID=HX...
+TWILIO_WEBHOOK_AUTH_TOKEN=...
+TWILIO_WEBHOOK_PUBLIC_URL=https://willyhaase-saas-fee-ai-concierge.vercel.app/api/twilio/whatsapp
 
 # Optional: Meta WhatsApp Cloud API fallback
 WHATSAPP_ACCESS_TOKEN=EA...
@@ -63,6 +66,9 @@ WHATSAPP_WEBHOOK_VERIFY_TOKEN=make-a-long-random-string
 - `WHATSAPP_PROVIDER=twilio` включает отправку WhatsApp через Twilio.
 - `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` и `TWILIO_WHATSAPP_FROM=whatsapp:+15559671989` нужны для Twilio Messages API.
 - `TWILIO_RESERVATION_CONTENT_SID` рекомендуется для первого исходящего сообщения ресторану. Это approved WhatsApp template в Twilio Content Template Builder, обычно начинается с `HX...`.
+- `TWILIO_GUEST_CONFIRMATION_CONTENT_SID` используется для WhatsApp template, который отправляется гостю после подтверждения ресторана.
+- `TWILIO_WEBHOOK_AUTH_TOKEN` используется для проверки подписи входящих Twilio webhooks. Можно указать тот же секрет, что и `TWILIO_AUTH_TOKEN`.
+- `TWILIO_WEBHOOK_PUBLIC_URL` должен совпадать с URL webhook, указанным в Twilio. Это помогает корректно проверять подпись webhook на Vercel.
 - Если `TWILIO_RESERVATION_CONTENT_SID` не задан, приложение попробует отправить обычный `Body`, но WhatsApp/Twilio может отклонить сообщение вне разрешённого 24-часового окна переписки.
 - `WHATSAPP_ACCESS_TOKEN` и `WHATSAPP_PHONE_NUMBER_ID` нужны только если используется `WHATSAPP_PROVIDER=meta` для Meta WhatsApp Cloud API.
 - `WHATSAPP_WEBHOOK_VERIFY_TOKEN` нужен для настройки Webhooks в Meta. Это не access token, а любая длинная секретная строка, которую ты сам задаёшь одинаково в Vercel и Meta.
@@ -287,6 +293,12 @@ supabase/seed_zur_muehle_restaurant.sql
 supabase/migrations/20260611_add_restaurant_reservations.sql
 ```
 
+Для хранения подтверждений ресторана и отправки подтверждения гостю выполни также:
+
+```text
+supabase/migrations/20260612_add_restaurant_confirmation_tracking.sql
+```
+
 Она создаёт:
 
 - `public.restaurant_contacts` — WhatsApp/phone/email ресторанов
@@ -378,7 +390,7 @@ https://willyhaase-saas-fee-ai-concierge.vercel.app/api/whatsapp/webhook
 restaurantName, reservationDate, reservationTime, partySize, guestName, guestContact, propertyName, specialRequests
 ```
 
-Если используется Twilio, создай approved WhatsApp template в Twilio Content Template Builder и добавь его SID в `TWILIO_RESERVATION_CONTENT_SID`. Код передаёт те же 8 значений как `ContentVariables`:
+Если используется Twilio, создай approved WhatsApp template в Twilio Content Template Builder и добавь его SID в `TWILIO_RESERVATION_CONTENT_SID`. Код передаёт 9 значений как `ContentVariables`:
 
 ```text
 1 = restaurantName
@@ -389,9 +401,48 @@ restaurantName, reservationDate, reservationTime, partySize, guestName, guestCon
 6 = guestContact
 7 = propertyName
 8 = specialRequests
+9 = reservationId
 ```
 
 При успешной отправке в `restaurant_reservations.whatsapp_message_id` сохраняется Twilio Message SID, обычно он начинается с `SM...`.
+
+Для template ресторана можно добавить quick reply кнопку:
+
+```text
+Button text:
+Reservierung bestätigen
+
+Button payload:
+confirm:{{9}}
+```
+
+Если Twilio UI не разрешает переменную в payload, используй статичный payload `confirm`. В этом случае webhook найдёт последнюю отправленную этому ресторану заявку, но вариант `confirm:{{9}}` надёжнее.
+
+Для подтверждения гостю создай отдельный approved template и добавь его SID в `TWILIO_GUEST_CONFIRMATION_CONTENT_SID`. Код передаёт 5 значений:
+
+```text
+1 = guestName
+2 = restaurantName
+3 = reservationDate
+4 = reservationTime
+5 = partySize
+```
+
+Пример немецкого текста:
+
+```text
+Hallo {{1}}, Ihre Tischreservierung im Restaurant {{2}} am {{3}} um {{4}} Uhr für {{5}} Personen wurde bestätigt.
+
+Saas-Fee Concierge
+```
+
+Для входящих ответов/кнопок ресторана укажи в Twilio WhatsApp sender webhook:
+
+```text
+https://willyhaase-saas-fee-ai-concierge.vercel.app/api/twilio/whatsapp
+```
+
+Webhook обновляет бронь на `confirmed`, заполняет `confirmed_at`, `confirmed_by_phone`, `guest_confirmation_message_id` или `guest_confirmation_error`.
 
 Быстрая диагностика:
 
