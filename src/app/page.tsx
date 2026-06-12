@@ -478,6 +478,15 @@ export default function Home() {
             </div>
           </aside>
         </section>
+
+        <footer className="border-t border-[#d8d8ce] py-4 text-sm text-[#5b6b5f]">
+          <a
+            className="font-medium text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d]"
+            href="/privacy"
+          >
+            Datenschutzerklärung
+          </a>
+        </footer>
       </div>
     </main>
   );
