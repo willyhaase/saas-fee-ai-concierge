@@ -16,7 +16,8 @@ values
   ('Zer Schlucht', null, null, null, true, 'Add the official WhatsApp-enabled phone number before enabling automatic reservations.'),
   ('Brasserie 1809', null, null, null, true, 'Add the official WhatsApp-enabled phone number before enabling automatic reservations.'),
   ('The Capra', null, null, null, true, 'Add the official WhatsApp-enabled phone number before enabling automatic reservations.'),
-  ('Walliserhof', null, null, null, true, 'Add the official WhatsApp-enabled phone number before enabling automatic reservations.')
+  ('Walliserhof', null, null, null, true, 'Add the official WhatsApp-enabled phone number before enabling automatic reservations.'),
+  ('Zur Mühle', '+41797531703', '+41 27 957 26 76', 'info@zurmuehle-saas-fee.ch', true, 'Reservation WhatsApp provided by project owner on 2026-06-12.')
 on conflict (restaurant_name) do update set
   whatsapp_phone = excluded.whatsapp_phone,
   phone = excluded.phone,

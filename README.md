@@ -235,10 +235,22 @@ supabase/seed_genially_interactive_map.sql
 supabase/seed_restaurant_menus_template.sql
 ```
 
-Для меню Hannig с ценами выполни:
+Для меню Hannig с ценами из PDF Winterkarte 25/26 выполни:
 
 ```text
 supabase/seed_hannig_menu.sql
+```
+
+Этот seed использует PDF-меню Hannig:
+
+```text
+https://de.cdn-website.com/3dca206eb97244728f6472178d501c4d/files/uploaded/Winterkarte+2526+%282%29-e41b79e8.pdf
+```
+
+Для ресторана Zur Mühle с адресом, контактами, WhatsApp для заявок на бронь, часами работы, средним чеком, ценами из меню и ссылкой на PDF-меню выполни:
+
+```text
+supabase/seed_zur_muehle_restaurant.sql
 ```
 
 Шаблон создаёт строки для:
@@ -249,8 +261,11 @@ supabase/seed_hannig_menu.sql
 - Brasserie 1809
 - The Capra
 - Walliserhof
+- Zur Mühle
 
 В шаблоне нет выдуманных цен. Заполни `average_check_min_chf`, `average_check_max_chf`, `price_chf`, `price_text`, `source_url` и `source_updated_at` по актуальному меню/PDF/фото. После этого `/api/chat` сможет отвечать на вопросы вроде “что поесть в Hannig и сколько примерно стоит”.
+
+Если у строк меню заполнен `source_url`, чат при вопросе о меню даёт короткую выжимку по блюдам/ценам и показывает кликабельную ссылку на полный PDF прямо в сообщении.
 
 ## Резервирование столика
 

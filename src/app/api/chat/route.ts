@@ -74,6 +74,7 @@ type RestaurantMenuItem = {
   priceChf: number | null;
   priceText: string | null;
   dietaryTags: string | null;
+  sourceUrl: string | null;
   sourceUpdatedAt: string | null;
 };
 
@@ -262,6 +263,8 @@ function getKnownRestaurantCandidates(propertyContext: PropertyContext | null) {
     "Brasserie 1809",
     "The Capra",
     "Walliserhof",
+    "Zur Mühle",
+    "Zur Muehle",
   ]);
 }
 
@@ -289,6 +292,7 @@ function classifyQuery(message: string): QueryAnalytics {
     { name: "Brasserie 1809", keywords: ["brasserie 1809", "1809"] },
     { name: "The Capra", keywords: ["capra", "the capra"] },
     { name: "Walliserhof", keywords: ["walliserhof"] },
+    { name: "Zur Mühle", keywords: ["zur mühle", "zur muehle", "mühle", "muehle"] },
     { name: "Allalin", keywords: ["allalin", "алалин"] },
     { name: "Spielboden", keywords: ["spielboden"] },
     { name: "Morenia", keywords: ["morenia"] },
@@ -640,7 +644,7 @@ async function getConciergeResponse(
           "When mentioning restaurant names in replies, format each restaurant name in bold Markdown, for example **Hannig**.",
           "Property context has two layers: globalKnowledge and localRecommendations are general information; property details, contacts, instructions, and FAQ are local housing information.",
           "For event questions, use propertyContext.localEvents first. Mention dates, village/location, time, price or registration details when available. Do not recommend events whose endDate is before today.",
-          "For restaurant menu and price questions, use propertyContext.restaurantMenus first. Mention the sourceUpdatedAt date when available, but phrase it in the reply language. If no menu price is present for a restaurant or dish, say in the reply language that the current menu price is not available in the chat data yet; never invent menu prices or average checks.",
+          "For restaurant menu and price questions, use propertyContext.restaurantMenus first. Give a concise summary with the most relevant dishes/prices, and when a sourceUrl is available include one Markdown link to the full PDF menu, for example [PDF-Menü ansehen](https://example.com/menu.pdf). Mention the sourceUpdatedAt date when available, but phrase it in the reply language. If no menu price is present for a restaurant or dish, say in the reply language that the current menu price is not available in the chat data yet; never invent menu prices or average checks.",
           "For restaurant table reservation requests, collect restaurant name, date, time, party size, guest name, and guest phone or WhatsApp contact. Do not say the table is confirmed. Say it is a reservation request until the restaurant confirms.",
           "If reservation details are missing, ask a concise follow-up question in German by default.",
           "When the guest wants a restaurant reservation, include restaurant_reservation in the JSON. Use requested=true. Set readyToSend=true only when restaurantName, reservationDate as YYYY-MM-DD, reservationTime, partySize, guestName, and guestContact are all present. Otherwise set readyToSend=false and list missingFields.",
@@ -929,12 +933,12 @@ async function getRestaurantMenus(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from("restaurant_menus")
     .select(
-      "restaurant_name, location, cuisine, average_check_min_chf, average_check_max_chf, menu_category, item_name, description, price_chf, price_text, dietary_tags, source_updated_at"
+      "restaurant_name, location, cuisine, average_check_min_chf, average_check_max_chf, menu_category, item_name, description, price_chf, price_text, dietary_tags, source_url, source_updated_at"
     )
     .eq("is_active", true)
     .order("restaurant_name", { ascending: true })
     .order("menu_category", { ascending: true })
-    .limit(120);
+    .limit(500);
 
   if (error || !data) {
     return [];
@@ -952,6 +956,7 @@ async function getRestaurantMenus(supabase: SupabaseClient) {
     priceChf: asNullableNumber(item.price_chf),
     priceText: asOptionalString(item.price_text),
     dietaryTags: asOptionalString(item.dietary_tags),
+    sourceUrl: asOptionalString(item.source_url),
     sourceUpdatedAt: asOptionalString(item.source_updated_at),
   }));
 }

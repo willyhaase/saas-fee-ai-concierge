@@ -44,6 +44,7 @@ const RESTAURANT_ACTIONS = [
   { name: "Brasserie 1809", aliases: ["Brasserie 1809"] },
   { name: "The Capra", aliases: ["The Capra", "Capra"] },
   { name: "Walliserhof", aliases: ["Walliserhof"] },
+  { name: "Zur Mühle", aliases: ["Zur Mühle", "Zur Muehle", "Mühle", "Muehle"] },
   { name: "Hohsaas", aliases: ["Hohsaas"] },
   { name: "Felskinn", aliases: ["Felskinn"] },
   { name: "Gletschergrotte", aliases: ["Gletschergrotte"] },
@@ -69,12 +70,17 @@ function getRestaurantByAlias(value: string) {
   );
 }
 
-function getRestaurantMatcher() {
+function getAssistantTokenMatcher() {
   const aliases = RESTAURANT_ACTIONS.flatMap((restaurant) => restaurant.aliases)
     .sort((a, b) => b.length - a.length)
     .map(escapeRegex);
 
-  return new RegExp(`(\\*\\*)?(${aliases.join("|")})(\\*\\*)?`, "giu");
+  return new RegExp(
+    `\\[([^\\]]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)|(\\*\\*)?(${aliases.join(
+      "|"
+    )})(\\*\\*)?`,
+    "giu"
+  );
 }
 
 function getVisitorErrorMessage(message: string) {
@@ -125,16 +131,18 @@ function MessageContent({
     return <p className="whitespace-pre-wrap break-words">{content}</p>;
   }
 
-  const matcher = getRestaurantMatcher();
+  const matcher = getAssistantTokenMatcher();
   const nodes: ReactNode[] = [];
   let lastIndex = 0;
 
   for (const match of content.matchAll(matcher)) {
     const matchIndex = match.index ?? 0;
-    const alias = match[2];
-    const restaurant = getRestaurantByAlias(alias);
+    const linkText = match[1];
+    const linkUrl = match[2];
+    const alias = match[4];
+    const restaurant = alias ? getRestaurantByAlias(alias) : undefined;
 
-    if (!restaurant) {
+    if (!restaurant && (!linkText || !linkUrl)) {
       continue;
     }
 
@@ -142,18 +150,32 @@ function MessageContent({
       nodes.push(content.slice(lastIndex, matchIndex));
     }
 
-    nodes.push(
-      <button
-        className="inline rounded-sm font-semibold text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d] disabled:cursor-wait disabled:opacity-60"
-        disabled={isSending}
-        key={`${restaurant.name}-${matchIndex}`}
-        onClick={() => onRestaurantClick(restaurant.name)}
-        title={`Menü und Preise anzeigen: ${restaurant.name}`}
-        type="button"
-      >
-        {restaurant.name}
-      </button>
-    );
+    if (linkText && linkUrl) {
+      nodes.push(
+        <a
+          className="font-semibold text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d]"
+          href={linkUrl}
+          key={`${linkUrl}-${matchIndex}`}
+          rel="noreferrer"
+          target="_blank"
+        >
+          {linkText}
+        </a>
+      );
+    } else if (restaurant) {
+      nodes.push(
+        <button
+          className="inline rounded-sm font-semibold text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d] disabled:cursor-wait disabled:opacity-60"
+          disabled={isSending}
+          key={`${restaurant.name}-${matchIndex}`}
+          onClick={() => onRestaurantClick(restaurant.name)}
+          title={`Menü und Preise anzeigen: ${restaurant.name}`}
+          type="button"
+        >
+          {restaurant.name}
+        </button>
+      );
+    }
 
     lastIndex = matchIndex + match[0].length;
   }
