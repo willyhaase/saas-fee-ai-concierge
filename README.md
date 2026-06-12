@@ -36,7 +36,14 @@ REQUIRE_GUEST_ACCESS_TOKEN=false
 # Optional: protect /api/stats and /stats
 STATS_ACCESS_TOKEN=change-me
 
-# Optional: WhatsApp Business Platform for restaurant reservations
+# Optional: WhatsApp via Twilio for restaurant reservations
+WHATSAPP_PROVIDER=twilio
+TWILIO_ACCOUNT_SID=AC...
+TWILIO_AUTH_TOKEN=...
+TWILIO_WHATSAPP_FROM=whatsapp:+15559671989
+TWILIO_RESERVATION_CONTENT_SID=HX...
+
+# Optional: Meta WhatsApp Cloud API fallback
 WHATSAPP_ACCESS_TOKEN=EA...
 WHATSAPP_PHONE_NUMBER_ID=1234567890
 WHATSAPP_GRAPH_API_VERSION=v23.0
@@ -53,8 +60,11 @@ WHATSAPP_WEBHOOK_VERIFY_TOKEN=make-a-long-random-string
 - Если таблицы называются иначе, укажи реальные имена в Vercel.
 - `REQUIRE_GUEST_ACCESS_TOKEN=true` включает строгий режим: локальная информация жилья выдаётся только по гостевой ссылке с access token.
 - `STATS_ACCESS_TOKEN` включает защиту статистики. Если переменная задана, открывай `/stats?token=<STATS_ACCESS_TOKEN>`.
-- `WHATSAPP_ACCESS_TOKEN` и `WHATSAPP_PHONE_NUMBER_ID` включают отправку заявок на бронирование в рестораны через WhatsApp Business Platform.
-- `WHATSAPP_RESERVATION_TEMPLATE_NAME` рекомендуется для первого исходящего сообщения ресторану. Если template не задан, приложение попробует отправить обычное text-сообщение, но WhatsApp может отклонить его вне разрешённого окна переписки.
+- `WHATSAPP_PROVIDER=twilio` включает отправку WhatsApp через Twilio.
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` и `TWILIO_WHATSAPP_FROM=whatsapp:+15559671989` нужны для Twilio Messages API.
+- `TWILIO_RESERVATION_CONTENT_SID` рекомендуется для первого исходящего сообщения ресторану. Это approved WhatsApp template в Twilio Content Template Builder, обычно начинается с `HX...`.
+- Если `TWILIO_RESERVATION_CONTENT_SID` не задан, приложение попробует отправить обычный `Body`, но WhatsApp/Twilio может отклонить сообщение вне разрешённого 24-часового окна переписки.
+- `WHATSAPP_ACCESS_TOKEN` и `WHATSAPP_PHONE_NUMBER_ID` нужны только если используется `WHATSAPP_PROVIDER=meta` для Meta WhatsApp Cloud API.
 - `WHATSAPP_WEBHOOK_VERIFY_TOKEN` нужен для настройки Webhooks в Meta. Это не access token, а любая длинная секретная строка, которую ты сам задаёшь одинаково в Vercel и Meta.
 
 ## Supabase Schema
@@ -315,6 +325,8 @@ supabase/seed_restaurant_contacts_template.sql
 
 ### Диагностика WhatsApp `(#200)`
 
+Этот раздел относится к `WHATSAPP_PROVIDER=meta`. При `WHATSAPP_PROVIDER=twilio` отправка идёт через Twilio, и ошибки будут приходить от Twilio Messages API.
+
 Ошибка Meta `(#200) You do not have the necessary permissions to send messages on behalf of this WhatsApp Business Account` почти всегда означает проблему не в тексте сообщения, а в связке:
 
 ```text
@@ -365,6 +377,21 @@ https://willyhaase-saas-fee-ai-concierge.vercel.app/api/whatsapp/webhook
 ```text
 restaurantName, reservationDate, reservationTime, partySize, guestName, guestContact, propertyName, specialRequests
 ```
+
+Если используется Twilio, создай approved WhatsApp template в Twilio Content Template Builder и добавь его SID в `TWILIO_RESERVATION_CONTENT_SID`. Код передаёт те же 8 значений как `ContentVariables`:
+
+```text
+1 = restaurantName
+2 = reservationDate
+3 = reservationTime
+4 = partySize
+5 = guestName
+6 = guestContact
+7 = propertyName
+8 = specialRequests
+```
+
+При успешной отправке в `restaurant_reservations.whatsapp_message_id` сохраняется Twilio Message SID, обычно он начинается с `SM...`.
 
 Быстрая диагностика:
 

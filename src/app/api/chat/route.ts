@@ -1138,18 +1138,38 @@ function normalizeWhatsAppPhone(phone: string | null | undefined) {
 }
 
 function getWhatsAppConfig() {
+  const provider = (
+    process.env.WHATSAPP_PROVIDER ||
+    (process.env.TWILIO_ACCOUNT_SID ? "twilio" : "meta")
+  ).toLowerCase();
+
   return {
+    provider,
     accessToken: process.env.WHATSAPP_ACCESS_TOKEN,
     phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID,
     graphApiVersion: process.env.WHATSAPP_GRAPH_API_VERSION || "v23.0",
     templateName: process.env.WHATSAPP_RESERVATION_TEMPLATE_NAME,
     templateLanguage:
       process.env.WHATSAPP_RESERVATION_TEMPLATE_LANGUAGE || "de",
+    twilioAccountSid: process.env.TWILIO_ACCOUNT_SID,
+    twilioAuthToken: process.env.TWILIO_AUTH_TOKEN,
+    twilioWhatsAppFrom: process.env.TWILIO_WHATSAPP_FROM,
+    twilioMessagingServiceSid: process.env.TWILIO_MESSAGING_SERVICE_SID,
+    twilioReservationContentSid: process.env.TWILIO_RESERVATION_CONTENT_SID,
   };
 }
 
 function isWhatsAppConfigured() {
   const config = getWhatsAppConfig();
+
+  if (config.provider === "twilio") {
+    return Boolean(
+      config.twilioAccountSid &&
+        config.twilioAuthToken &&
+        (config.twilioWhatsAppFrom || config.twilioMessagingServiceSid)
+    );
+  }
+
   return Boolean(config.accessToken && config.phoneNumberId);
 }
 
@@ -1181,7 +1201,32 @@ function buildReservationMessage(
     .join("\n");
 }
 
-async function sendWhatsAppReservationMessage(
+function formatTwilioWhatsAppAddress(phone: string) {
+  if (phone.startsWith("whatsapp:")) {
+    return phone;
+  }
+
+  const normalized = normalizeWhatsAppPhone(phone);
+  return normalized ? `whatsapp:+${normalized}` : null;
+}
+
+function getTwilioReservationContentVariables(
+  draft: RestaurantReservationDraft,
+  propertyContext: PropertyContext | null
+) {
+  return {
+    "1": draft.restaurantName ?? "-",
+    "2": draft.reservationDate ?? "-",
+    "3": draft.reservationTime ?? "-",
+    "4": String(draft.partySize ?? "-"),
+    "5": draft.guestName ?? "-",
+    "6": draft.guestContact ?? "-",
+    "7": propertyContext?.propertyName ?? "-",
+    "8": draft.specialRequests ?? "-",
+  };
+}
+
+async function sendMetaWhatsAppReservationMessage(
   toPhone: string,
   draft: RestaurantReservationDraft,
   propertyContext: PropertyContext | null,
@@ -1259,6 +1304,114 @@ async function sendWhatsAppReservationMessage(
   const firstMessage = messages[0] as Record<string, unknown> | undefined;
 
   return typeof firstMessage?.id === "string" ? firstMessage.id : null;
+}
+
+async function sendTwilioWhatsAppReservationMessage(
+  toPhone: string,
+  draft: RestaurantReservationDraft,
+  propertyContext: PropertyContext | null,
+  body: string
+) {
+  const config = getWhatsAppConfig();
+
+  if (!config.twilioAccountSid || !config.twilioAuthToken) {
+    throw new Error("Missing TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN.");
+  }
+
+  if (!config.twilioWhatsAppFrom && !config.twilioMessagingServiceSid) {
+    throw new Error(
+      "Missing TWILIO_WHATSAPP_FROM or TWILIO_MESSAGING_SERVICE_SID."
+    );
+  }
+
+  const to = formatTwilioWhatsAppAddress(toPhone);
+
+  if (!to) {
+    throw new Error("Invalid restaurant WhatsApp phone number.");
+  }
+
+  const params = new URLSearchParams();
+  params.set("To", to);
+
+  if (config.twilioMessagingServiceSid) {
+    params.set("MessagingServiceSid", config.twilioMessagingServiceSid);
+  } else if (config.twilioWhatsAppFrom) {
+    const from = formatTwilioWhatsAppAddress(config.twilioWhatsAppFrom);
+
+    if (!from) {
+      throw new Error("Invalid TWILIO_WHATSAPP_FROM.");
+    }
+
+    params.set("From", from);
+  }
+
+  if (config.twilioReservationContentSid) {
+    params.set("ContentSid", config.twilioReservationContentSid);
+    params.set(
+      "ContentVariables",
+      JSON.stringify(
+        getTwilioReservationContentVariables(draft, propertyContext)
+      )
+    );
+  } else {
+    params.set("Body", body);
+  }
+
+  const auth = Buffer.from(
+    `${config.twilioAccountSid}:${config.twilioAuthToken}`
+  ).toString("base64");
+  const response = await fetch(
+    `https://api.twilio.com/2010-04-01/Accounts/${config.twilioAccountSid}/Messages.json`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params,
+      signal: AbortSignal.timeout(8000),
+    }
+  );
+  const responseText = await response.text();
+  const data = responseText
+    ? (JSON.parse(responseText) as Record<string, unknown>)
+    : {};
+
+  if (!response.ok) {
+    const message =
+      typeof data.message === "string"
+        ? data.message
+        : `Twilio returned ${response.status}`;
+    const code = typeof data.code === "number" ? ` (${data.code})` : "";
+    throw new Error(`${message}${code}`);
+  }
+
+  return typeof data.sid === "string" ? data.sid : null;
+}
+
+async function sendWhatsAppReservationMessage(
+  toPhone: string,
+  draft: RestaurantReservationDraft,
+  propertyContext: PropertyContext | null,
+  body: string
+) {
+  const config = getWhatsAppConfig();
+
+  if (config.provider === "twilio") {
+    return sendTwilioWhatsAppReservationMessage(
+      toPhone,
+      draft,
+      propertyContext,
+      body
+    );
+  }
+
+  return sendMetaWhatsAppReservationMessage(
+    toPhone,
+    draft,
+    propertyContext,
+    body
+  );
 }
 
 async function insertRestaurantReservation(
