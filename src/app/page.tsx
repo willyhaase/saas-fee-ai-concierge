@@ -33,6 +33,202 @@ type GuestContextResponse = {
   error?: string;
 };
 
+type UiLanguage = "de" | "en" | "ru" | "fr" | "it";
+
+const UI_TEXT: Record<
+  UiLanguage,
+  {
+    welcome: (propertyName?: string | null) => string;
+    temporaryUnavailable: string;
+    unexpectedResponse: string;
+    unavailable: string;
+    fallbackReply: string;
+    sendFailed: string;
+    menuPrompt: (restaurantName: string) => string;
+    thinking: string;
+    placeholder: string;
+    send: string;
+    sending: string;
+    guestData: string;
+    name: string;
+    email: string;
+    guestLinkActive: string;
+    online: string;
+    privacy: string;
+    conversation: string;
+    caseLabel: string;
+    created: string;
+    priority: string;
+  }
+> = {
+  de: {
+    welcome: (propertyName) =>
+      propertyName
+        ? `Willkommen in ${propertyName}. Ich bin Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zur Unterkunft, zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.`
+        : "Guten Tag, ich bin Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.",
+    temporaryUnavailable:
+      "Der Concierge ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.",
+    unexpectedResponse:
+      "Der Concierge hat eine unerwartete Antwort zurückgegeben. Bitte versuchen Sie es erneut.",
+    unavailable: "Der Concierge ist im Moment nicht verfügbar.",
+    fallbackReply:
+      "Danke. Ich habe Ihre Nachricht aufgenommen und das Team wird sie in Kürze prüfen.",
+    sendFailed:
+      "Ich konnte diese Nachricht nicht senden. Bitte versuchen Sie es erneut.",
+    menuPrompt: (restaurantName) =>
+      `Zeige mir das Menü von ${restaurantName} mit Preisen.`,
+    thinking: "Ich denke nach...",
+    placeholder: "Ihre Nachricht...",
+    send: "Senden",
+    sending: "Senden...",
+    guestData: "Gästedaten",
+    name: "Name",
+    email: "E-Mail",
+    guestLinkActive: "Gästelink aktiv",
+    online: "Online",
+    privacy: "Datenschutzerklärung",
+    conversation: "Konversation",
+    caseLabel: "Vorgang",
+    created: "erstellt",
+    priority: "Priorität",
+  },
+  en: {
+    welcome: (propertyName) =>
+      propertyName
+        ? `Welcome to ${propertyName}. I am your AI concierge for Saas-Fee. Ask me about the accommodation, restaurants, activities, mountain railways, weather, or anything you need during your stay.`
+        : "Hello, I am your AI concierge for Saas-Fee. Ask me about restaurants, activities, mountain railways, weather, or anything you need during your stay.",
+    temporaryUnavailable:
+      "The concierge is temporarily unavailable. Please try again later.",
+    unexpectedResponse:
+      "The concierge returned an unexpected response. Please try again.",
+    unavailable: "The concierge is not available right now.",
+    fallbackReply:
+      "Thank you. I have received your message and the team will review it shortly.",
+    sendFailed: "I could not send this message. Please try again.",
+    menuPrompt: (restaurantName) =>
+      `Show me the menu of ${restaurantName} with prices.`,
+    thinking: "Thinking...",
+    placeholder: "Your message...",
+    send: "Send",
+    sending: "Sending...",
+    guestData: "Guest details",
+    name: "Name",
+    email: "Email",
+    guestLinkActive: "Guest link active",
+    online: "Online",
+    privacy: "Privacy Policy",
+    conversation: "Conversation",
+    caseLabel: "Case",
+    created: "created",
+    priority: "Priority",
+  },
+  ru: {
+    welcome: (propertyName) =>
+      propertyName
+        ? `Добро пожаловать в ${propertyName}. Я ваш AI-консьерж по Saas-Fee. Спрашивайте про жильё, рестораны, активности, горные дороги, погоду и всё, что нужно во время проживания.`
+        : "Здравствуйте, я ваш AI-консьерж по Saas-Fee. Спрашивайте про рестораны, активности, горные дороги, погоду и всё, что нужно во время проживания.",
+    temporaryUnavailable:
+      "Консьерж временно недоступен. Пожалуйста, попробуйте позже.",
+    unexpectedResponse:
+      "Консьерж вернул неожиданный ответ. Пожалуйста, попробуйте ещё раз.",
+    unavailable: "Консьерж сейчас недоступен.",
+    fallbackReply:
+      "Спасибо. Я получил ваше сообщение, команда скоро его проверит.",
+    sendFailed: "Не удалось отправить сообщение. Пожалуйста, попробуйте ещё раз.",
+    menuPrompt: (restaurantName) =>
+      `Покажи меню ресторана ${restaurantName} с ценами.`,
+    thinking: "Думаю...",
+    placeholder: "Ваше сообщение...",
+    send: "Отправить",
+    sending: "Отправка...",
+    guestData: "Данные гостя",
+    name: "Имя",
+    email: "E-mail",
+    guestLinkActive: "Гостевая ссылка активна",
+    online: "Онлайн",
+    privacy: "Политика конфиденциальности",
+    conversation: "Диалог",
+    caseLabel: "Заявка",
+    created: "создана",
+    priority: "Приоритет",
+  },
+  fr: {
+    welcome: (propertyName) =>
+      propertyName
+        ? `Bienvenue à ${propertyName}. Je suis votre concierge IA pour Saas-Fee. Posez-moi vos questions sur le logement, les restaurants, les activités, les remontées mécaniques, la météo ou tout ce dont vous avez besoin pendant votre séjour.`
+        : "Bonjour, je suis votre concierge IA pour Saas-Fee. Posez-moi vos questions sur les restaurants, les activités, les remontées mécaniques, la météo ou tout ce dont vous avez besoin pendant votre séjour.",
+    temporaryUnavailable:
+      "Le concierge est temporairement indisponible. Veuillez réessayer plus tard.",
+    unexpectedResponse:
+      "Le concierge a renvoyé une réponse inattendue. Veuillez réessayer.",
+    unavailable: "Le concierge n'est pas disponible pour le moment.",
+    fallbackReply:
+      "Merci. J'ai bien reçu votre message et l'équipe va l'examiner sous peu.",
+    sendFailed: "Je n'ai pas pu envoyer ce message. Veuillez réessayer.",
+    menuPrompt: (restaurantName) =>
+      `Montrez-moi le menu de ${restaurantName} avec les prix.`,
+    thinking: "Je réfléchis...",
+    placeholder: "Votre message...",
+    send: "Envoyer",
+    sending: "Envoi...",
+    guestData: "Données du client",
+    name: "Nom",
+    email: "E-mail",
+    guestLinkActive: "Lien client actif",
+    online: "En ligne",
+    privacy: "Politique de confidentialité",
+    conversation: "Conversation",
+    caseLabel: "Dossier",
+    created: "créé",
+    priority: "Priorité",
+  },
+  it: {
+    welcome: (propertyName) =>
+      propertyName
+        ? `Benvenuti a ${propertyName}. Sono il vostro concierge IA per Saas-Fee. Chiedetemi informazioni sull'alloggio, ristoranti, attività, impianti di risalita, meteo o qualsiasi cosa vi serva durante il soggiorno.`
+        : "Buongiorno, sono il vostro concierge IA per Saas-Fee. Chiedetemi informazioni su ristoranti, attività, impianti di risalita, meteo o qualsiasi cosa vi serva durante il soggiorno.",
+    temporaryUnavailable:
+      "Il concierge è temporaneamente non disponibile. Riprova più tardi.",
+    unexpectedResponse:
+      "Il concierge ha restituito una risposta inattesa. Riprova.",
+    unavailable: "Il concierge non è disponibile al momento.",
+    fallbackReply:
+      "Grazie. Ho ricevuto il tuo messaggio e il team lo controllerà a breve.",
+    sendFailed: "Non sono riuscito a inviare questo messaggio. Riprova.",
+    menuPrompt: (restaurantName) =>
+      `Mostrami il menu di ${restaurantName} con i prezzi.`,
+    thinking: "Sto pensando...",
+    placeholder: "Il tuo messaggio...",
+    send: "Invia",
+    sending: "Invio...",
+    guestData: "Dati ospite",
+    name: "Nome",
+    email: "E-mail",
+    guestLinkActive: "Link ospite attivo",
+    online: "Online",
+    privacy: "Informativa sulla privacy",
+    conversation: "Conversazione",
+    caseLabel: "Caso",
+    created: "creato",
+    priority: "Priorità",
+  },
+};
+
+function getBrowserLanguage(): UiLanguage {
+  if (typeof window === "undefined") {
+    return "en";
+  }
+
+  const language = navigator.language.toLowerCase();
+
+  if (language.startsWith("de")) return "de";
+  if (language.startsWith("ru")) return "ru";
+  if (language.startsWith("fr")) return "fr";
+  if (language.startsWith("it")) return "it";
+
+  return "en";
+}
+
 const RESTAURANT_ACTIONS = [
   { name: "Hannig", aliases: ["Hannig", "Ханниг"] },
   { name: "Allalin", aliases: ["Allalin", "Алалин"] },
@@ -83,13 +279,16 @@ function getAssistantTokenMatcher() {
   );
 }
 
-function getVisitorErrorMessage(message: string) {
+function getVisitorErrorMessage(
+  message: string,
+  text: (typeof UI_TEXT)[UiLanguage]
+) {
   if (
     message.includes("Missing Supabase") ||
     message.includes("Missing OPENAI") ||
     message.includes("env vars")
   ) {
-    return "Der Concierge ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.";
+    return text.temporaryUnavailable;
   }
 
   return message;
@@ -108,12 +307,8 @@ function getGuestContextFromUrl() {
   return { propertyId, guestAccessToken };
 }
 
-function getWelcomeMessage(propertyName?: string | null) {
-  if (propertyName) {
-    return `Willkommen in ${propertyName}. Ich bin Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zur Unterkunft, zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.`;
-  }
-
-  return "Guten Tag, ich bin Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.";
+function getWelcomeMessage(language: UiLanguage, propertyName?: string | null) {
+  return UI_TEXT[language].welcome(propertyName);
 }
 
 function MessageContent({
@@ -188,11 +383,13 @@ function MessageContent({
 }
 
 export default function Home() {
+  const [language] = useState<UiLanguage>(() => getBrowserLanguage());
+  const ui = UI_TEXT[language];
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
       role: "assistant",
-      content: getWelcomeMessage(),
+      content: getWelcomeMessage(language),
     },
   ]);
   const [propertyName, setPropertyName] = useState<string | null>(null);
@@ -211,6 +408,10 @@ export default function Home() {
     () => message.trim().length > 0 && !isSending,
     [isSending, message]
   );
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -242,7 +443,10 @@ export default function Home() {
         setMessages((current) =>
           current.map((item) =>
             item.id === "welcome"
-              ? { ...item, content: getWelcomeMessage(loadedPropertyName) }
+              ? {
+                  ...item,
+                  content: getWelcomeMessage(language, loadedPropertyName),
+                }
               : item
           )
         );
@@ -254,7 +458,7 @@ export default function Home() {
             : "Could not load guest context."
         );
       });
-  }, [guestContext]);
+  }, [guestContext, language]);
 
   async function sendChatMessage(text: string) {
     if (!text || isSending) {
@@ -285,6 +489,8 @@ export default function Home() {
           customerEmail: customerEmail.trim() || undefined,
           context: {
             source: "website-chat",
+            browserLanguage: navigator.language,
+            uiLanguage: language,
             ...guestContext,
           },
         }),
@@ -297,15 +503,12 @@ export default function Home() {
         data = responseText ? (JSON.parse(responseText) as ChatResponse) : {};
       } catch {
         data = {
-          error:
-            "Der Concierge hat eine unerwartete Antwort zurückgegeben. Bitte versuchen Sie es erneut.",
+          error: ui.unexpectedResponse,
         };
       }
 
       if (!response.ok || data.error) {
-        throw new Error(
-          data.error || "Der Concierge ist im Moment nicht verfügbar."
-        );
+        throw new Error(data.error || ui.unavailable);
       }
 
       setMessages((current) => [
@@ -314,14 +517,13 @@ export default function Home() {
           id: createMessageId(),
           role: "assistant",
           content:
-            data.reply ||
-            "Danke. Ich habe Ihre Nachricht aufgenommen und das Team wird sie in Kürze prüfen.",
+            data.reply || ui.fallbackReply,
           meta: data.incidentCreated
-            ? `Vorgang ${data.incidentId ?? "erstellt"}${
-                data.priority ? `, Priorität: ${data.priority}` : ""
+            ? `${ui.caseLabel} ${data.incidentId ?? ui.created}${
+                data.priority ? `, ${ui.priority}: ${data.priority}` : ""
               }`
             : data.conversationId
-              ? `Konversation ${data.conversationId}`
+              ? `${ui.conversation} ${data.conversationId}`
               : undefined,
         },
       ]);
@@ -329,8 +531,8 @@ export default function Home() {
       const errorMessage =
         sendError instanceof Error
           ? sendError.message
-          : "Der Concierge ist im Moment nicht verfügbar.";
-      const visitorMessage = getVisitorErrorMessage(errorMessage);
+          : ui.unavailable;
+      const visitorMessage = getVisitorErrorMessage(errorMessage, ui);
 
       console.error(errorMessage);
       setError(visitorMessage);
@@ -339,8 +541,7 @@ export default function Home() {
         {
           id: createMessageId(),
           role: "assistant",
-          content:
-            "Ich konnte diese Nachricht nicht senden. Bitte versuchen Sie es erneut.",
+          content: ui.sendFailed,
         },
       ]);
     } finally {
@@ -355,9 +556,7 @@ export default function Home() {
   }
 
   async function requestRestaurantMenu(restaurantName: string) {
-    await sendChatMessage(
-      `Zeige mir das Menü von ${restaurantName} mit Preisen.`
-    );
+    await sendChatMessage(ui.menuPrompt(restaurantName));
   }
 
   return (
@@ -375,8 +574,8 @@ export default function Home() {
           <div className="flex items-center gap-2 text-sm text-[#5b6b5f]">
             <span className="h-2.5 w-2.5 rounded-full bg-[#2f7d59]" />
             {guestContext.propertyId && guestContext.guestAccessToken
-              ? "Gästelink aktiv"
-              : "Online"}
+              ? ui.guestLinkActive
+              : ui.online}
           </div>
         </header>
 
@@ -414,7 +613,7 @@ export default function Home() {
               {isSending ? (
                 <div className="flex justify-start">
                   <div className="rounded-lg border border-[#d8d8ce] bg-[#fbfbf7] px-4 py-3 text-sm text-[#5b6b5f]">
-                    Ich denke nach...
+                    {ui.thinking}
                   </div>
                 </div>
               ) : null}
@@ -436,14 +635,14 @@ export default function Home() {
                   onChange={(event) => setMessage(event.target.value)}
                   rows={2}
                   className="min-h-12 flex-1 resize-none rounded-md border border-[#c8c8bc] bg-white px-3 py-3 text-base text-[#1f2421] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
-                  placeholder="Ihre Nachricht..."
+                  placeholder={ui.placeholder}
                 />
                 <button
                   type="submit"
                   disabled={!canSend}
                   className="h-12 shrink-0 rounded-md bg-[#1f5f46] px-5 text-sm font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
                 >
-                  {isSending ? "Senden..." : "Senden"}
+                  {isSending ? ui.sending : ui.send}
                 </button>
               </div>
             </form>
@@ -451,11 +650,13 @@ export default function Home() {
 
           <aside className="rounded-lg border border-[#d8d8ce] bg-white p-4 shadow-sm lg:self-start">
             <h2 className="text-base font-semibold text-[#151815]">
-              Gästedaten
+              {ui.guestData}
             </h2>
             <div className="mt-4 space-y-3">
               <label className="block">
-                <span className="text-sm font-medium text-[#4f5b52]">Name</span>
+                <span className="text-sm font-medium text-[#4f5b52]">
+                  {ui.name}
+                </span>
                 <input
                   value={customerName}
                   onChange={(event) => setCustomerName(event.target.value)}
@@ -465,7 +666,7 @@ export default function Home() {
               </label>
               <label className="block">
                 <span className="text-sm font-medium text-[#4f5b52]">
-                  E-Mail
+                  {ui.email}
                 </span>
                 <input
                   value={customerEmail}
@@ -484,7 +685,7 @@ export default function Home() {
             className="font-medium text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d]"
             href="/privacy"
           >
-            Datenschutzerklärung
+            {ui.privacy}
           </a>
         </footer>
       </div>

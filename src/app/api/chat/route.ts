@@ -222,6 +222,48 @@ function getPayloadContext(payload: ChatRequest) {
     : null;
 }
 
+type ResponseLanguage = "German" | "English" | "Russian" | "French" | "Italian";
+
+function getPreferredLanguage(payload: ChatRequest) {
+  const context = getPayloadContext(payload);
+  const rawLanguage =
+    asOptionalString(context?.uiLanguage) ||
+    asOptionalString(context?.browserLanguage) ||
+    asOptionalString(context?.locale);
+  const language = rawLanguage?.toLowerCase() ?? "";
+
+  if (language.startsWith("de")) return "German";
+  if (language.startsWith("ru")) return "Russian";
+  if (language.startsWith("fr")) return "French";
+  if (language.startsWith("it")) return "Italian";
+
+  return "English";
+}
+
+function detectMessageLanguage(message: string): ResponseLanguage | null {
+  const text = message.toLowerCase();
+
+  if (/[а-яё]/i.test(message)) return "Russian";
+  if (includesAny(text, ["bonjour", "merci", "réservation", "reservation", "prix", "où", "avec"])) {
+    return "French";
+  }
+  if (includesAny(text, ["ciao", "grazie", "prenot", "prezzo", "dove", "ristorante"])) {
+    return "Italian";
+  }
+  if (includesAny(text, ["hello", "hi", "please", "menu", "price", "where", "book", "reserve"])) {
+    return "English";
+  }
+  if (includesAny(text, ["hallo", "guten", "bitte", "menü", "preis", "wo", "reserv", "buchen"])) {
+    return "German";
+  }
+
+  return null;
+}
+
+function getResponseLanguage(message: string, payload: ChatRequest) {
+  return detectMessageLanguage(message) ?? getPreferredLanguage(payload);
+}
+
 function getBooleanEnv(name: string) {
   return process.env[name]?.toLowerCase() === "true";
 }
@@ -617,7 +659,8 @@ async function getLiveExchangeRates(): Promise<LiveExchangeRates | null> {
 async function getConciergeResponse(
   message: string,
   payload: ChatRequest,
-  propertyContext: PropertyContext | null
+  propertyContext: PropertyContext | null,
+  responseLanguage: ResponseLanguage
 ): Promise<ConciergeResponse> {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("Missing OPENAI_API_KEY.");
@@ -626,6 +669,7 @@ async function getConciergeResponse(
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
+  const preferredLanguage = getPreferredLanguage(payload);
 
   const completion = await openai.chat.completions.create({
     model: process.env.OPENAI_MODEL || "gpt-4o-mini",
@@ -635,8 +679,8 @@ async function getConciergeResponse(
         role: "system",
         content: [
           "You are a concise Saas-Fee guest AI concierge for a holiday rental.",
-          "Default language is German. Write replies in German unless the guest clearly writes in another language; if the guest mixes languages or the language is ambiguous, reply in German.",
-          "Do not translate German source text into English or Russian; preserve German place names, item names, and guest-facing wording where possible.",
+          `Reply in ${responseLanguage}. This is the detected language of the guest's latest message; if detection was ambiguous, it falls back to the browser/preferred language: ${preferredLanguage}.`,
+          "Preserve official place names, restaurant names, dish names, addresses, and other source wording where translation would make them less accurate.",
           "Use the supplied property context as the source of truth. Never invent contact details.",
           "Answer with the concrete information available in propertyContext instead of sending the guest to another website.",
           "Do not include source links in normal replies unless the guest explicitly asks for a link, booking page, live status page, or official source.",
@@ -646,7 +690,7 @@ async function getConciergeResponse(
           "For event questions, use propertyContext.localEvents first. Mention dates, village/location, time, price or registration details when available. Do not recommend events whose endDate is before today.",
           "For restaurant menu and price questions, use propertyContext.restaurantMenus first. Give a concise summary with the most relevant dishes/prices, and when a sourceUrl is available include one Markdown link to the full PDF menu, for example [PDF-Menü ansehen](https://example.com/menu.pdf). Mention the sourceUpdatedAt date when available, but phrase it in the reply language. If no menu price is present for a restaurant or dish, say in the reply language that the current menu price is not available in the chat data yet; never invent menu prices or average checks.",
           "For restaurant table reservation requests, collect restaurant name, date, time, party size, guest name, and guest phone or WhatsApp contact. Do not say the table is confirmed. Say it is a reservation request until the restaurant confirms.",
-          "If reservation details are missing, ask a concise follow-up question in German by default.",
+          "If reservation details are missing, ask a concise follow-up question in the reply language.",
           "When the guest wants a restaurant reservation, include restaurant_reservation in the JSON. Use requested=true. Set readyToSend=true only when restaurantName, reservationDate as YYYY-MM-DD, reservationTime, partySize, guestName, and guestContact are all present. Otherwise set readyToSend=false and list missingFields.",
           "For weather questions, use propertyContext.liveWeather when it is available and mention that mountain weather can change quickly.",
           "For currency exchange questions, use propertyContext.liveExchangeRates when rates are present. If rates are missing, provide the bank address and explain that the live exchange-rate table is not available in chat right now; never invent exchange rates.",
@@ -666,6 +710,8 @@ async function getConciergeResponse(
           customerEmail: asOptionalString(payload.customerEmail),
           conversationId: asOptionalString(payload.conversationId),
           context: payload.context ?? null,
+          preferredLanguage,
+          responseLanguage,
           propertyContext,
         }),
       },
@@ -1496,11 +1542,69 @@ async function updateConversationReply(
   }
 }
 
+function reservationNotice(
+  language: ResponseLanguage,
+  key:
+    | "missingFields"
+    | "missingRestaurantContact"
+    | "missingWhatsAppConfig"
+    | "sent"
+    | "failed",
+  restaurantName?: string | null
+) {
+  const restaurant = restaurantName ? `**${restaurantName}**` : "restaurant";
+  const notices: Record<ResponseLanguage, Record<typeof key, string>> = {
+    German: {
+      missingFields:
+        "Ich habe Ihre Reservierungsanfrage aufgenommen, brauche aber noch fehlende Angaben, bevor ich sie an das Restaurant senden kann.",
+      missingRestaurantContact: `Ich habe die Reservierungsanfrage vorbereitet, aber für ${restaurant} ist noch kein WhatsApp-Kontakt für Reservierungen in der Datenbank hinterlegt. Die Anfrage wurde noch nicht an das Restaurant gesendet.`,
+      missingWhatsAppConfig: `Ich habe die Reservierungsanfrage vorbereitet, aber der WhatsApp-Versand ist noch nicht vollständig konfiguriert. Die Anfrage wurde noch nicht an ${restaurant} gesendet.`,
+      sent: `Ich habe die Reservierungsanfrage per WhatsApp an ${restaurant} gesendet. Wichtig: Die Reservierung ist erst verbindlich, wenn das Restaurant sie bestätigt.`,
+      failed: `Ich habe die Reservierungsanfrage gespeichert, aber der WhatsApp-Versand an ${restaurant} ist fehlgeschlagen. Die Reservierung ist noch nicht bestätigt.`,
+    },
+    English: {
+      missingFields:
+        "I have recorded your reservation request, but I still need a few missing details before I can send it to the restaurant.",
+      missingRestaurantContact: `I prepared the reservation request, but there is no WhatsApp reservation contact for ${restaurant} in the database yet. The request has not been sent to the restaurant.`,
+      missingWhatsAppConfig: `I prepared the reservation request, but WhatsApp sending is not fully configured yet. The request has not been sent to ${restaurant}.`,
+      sent: `I sent the reservation request to ${restaurant} via WhatsApp. Important: the reservation is only binding once the restaurant confirms it.`,
+      failed: `I saved the reservation request, but WhatsApp sending to ${restaurant} failed. The reservation is not confirmed yet.`,
+    },
+    Russian: {
+      missingFields:
+        "Я записал запрос на бронирование, но мне нужны недостающие данные, прежде чем отправить его в ресторан.",
+      missingRestaurantContact: `Я подготовил запрос на бронирование, но для ${restaurant} ещё нет WhatsApp-контакта для бронирований в базе. Запрос пока не отправлен в ресторан.`,
+      missingWhatsAppConfig: `Я подготовил запрос на бронирование, но отправка WhatsApp ещё не настроена полностью. Запрос пока не отправлен в ${restaurant}.`,
+      sent: `Я отправил запрос на бронирование в ${restaurant} через WhatsApp. Важно: бронь станет действительной только после подтверждения ресторана.`,
+      failed: `Я сохранил запрос на бронирование, но отправка WhatsApp в ${restaurant} не удалась. Бронь пока не подтверждена.`,
+    },
+    French: {
+      missingFields:
+        "J'ai enregistré votre demande de réservation, mais il manque encore quelques informations avant de pouvoir l'envoyer au restaurant.",
+      missingRestaurantContact: `J'ai préparé la demande de réservation, mais aucun contact WhatsApp pour les réservations de ${restaurant} n'est encore enregistré dans la base. La demande n'a pas été envoyée au restaurant.`,
+      missingWhatsAppConfig: `J'ai préparé la demande de réservation, mais l'envoi WhatsApp n'est pas encore entièrement configuré. La demande n'a pas été envoyée à ${restaurant}.`,
+      sent: `J'ai envoyé la demande de réservation à ${restaurant} via WhatsApp. Important : la réservation n'est définitive qu'après confirmation du restaurant.`,
+      failed: `J'ai enregistré la demande de réservation, mais l'envoi WhatsApp à ${restaurant} a échoué. La réservation n'est pas encore confirmée.`,
+    },
+    Italian: {
+      missingFields:
+        "Ho registrato la richiesta di prenotazione, ma mi servono ancora alcuni dati prima di inviarla al ristorante.",
+      missingRestaurantContact: `Ho preparato la richiesta di prenotazione, ma nel database non c'è ancora un contatto WhatsApp per le prenotazioni di ${restaurant}. La richiesta non è stata inviata al ristorante.`,
+      missingWhatsAppConfig: `Ho preparato la richiesta di prenotazione, ma l'invio WhatsApp non è ancora configurato completamente. La richiesta non è stata inviata a ${restaurant}.`,
+      sent: `Ho inviato la richiesta di prenotazione a ${restaurant} via WhatsApp. Importante: la prenotazione è vincolante solo dopo la conferma del ristorante.`,
+      failed: `Ho salvato la richiesta di prenotazione, ma l'invio WhatsApp a ${restaurant} non è riuscito. La prenotazione non è ancora confermata.`,
+    },
+  };
+
+  return notices[language][key];
+}
+
 async function handleRestaurantReservation(
   supabase: SupabaseClient,
   conversationId: string | null,
   propertyContext: PropertyContext | null,
-  draft: RestaurantReservationDraft | null
+  draft: RestaurantReservationDraft | null,
+  language: ResponseLanguage
 ): Promise<ReservationResult | null> {
   if (!draft?.requested) {
     return null;
@@ -1531,8 +1635,7 @@ async function handleRestaurantReservation(
       id: reservationId,
       status: "requested",
       whatsappMessageId: null,
-      guestNotice:
-        "Ich habe Ihre Reservierungsanfrage aufgenommen, brauche aber noch fehlende Angaben, bevor ich sie an das Restaurant senden kann.",
+      guestNotice: reservationNotice(language, "missingFields"),
     };
   }
 
@@ -1562,7 +1665,11 @@ async function handleRestaurantReservation(
   if (!contact || !contact.acceptsWhatsappReservations || !restaurantWhatsapp) {
     whatsappError =
       "Restaurant WhatsApp contact is missing or not enabled for reservations.";
-    guestNotice = `Ich habe die Reservierungsanfrage vorbereitet, aber für **${draft.restaurantName}** ist noch kein WhatsApp-Kontakt für Reservierungen in der Datenbank hinterlegt. Die Anfrage wurde noch nicht an das Restaurant gesendet.`;
+    guestNotice = reservationNotice(
+      language,
+      "missingRestaurantContact",
+      draft.restaurantName
+    );
     const reservationId = await insertRestaurantReservation(supabase, {
       ...baseReservationPayload,
       status: "needs_restaurant_contact",
@@ -1578,7 +1685,11 @@ async function handleRestaurantReservation(
     };
   } else if (!isWhatsAppConfigured()) {
     whatsappError = "WhatsApp Business Platform env vars are missing.";
-    guestNotice = `Ich habe die Reservierungsanfrage vorbereitet, aber der WhatsApp-Versand ist noch nicht vollständig konfiguriert. Die Anfrage wurde noch nicht an **${draft.restaurantName}** gesendet.`;
+    guestNotice = reservationNotice(
+      language,
+      "missingWhatsAppConfig",
+      draft.restaurantName
+    );
     const reservationId = await insertRestaurantReservation(supabase, {
       ...baseReservationPayload,
       status: "pending_whatsapp_config",
@@ -1614,7 +1725,7 @@ async function handleRestaurantReservation(
       whatsapp_message_id: whatsappMessageId,
       whatsapp_error: null,
     });
-    guestNotice = `Ich habe die Reservierungsanfrage per WhatsApp an **${draft.restaurantName}** gesendet. Wichtig: Die Reservierung ist erst verbindlich, wenn das Restaurant sie bestätigt.`;
+    guestNotice = reservationNotice(language, "sent", draft.restaurantName);
   } catch (error) {
     whatsappError =
       error instanceof Error ? error.message : "Unknown WhatsApp error.";
@@ -1623,7 +1734,7 @@ async function handleRestaurantReservation(
       whatsapp_message_id: whatsappMessageId,
       whatsapp_error: whatsappError,
     });
-    guestNotice = `Ich habe die Reservierungsanfrage gespeichert, aber der WhatsApp-Versand an **${draft.restaurantName}** ist fehlgeschlagen. Die Reservierung ist noch nicht bestätigt.`;
+    guestNotice = reservationNotice(language, "failed", draft.restaurantName);
     console.error(`WhatsApp reservation send failed: ${whatsappError}`);
   }
 
@@ -1901,6 +2012,7 @@ export async function POST(req: Request) {
     const customerEmail = asOptionalString(payload.customerEmail);
     const requestConversationId = asOptionalString(payload.conversationId);
     const requestContext = getPayloadContext(payload);
+    const responseLanguage = getResponseLanguage(message, payload);
     const requestPropertyId = asOptionalString(requestContext?.propertyId);
     const guestAccessToken =
       asOptionalString(requestContext?.guestAccessToken) ||
@@ -1910,7 +2022,12 @@ export async function POST(req: Request) {
       requestPropertyId,
       guestAccessToken
     );
-    const ai = await getConciergeResponse(message, payload, propertyContext);
+    const ai = await getConciergeResponse(
+      message,
+      payload,
+      propertyContext,
+      responseLanguage
+    );
     const reservationDraft = mergeReservationDrafts(
       ai.restaurant_reservation,
       localReservationDraft(
@@ -1925,6 +2042,7 @@ export async function POST(req: Request) {
       requestConversationId,
       customerName,
       customerEmail,
+      responseLanguage,
       context: payload.context ?? null,
       analytics,
       reservationDraft,
@@ -1976,7 +2094,8 @@ export async function POST(req: Request) {
       supabase,
       conversation.id,
       propertyContext,
-      reservationDraft
+      reservationDraft,
+      responseLanguage
     );
     const finalReply = reservation
       ? appendReservationNotice(ai.reply, reservation.guestNotice)
