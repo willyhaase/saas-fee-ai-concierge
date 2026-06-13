@@ -231,14 +231,82 @@ instruction_rows as (
     id,
     'contact',
     'Host contact',
-    'Host: Konstantin Bumann. WhatsApp: +41 79 252 79 36. Email: info@ferien-in-saas-fee.ch.'
+    'Host: Konstantin Bumann. WhatsApp: +41 79 252 79 36. Phone: +41 27 957 31 49. Email: info@ferien-in-saas-fee.ch.'
+  from all_properties
+  union all
+  select
+    id,
+    'equipment',
+    'Included apartment equipment',
+    'All apartments are described as fully equipped and include high-quality Swiss furniture, modern kitchen appliances, free Wi-Fi/Internet, satellite TV/radio, hairdryer, bed linen already made on arrival, towels and tea towels. Each apartment has a Nespresso coffee machine; guests can bring capsules or buy capsules from the host at cost price.'
+  from all_properties
+  union all
+  select
+    id,
+    'kitchen',
+    'Kitchen equipment',
+    'The kitchens are described as modern and fully equipped. Common equipment includes ceramic hob, oven, toaster, coffee machine or Nespresso machine, kettle and fondue set. Larger apartments can also include dishwasher, microwave and large fridge/freezer.'
+  from all_properties
+  union all
+  select
+    id,
+    'arrival',
+    'Free arrival and luggage shuttle',
+    'Saas-Fee is car-free. The host offers free luggage transport on arrival from the car park or post office with an electric car. If guests want to ski on arrival day, luggage can be picked up and placed in the apartment. On departure day, luggage can be stored in a reserved room and transported later by electric taxi.'
+  from all_properties
+  union all
+  select
+    id,
+    'ski',
+    'Heated ski room near the slopes',
+    'Guests can use a free heated ski room directly next to the slopes/cross-country tracks, with boot dryers for ski and snowboard shoes. The ski room/slopes are about 10-12 minutes on foot from the homes, and the free ski bus runs regularly in winter with stops near the houses.'
+  from all_properties
+  union all
+  select
+    id,
+    'children',
+    'Children and baby equipment',
+    'On request, the host provides child equipment free of charge, including cot, high chair, children plates/cutlery/cups/placemats, baby bath, changing mat, potty, children toilet seat, rocker and breastfeeding pillow. Guests should request these items with their reservation.'
+  from all_properties
+  union all
+  select
+    id,
+    'children',
+    'Playground details',
+    'The children playground is behind Belle-Vue and includes a climbing wall, slide, sandpit and swings. It is intended as a safe sunny place for children to play while adults can relax.'
+  from all_properties
+  union all
+  select
+    id,
+    'shopping',
+    'Drinks kiosk and nearby shops',
+    'There is a small drinks kiosk in the house with milk, orange juice, mineral water, soft drinks, beer and wine at reasonable prices. For Alpenglueck, the large beverage depot Supersaxo is described as about 5 minutes from the house. Bakery and grocery store are nearby.'
+  from all_properties
+  union all
+  select
+    id,
+    'discounts',
+    'Sport equipment discount',
+    'Guests can receive a 15% discount on rental or purchase of sports gear at partner shop Intersport Glacier when booking/paying online in advance at least 7 days before arrival. Pick-up can be possible the day before from 16:00.'
   from all_properties
 ),
 deleted_instructions as (
   delete from public.property_instructions i
   using all_properties p
   where i.property_id = p.id
-    and i.category in ('overview', 'location', 'ski', 'family', 'contact')
+    and i.category in (
+      'overview',
+      'location',
+      'ski',
+      'family',
+      'contact',
+      'equipment',
+      'kitchen',
+      'arrival',
+      'children',
+      'shopping',
+      'discounts'
+    )
   returning i.id
 )
 insert into public.property_instructions (property_id, category, title, content)
