@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 type GuestContextResponse = {
   propertyId: string | null;
+  propertySlug: string | null;
   propertyName: string | null;
   localAccessGranted: boolean;
 };
@@ -36,65 +37,30 @@ function asOptionalString(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
-function getBooleanEnv(name: string) {
-  return process.env[name]?.toLowerCase() === "true";
-}
-
 function hashAccessToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 
 async function resolvePropertyId(
   requestedPropertyId: string | null,
+  requestedPropertySlug: string | null,
   guestAccessToken: string | null
 ) {
   const supabase = getSupabase();
 
-  if (guestAccessToken) {
-    const tokenHash = hashAccessToken(guestAccessToken);
-    const { data, error } = await supabase
-      .from("guest_property_access")
-      .select("property_id, active, valid_from, valid_until")
-      .eq("access_token_hash", tokenHash)
-      .eq("active", true)
-      .limit(1)
-      .maybeSingle();
-
-    if (!error && data) {
-      const access = data as Record<string, unknown>;
-      const now = Date.now();
-      const validFrom = asOptionalString(access.valid_from);
-      const validUntil = asOptionalString(access.valid_until);
-      const startsOk = !validFrom || Date.parse(validFrom) <= now;
-      const endsOk = !validUntil || Date.parse(validUntil) >= now;
-
-      if (startsOk && endsOk) {
-        return {
-          propertyId: asOptionalString(access.property_id),
-          localAccessGranted: true,
-        };
-      }
-    }
-  }
-
-  if (getBooleanEnv("REQUIRE_GUEST_ACCESS_TOKEN")) {
+  if (!guestAccessToken) {
     return {
       propertyId: null,
       localAccessGranted: false,
     };
   }
 
-  if (requestedPropertyId) {
-    return {
-      propertyId: requestedPropertyId,
-      localAccessGranted: true,
-    };
-  }
-
+  const tokenHash = hashAccessToken(guestAccessToken);
   const { data, error } = await supabase
-    .from("properties")
-    .select("id")
-    .order("created_at", { ascending: true })
+    .from("guest_property_access")
+    .select("property_id, active, valid_from, valid_until")
+    .eq("access_token_hash", tokenHash)
+    .eq("active", true)
     .limit(1)
     .maybeSingle();
 
@@ -105,31 +71,85 @@ async function resolvePropertyId(
     };
   }
 
+  const access = data as Record<string, unknown>;
+  const now = Date.now();
+  const validFrom = asOptionalString(access.valid_from);
+  const validUntil = asOptionalString(access.valid_until);
+  const startsOk = !validFrom || Date.parse(validFrom) <= now;
+  const endsOk = !validUntil || Date.parse(validUntil) >= now;
+  const propertyId = asOptionalString(access.property_id);
+
+  if (!startsOk || !endsOk || !propertyId) {
+    return {
+      propertyId: null,
+      localAccessGranted: false,
+    };
+  }
+
+  if (requestedPropertyId && requestedPropertyId !== propertyId) {
+    return {
+      propertyId: null,
+      localAccessGranted: false,
+    };
+  }
+
+  if (requestedPropertySlug) {
+    const { data: propertyData, error: propertyError } = await supabase
+      .from("properties")
+      .select("id, slug")
+      .eq("id", propertyId)
+      .eq("slug", requestedPropertySlug)
+      .limit(1)
+      .maybeSingle();
+
+    if (propertyError || !propertyData) {
+      return {
+        propertyId: null,
+        localAccessGranted: false,
+      };
+    }
+  }
+
   return {
-    propertyId: asOptionalString((data as Record<string, unknown>).id),
+    propertyId,
     localAccessGranted: true,
   };
+}
+
+function isApartmentMode(value: string | null) {
+  return value === "apartment";
 }
 
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
+    const accessMode = asOptionalString(url.searchParams.get("accessMode"));
     const requestedPropertyId = asOptionalString(
       url.searchParams.get("propertyId")
+    );
+    const requestedPropertySlug = asOptionalString(
+      url.searchParams.get("propertySlug")
     );
     const guestAccessToken =
       asOptionalString(url.searchParams.get("access")) ||
       asOptionalString(url.searchParams.get("guestAccessToken"));
+    const response: GuestContextResponse = {
+      propertyId: null,
+      propertySlug: null,
+      propertyName: null,
+      localAccessGranted: false,
+    };
+
+    if (!isApartmentMode(accessMode)) {
+      return Response.json(response);
+    }
+
     const supabase = getSupabase();
     const resolved = await resolvePropertyId(
       requestedPropertyId,
+      requestedPropertySlug,
       guestAccessToken
     );
-    const response: GuestContextResponse = {
-      propertyId: resolved.propertyId,
-      propertyName: null,
-      localAccessGranted: resolved.localAccessGranted,
-    };
 
     if (!resolved.propertyId) {
       return Response.json(response);
@@ -137,7 +157,7 @@ export async function GET(req: Request) {
 
     const { data, error } = await supabase
       .from("properties")
-      .select("id, name")
+      .select("id, slug, name")
       .eq("id", resolved.propertyId)
       .limit(1)
       .maybeSingle();
@@ -150,6 +170,7 @@ export async function GET(req: Request) {
 
     return Response.json({
       propertyId: asOptionalString(property.id),
+      propertySlug: asOptionalString(property.slug),
       propertyName: asOptionalString(property.name),
       localAccessGranted: resolved.localAccessGranted,
     } satisfies GuestContextResponse);

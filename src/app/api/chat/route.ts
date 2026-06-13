@@ -11,6 +11,8 @@ type ChatRequest = {
   createIncident?: unknown;
 };
 
+type AccessMode = "public" | "apartment";
+
 type ConciergeResponse = {
   reply: string;
   incident_required: boolean;
@@ -117,6 +119,7 @@ type LiveExchangeRates = {
 
 type PropertyContext = {
   propertyId: string | null;
+  propertySlug: string | null;
   propertyName: string | null;
   address: string | null;
   localAccessGranted: boolean;
@@ -220,6 +223,22 @@ function getPayloadContext(payload: ChatRequest) {
     !Array.isArray(payload.context)
     ? (payload.context as Record<string, unknown>)
     : null;
+}
+
+function getAccessMode(context: Record<string, unknown> | null): AccessMode {
+  const mode = asOptionalString(context?.accessMode);
+  const hasLocalSelector = Boolean(
+    asOptionalString(context?.propertySlug) ||
+      asOptionalString(context?.propertyId) ||
+      asOptionalString(context?.guestAccessToken) ||
+      asOptionalString(context?.access)
+  );
+
+  if (mode === "apartment" || (!mode && hasLocalSelector)) {
+    return "apartment";
+  }
+
+  return "public";
 }
 
 type ResponseLanguage = "German" | "English" | "Russian" | "French" | "Italian";
@@ -730,7 +749,9 @@ async function getConciergeResponse(
 async function getPropertyContext(
   supabase: SupabaseClient,
   requestedPropertyId: string | null,
-  guestAccessToken: string | null
+  requestedPropertySlug: string | null,
+  guestAccessToken: string | null,
+  accessMode: AccessMode
 ): Promise<PropertyContext | null> {
   const globalKnowledge = await getGlobalKnowledge(supabase);
   const localRecommendations = await getLocalRecommendations(supabase);
@@ -741,15 +762,20 @@ async function getPropertyContext(
     getLiveSaasFeeWeather(),
     getLiveExchangeRates(),
   ]);
-  const propertyId = await resolvePropertyId(
-    supabase,
-    requestedPropertyId,
-    guestAccessToken
-  );
+  const propertyId =
+    accessMode === "apartment"
+      ? await resolvePropertyId(
+          supabase,
+          requestedPropertyId,
+          requestedPropertySlug,
+          guestAccessToken
+        )
+      : null;
 
   if (!propertyId) {
     return {
       propertyId: null,
+      propertySlug: null,
       propertyName: null,
       address: null,
       localAccessGranted: false,
@@ -774,7 +800,7 @@ async function getPropertyContext(
   const query = supabase
     .from("properties")
     .select(
-      "id, name, address, property_contacts(host_name, whatsapp, emergency_medical, police, fire, taxi)"
+      "id, slug, name, address, property_contacts(host_name, whatsapp, emergency_medical, police, fire, taxi)"
     )
     .eq("id", propertyId);
 
@@ -799,6 +825,7 @@ async function getPropertyContext(
 
   return {
     propertyId: asOptionalString(property.id),
+    propertySlug: asOptionalString(property.slug),
     propertyName: asOptionalString(property.name),
     address: asOptionalString(property.address),
     localAccessGranted: true,
@@ -823,44 +850,19 @@ async function getPropertyContext(
 async function resolvePropertyId(
   supabase: SupabaseClient,
   requestedPropertyId: string | null,
+  requestedPropertySlug: string | null,
   guestAccessToken: string | null
 ) {
-  if (guestAccessToken) {
-    const tokenHash = hashAccessToken(guestAccessToken);
-    const { data, error } = await supabase
-      .from("guest_property_access")
-      .select("property_id, active, valid_from, valid_until")
-      .eq("access_token_hash", tokenHash)
-      .eq("active", true)
-      .limit(1)
-      .maybeSingle();
-
-    if (!error && data) {
-      const access = data as Record<string, unknown>;
-      const now = Date.now();
-      const validFrom = asOptionalString(access.valid_from);
-      const validUntil = asOptionalString(access.valid_until);
-      const startsOk = !validFrom || Date.parse(validFrom) <= now;
-      const endsOk = !validUntil || Date.parse(validUntil) >= now;
-
-      if (startsOk && endsOk) {
-        return asOptionalString(access.property_id);
-      }
-    }
-  }
-
-  if (getBooleanEnv("REQUIRE_GUEST_ACCESS_TOKEN")) {
+  if (!guestAccessToken) {
     return null;
   }
 
-  if (requestedPropertyId) {
-    return requestedPropertyId;
-  }
-
+  const tokenHash = hashAccessToken(guestAccessToken);
   const { data, error } = await supabase
-    .from("properties")
-    .select("id")
-    .order("created_at", { ascending: true })
+    .from("guest_property_access")
+    .select("property_id, active, valid_from, valid_until")
+    .eq("access_token_hash", tokenHash)
+    .eq("active", true)
     .limit(1)
     .maybeSingle();
 
@@ -868,7 +870,37 @@ async function resolvePropertyId(
     return null;
   }
 
-  return asOptionalString((data as Record<string, unknown>).id);
+  const access = data as Record<string, unknown>;
+  const now = Date.now();
+  const validFrom = asOptionalString(access.valid_from);
+  const validUntil = asOptionalString(access.valid_until);
+  const startsOk = !validFrom || Date.parse(validFrom) <= now;
+  const endsOk = !validUntil || Date.parse(validUntil) >= now;
+  const propertyId = asOptionalString(access.property_id);
+
+  if (!startsOk || !endsOk || !propertyId) {
+    return null;
+  }
+
+  if (requestedPropertyId && requestedPropertyId !== propertyId) {
+    return null;
+  }
+
+  if (requestedPropertySlug) {
+    const { data: propertyData, error: propertyError } = await supabase
+      .from("properties")
+      .select("id, slug")
+      .eq("id", propertyId)
+      .eq("slug", requestedPropertySlug)
+      .limit(1)
+      .maybeSingle();
+
+    if (propertyError || !propertyData) {
+      return null;
+    }
+  }
+
+  return propertyId;
 }
 
 async function getPropertyInstructions(
@@ -2012,15 +2044,19 @@ export async function POST(req: Request) {
     const customerEmail = asOptionalString(payload.customerEmail);
     const requestConversationId = asOptionalString(payload.conversationId);
     const requestContext = getPayloadContext(payload);
+    const accessMode = getAccessMode(requestContext);
     const responseLanguage = getResponseLanguage(message, payload);
     const requestPropertyId = asOptionalString(requestContext?.propertyId);
+    const requestPropertySlug = asOptionalString(requestContext?.propertySlug);
     const guestAccessToken =
       asOptionalString(requestContext?.guestAccessToken) ||
       asOptionalString(requestContext?.access);
     const propertyContext = await getPropertyContext(
       supabase,
       requestPropertyId,
-      guestAccessToken
+      requestPropertySlug,
+      guestAccessToken,
+      accessMode
     );
     const ai = await getConciergeResponse(
       message,
@@ -2040,6 +2076,7 @@ export async function POST(req: Request) {
     const analytics = classifyQuery(message);
     const metadata = {
       requestConversationId,
+      accessMode,
       customerName,
       customerEmail,
       responseLanguage,

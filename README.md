@@ -118,7 +118,17 @@ supabase/migrations/20260610_split_global_and_property_knowledge.sql
 Гостевая ссылка должна передавать:
 
 ```text
-https://your-domain.vercel.app/?propertyId=<PROPERTY_ID>&access=<RAW_GUEST_TOKEN>
+https://your-domain.vercel.app/apartments/<PROPERTY_SLUG>?access=<RAW_GUEST_TOKEN>
+```
+
+Главная страница `https://your-domain.vercel.app/` работает как общий Saas-Fee чат и не получает доступ к локальной информации апартаментов. Локальная информация жилья доступна только на странице `/apartments/<PROPERTY_SLUG>` при валидном `access` token.
+
+Для красивого URL сначала задайте slug объекту:
+
+```sql
+update public.properties
+set slug = 'studio-atlantic'
+where id = '<PROPERTY_ID>'::uuid;
 ```
 
 API хэширует `access` через SHA-256 и ищет его в `guest_property_access.access_token_hash`. Сырой token не хранится в базе.
@@ -147,7 +157,8 @@ inserted as (
 select
   token.raw_token,
   inserted.property_id,
-  inserted.valid_until
+  inserted.valid_until,
+  'https://your-domain.vercel.app/apartments/studio-atlantic?access=' || token.raw_token as guest_url
 from token, inserted;
 ```
 
