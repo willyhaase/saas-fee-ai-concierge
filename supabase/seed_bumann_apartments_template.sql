@@ -1,9 +1,8 @@
 -- Seed template for Ferienwohnungen in Saas-Fee / Konstantin Bumann apartments.
 -- Source: https://www.ferien-in-saas-fee.ch/en/holiday-homes/
 --
--- The public page currently lists 11 apartment categories:
--- Aristella: 6, Belle-Vue: 4, Alpenglueck: 1.
--- Add the remaining internal units once their exact names/numbers are known.
+-- Physical apartment list:
+-- Aristella: 8, Belle-Vue: 5, Alpenglueck: 1.
 
 create extension if not exists pgcrypto;
 
@@ -17,34 +16,14 @@ create unique index if not exists properties_slug_unique_idx
 with property_rows(name, slug, address, house, apartment_type, occupancy, source_url, description) as (
   values
     (
-      'Aristella Studio',
-      'aristella-studio',
+      'Aristella Studio A',
+      'aristella-studio-a',
       'Wildistr. 8, 3906 Saas-Fee',
       'Aristella',
       'Studio',
       '1-2 people',
       'https://www.ferien-in-saas-fee.ch/en/studio/',
-      'Studio apartment in Aristella for 1-2 people. Aristella is in a peaceful, central location with mountain and glacier views.'
-    ),
-    (
-      'Aristella 2.5-room Superior',
-      'aristella-25-room-superior',
-      'Wildistr. 8, 3906 Saas-Fee',
-      'Aristella',
-      '2.5-room apartment superior',
-      '2 people',
-      'https://www.ferien-in-saas-fee.ch/en/compact-holiday-apartment/',
-      '2.5-room superior apartment in Aristella for 2 people.'
-    ),
-    (
-      'Aristella 2.5-room',
-      'aristella-25-room',
-      'Wildistr. 8, 3906 Saas-Fee',
-      'Aristella',
-      '2.5-room apartment',
-      '2-4 people',
-      'https://www.ferien-in-saas-fee.ch/en/low-cost-holiday-apartment/',
-      '2.5-room apartment in Aristella for 2-4 people.'
+      'Studio A in Aristella for 1-2 people. Aristella is in a peaceful, central location with mountain and glacier views.'
     ),
     (
       'Aristella 3-room',
@@ -57,6 +36,26 @@ with property_rows(name, slug, address, house, apartment_type, occupancy, source
       '3-room apartment in Aristella for 3-4 people.'
     ),
     (
+      'Aristella Studio B',
+      'aristella-studio-b',
+      'Wildistr. 8, 3906 Saas-Fee',
+      'Aristella',
+      'Studio',
+      '1-2 people',
+      'https://www.ferien-in-saas-fee.ch/en/studio/',
+      'Studio B in Aristella for 1-2 people.'
+    ),
+    (
+      'Aristella 2.5-room A',
+      'aristella-25-room-a',
+      'Wildistr. 8, 3906 Saas-Fee',
+      'Aristella',
+      '2.5-room apartment',
+      '2-4 people',
+      'https://www.ferien-in-saas-fee.ch/en/low-cost-holiday-apartment/',
+      '2.5-room apartment A in Aristella for 2-4 people.'
+    ),
+    (
       'Aristella 4-room',
       'aristella-4-room',
       'Wildistr. 8, 3906 Saas-Fee',
@@ -65,6 +64,26 @@ with property_rows(name, slug, address, house, apartment_type, occupancy, source
       '4-6 people',
       'https://www.ferien-in-saas-fee.ch/en/saas-valley-holiday-apartment/',
       '4-room apartment in Aristella for 4-6 people.'
+    ),
+    (
+      'Aristella Studio C',
+      'aristella-studio-c',
+      'Wildistr. 8, 3906 Saas-Fee',
+      'Aristella',
+      'Studio',
+      '1-2 people',
+      'https://www.ferien-in-saas-fee.ch/en/studio/',
+      'Studio C in Aristella for 1-2 people.'
+    ),
+    (
+      'Aristella 2.5-room B',
+      'aristella-25-room-b',
+      'Wildistr. 8, 3906 Saas-Fee',
+      'Aristella',
+      '2.5-room apartment',
+      '2-4 people',
+      'https://www.ferien-in-saas-fee.ch/en/low-cost-holiday-apartment/',
+      '2.5-room apartment B in Aristella for 2-4 people.'
     ),
     (
       'Aristella 6-room',
@@ -77,36 +96,6 @@ with property_rows(name, slug, address, house, apartment_type, occupancy, source
       '6-room apartment in Aristella for 8-10 people.'
     ),
     (
-      'Belle-Vue 3-room Penthouse',
-      'belle-vue-3-room-penthouse',
-      'Obere Wildistrasse, 3906 Saas-Fee',
-      'Belle-Vue',
-      '3-room penthouse apartment',
-      '2-4 people',
-      'https://www.ferien-in-saas-fee.ch/en/inexpensive-holiday-apartment/',
-      '3-room penthouse apartment in Belle-Vue for 2-4 people. Belle-Vue adjoins Aristella on Obere Wildistrasse.'
-    ),
-    (
-      'Belle-Vue 3.5-room',
-      'belle-vue-35-room',
-      'Obere Wildistrasse, 3906 Saas-Fee',
-      'Belle-Vue',
-      '3.5-room apartment',
-      '4-5 people',
-      'https://www.ferien-in-saas-fee.ch/en/saas-fee-apartment/',
-      '3.5-room apartment in Belle-Vue for 4-5 people.'
-    ),
-    (
-      'Belle-Vue 3.5-room Superior',
-      'belle-vue-35-room-superior',
-      'Obere Wildistrasse, 3906 Saas-Fee',
-      'Belle-Vue',
-      '3.5-room apartment superior',
-      '4 people',
-      'https://www.ferien-in-saas-fee.ch/en/holidayapartment-saas-fee/',
-      '3.5-room superior apartment in Belle-Vue for 4 people.'
-    ),
-    (
       'Belle-Vue 4-room',
       'belle-vue-4-room',
       'Obere Wildistrasse, 3906 Saas-Fee',
@@ -114,7 +103,47 @@ with property_rows(name, slug, address, house, apartment_type, occupancy, source
       '4-room apartment',
       '6-7 people',
       'https://www.ferien-in-saas-fee.ch/en/luxury-holiday-apartment/',
-      '4-room apartment in Belle-Vue for 6-7 people.'
+      '4-room apartment in Belle-Vue for 6-7 people. Belle-Vue adjoins Aristella on Obere Wildistrasse.'
+    ),
+    (
+      'Belle-Vue 3.5-room A',
+      'belle-vue-35-room-a',
+      'Obere Wildistrasse, 3906 Saas-Fee',
+      'Belle-Vue',
+      '3.5-room apartment',
+      '4-5 people',
+      'https://www.ferien-in-saas-fee.ch/en/saas-fee-apartment/',
+      '3.5-room apartment A in Belle-Vue for 4-5 people.'
+    ),
+    (
+      'Belle-Vue 3.5-room B',
+      'belle-vue-35-room-b',
+      'Obere Wildistrasse, 3906 Saas-Fee',
+      'Belle-Vue',
+      '3.5-room apartment',
+      '4-5 people',
+      'https://www.ferien-in-saas-fee.ch/en/saas-fee-apartment/',
+      '3.5-room apartment B in Belle-Vue for 4-5 people.'
+    ),
+    (
+      'Belle-Vue 3.5-room Superior A',
+      'belle-vue-35-room-superior-a',
+      'Obere Wildistrasse, 3906 Saas-Fee',
+      'Belle-Vue',
+      '3.5-room apartment superior',
+      '4 people',
+      'https://www.ferien-in-saas-fee.ch/en/holidayapartment-saas-fee/',
+      '3.5-room superior apartment A in Belle-Vue for 4 people.'
+    ),
+    (
+      'Belle-Vue 3.5-room Superior B',
+      'belle-vue-35-room-superior-b',
+      'Obere Wildistrasse, 3906 Saas-Fee',
+      'Belle-Vue',
+      '3.5-room apartment superior',
+      '4 people',
+      'https://www.ferien-in-saas-fee.ch/en/holidayapartment-saas-fee/',
+      '3.5-room superior apartment B in Belle-Vue for 4 people.'
     ),
     (
       'Alpenglueck 6.5-room',
