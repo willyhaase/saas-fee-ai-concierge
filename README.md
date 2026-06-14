@@ -254,6 +254,14 @@ supabase/seed_genially_interactive_map.sql
 
 Этот файл добавляет более подробные описания интерактивных точек: Allalin, Längfluh, Spielboden, Hannig, Plattjen, Mattmark, Furggstalden, via ferrata, mountain huts, themed trails, Mountaincarts, Glacier Tour и другие объекты.
 
+Для официальной карты пешеходных маршрутов Saas-Fee/Saastal выполни:
+
+```text
+supabase/seed_saas_fee_hiking_maps.sql
+```
+
+Файл добавляет официальный источник `Maps & Guides` с интерактивной summer hiking map Saastal и правила, когда чат должен дать карту, а когда сначала подобрать конкретный маршрут.
+
 ## Меню ресторанов
 
 Для меню, цен и среднего чека используется таблица `public.restaurant_menus`.
