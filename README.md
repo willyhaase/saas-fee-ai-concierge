@@ -164,6 +164,28 @@ from token, inserted;
 
 `raw_token` показывается только в результате этого запроса. Его нужно вставить в ссылку гостя, а в базе останется только hash.
 
+## Seed для апартаментов
+
+Для дома Shangri-La в Saas-Fee выполни в Supabase SQL Editor:
+
+```text
+supabase/seed_shangri_la_apartments.sql
+```
+
+Файл добавляет 9 апартаментов:
+
+- Shangri-La Nadelhorn
+- Shangri-La Suedlenz
+- Shangri-La Weissmies
+- Shangri-La Taeschhorn
+- Shangri-La Allalin
+- Shangri-La Alphubel
+- Shangri-La Strahlhorn
+- Shangri-La Fletschhorn
+- Shangri-La Felskinn
+
+Seed можно запускать повторно. Он обновляет `properties`, перезаписывает контакты и инструкции только для этих Shangri-La объектов. Публичный источник не содержит точный WhatsApp, инструкции по ключам, check-in и Wi-Fi пароль, поэтому эти данные нужно дозаполнить из внутренних документов объекта перед выдачей гостевых ссылок.
+
 ## Общая информация о Saas-Fee
 
 Чтобы чат отвечал на вопросы про рестораны, активности, горные подъёмники/дороги и погоду, выполни в Supabase SQL Editor файл:
