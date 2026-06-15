@@ -57,10 +57,19 @@ export default function LandingPage({ locale }: LandingPageProps) {
         <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-5 py-6 sm:px-8 lg:px-10">
           <header className="flex flex-col items-start justify-between gap-4 text-white sm:flex-row sm:items-center">
             <Link
-              className="text-sm font-semibold uppercase tracking-[0.18em]"
+              className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.16em]"
               href={copy.path}
             >
-              Saas-Fee AI Concierge
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white p-1 shadow-lg shadow-black/15">
+                <Image
+                  src="/saas-fee-ai-concierge-logo.svg"
+                  alt=""
+                  width={36}
+                  height={36}
+                  className="h-9 w-9"
+                />
+              </span>
+              <span className="leading-5">Saas-Fee AI Concierge</span>
             </Link>
             <nav className="flex flex-wrap items-center gap-2 text-sm">
               <a
@@ -116,10 +125,10 @@ export default function LandingPage({ locale }: LandingPageProps) {
               <p className="mb-5 text-sm font-semibold uppercase tracking-[0.2em] text-[#d7e8d9]">
                 {copy.hero.eyebrow}
               </p>
-              <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] tracking-normal sm:text-6xl lg:text-7xl">
+              <h1 className="max-w-4xl text-balance text-4xl font-semibold leading-[1.05] tracking-normal sm:text-5xl lg:text-6xl">
                 {copy.hero.title}
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/86">
+              <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-white/86">
                 {copy.hero.description}
               </p>
             </div>
@@ -152,7 +161,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#3e6d5a]">
               {copy.product.eyebrow}
             </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-normal text-[#15221d]">
+            <h2 className="mt-3 text-balance text-4xl font-semibold tracking-normal text-[#15221d]">
               {copy.product.title}
             </h2>
           </div>
@@ -180,7 +189,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#9b3f35]">
               {copy.useCases.eyebrow}
             </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-normal">
+            <h2 className="mt-3 text-balance text-4xl font-semibold tracking-normal">
               {copy.useCases.title}
             </h2>
           </div>
@@ -211,7 +220,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#315f7d]">
               {copy.architecture.eyebrow}
             </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-normal">
+            <h2 className="mt-3 text-balance text-4xl font-semibold tracking-normal">
               {copy.architecture.title}
             </h2>
             <p className="mt-5 text-base leading-7 text-[#59665f]">
@@ -237,7 +246,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#3e6d5a]">
               {copy.contact.eyebrow}
             </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-normal">
+            <h2 className="mt-3 text-balance text-4xl font-semibold tracking-normal">
               {copy.contact.title}
             </h2>
             <p className="mt-5 text-base leading-7 text-[#59665f]">
@@ -256,7 +265,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#f0c85a]">
               {copy.demo.eyebrow}
             </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-normal">
+            <h2 className="mt-3 text-balance text-3xl font-semibold tracking-normal">
               {copy.demo.title}
             </h2>
           </div>
