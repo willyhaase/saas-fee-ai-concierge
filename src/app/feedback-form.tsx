@@ -2,6 +2,22 @@
 
 import { FormEvent, useState } from "react";
 
+type FeedbackFormCopy = {
+  website: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  company: string;
+  message: string;
+  messagePlaceholder: string;
+  consent: string;
+  submit: string;
+  submitting: string;
+  success: string;
+  fallbackError: string;
+};
+
 type FeedbackStatus =
   | { type: "idle"; message: "" }
   | { type: "success"; message: string }
@@ -22,7 +38,7 @@ function getHubSpotTrackingCookie() {
   );
 }
 
-export default function FeedbackForm() {
+export default function FeedbackForm({ copy }: { copy: FeedbackFormCopy }) {
   const [status, setStatus] = useState<FeedbackStatus>(initialStatus);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -65,15 +81,14 @@ export default function FeedbackForm() {
       };
 
       if (!response.ok) {
-        throw new Error(
-          data.error || "Die Nachricht konnte nicht gesendet werden."
-        );
+        console.error(data.error || copy.fallbackError);
+        throw new Error(copy.fallbackError);
       }
 
       form.reset();
       setStatus({
         type: "success",
-        message: "Vielen Dank. Ihre Nachricht wurde an HubSpot übermittelt.",
+        message: copy.success,
       });
     } catch (error) {
       setStatus({
@@ -81,7 +96,7 @@ export default function FeedbackForm() {
         message:
           error instanceof Error
             ? error.message
-            : "Die Nachricht konnte nicht gesendet werden.",
+            : copy.fallbackError,
       });
     } finally {
       setIsSubmitting(false);
@@ -92,14 +107,16 @@ export default function FeedbackForm() {
     <form className="space-y-4" onSubmit={submitFeedback}>
       <div className="hidden">
         <label>
-          Website
+          {copy.website}
           <input autoComplete="off" name="website" tabIndex={-1} />
         </label>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-semibold text-[#2d3c35]">Vorname</span>
+          <span className="text-sm font-semibold text-[#2d3c35]">
+            {copy.firstName}
+          </span>
           <input
             className="mt-1 h-11 w-full rounded-md border border-[#cfd3c6] bg-white px-3 text-sm text-[#18211d] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
             name="firstname"
@@ -108,7 +125,9 @@ export default function FeedbackForm() {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-semibold text-[#2d3c35]">Nachname</span>
+          <span className="text-sm font-semibold text-[#2d3c35]">
+            {copy.lastName}
+          </span>
           <input
             className="mt-1 h-11 w-full rounded-md border border-[#cfd3c6] bg-white px-3 text-sm text-[#18211d] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
             name="lastname"
@@ -119,7 +138,9 @@ export default function FeedbackForm() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-semibold text-[#2d3c35]">E-Mail</span>
+          <span className="text-sm font-semibold text-[#2d3c35]">
+            {copy.email}
+          </span>
           <input
             className="mt-1 h-11 w-full rounded-md border border-[#cfd3c6] bg-white px-3 text-sm text-[#18211d] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
             name="email"
@@ -130,7 +151,7 @@ export default function FeedbackForm() {
         </label>
         <label className="block">
           <span className="text-sm font-semibold text-[#2d3c35]">
-            Telefon
+            {copy.phone}
           </span>
           <input
             className="mt-1 h-11 w-full rounded-md border border-[#cfd3c6] bg-white px-3 text-sm text-[#18211d] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
@@ -143,7 +164,7 @@ export default function FeedbackForm() {
 
       <label className="block">
         <span className="text-sm font-semibold text-[#2d3c35]">
-          Unternehmen oder Objekt
+          {copy.company}
         </span>
         <input
           className="mt-1 h-11 w-full rounded-md border border-[#cfd3c6] bg-white px-3 text-sm text-[#18211d] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
@@ -153,12 +174,14 @@ export default function FeedbackForm() {
       </label>
 
       <label className="block">
-        <span className="text-sm font-semibold text-[#2d3c35]">Nachricht</span>
+        <span className="text-sm font-semibold text-[#2d3c35]">
+          {copy.message}
+        </span>
         <textarea
           className="mt-1 min-h-32 w-full resize-y rounded-md border border-[#cfd3c6] bg-white px-3 py-3 text-sm text-[#18211d] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
           name="message"
           required
-          placeholder="Worum geht es bei Ihrer Unterkunft oder Ihrem Gästeservice?"
+          placeholder={copy.messagePlaceholder}
         />
       </label>
 
@@ -170,8 +193,7 @@ export default function FeedbackForm() {
           type="checkbox"
         />
         <span>
-          Ich bin einverstanden, dass meine Angaben zur Bearbeitung der Anfrage
-          in HubSpot gespeichert und verwendet werden.
+          {copy.consent}
         </span>
       </label>
 
@@ -181,7 +203,7 @@ export default function FeedbackForm() {
           disabled={isSubmitting}
           type="submit"
         >
-          {isSubmitting ? "Wird gesendet..." : "Anfrage senden"}
+          {isSubmitting ? copy.submitting : copy.submit}
         </button>
         {status.message ? (
           <p
