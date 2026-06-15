@@ -109,6 +109,16 @@ type ReservationResult = {
   guestNotice: string;
 };
 
+type IncidentNotificationResult = {
+  attempted: boolean;
+  sent: boolean;
+  provider: string | null;
+  toPhone: string | null;
+  messageId: string | null;
+  error: string | null;
+  reason: string | null;
+};
+
 type LiveExchangeRates = {
   source: string;
   sourceUrl: string;
@@ -1141,6 +1151,40 @@ async function updateConversationIncident(
   }
 }
 
+async function updateIncidentNotificationMetadata(
+  supabase: SupabaseClient,
+  table: string,
+  incident: InsertResult | null,
+  notification: IncidentNotificationResult | null
+) {
+  if (!incident?.id || !notification) {
+    return;
+  }
+
+  const existingMetadata =
+    incident.data?.metadata &&
+    typeof incident.data.metadata === "object" &&
+    !Array.isArray(incident.data.metadata)
+      ? (incident.data.metadata as Record<string, unknown>)
+      : {};
+
+  const { error } = await supabase
+    .from(table)
+    .update({
+      metadata: {
+        ...existingMetadata,
+        property_owner_whatsapp_notification: notification,
+      },
+    })
+    .eq("id", incident.id);
+
+  if (error && !error.message.includes("metadata")) {
+    console.error(
+      `Could not update incident notification metadata: ${error.message}`
+    );
+  }
+}
+
 async function insertQueryAnalytics(
   supabase: SupabaseClient,
   conversationId: string | null,
@@ -1234,6 +1278,10 @@ function getWhatsAppConfig() {
     twilioWhatsAppFrom: process.env.TWILIO_WHATSAPP_FROM,
     twilioMessagingServiceSid: process.env.TWILIO_MESSAGING_SERVICE_SID,
     twilioReservationContentSid: process.env.TWILIO_RESERVATION_CONTENT_SID,
+    twilioIncidentContentSid: process.env.TWILIO_INCIDENT_CONTENT_SID,
+    metaIncidentTemplateName: process.env.WHATSAPP_INCIDENT_TEMPLATE_NAME,
+    metaIncidentTemplateLanguage:
+      process.env.WHATSAPP_INCIDENT_TEMPLATE_LANGUAGE || "de",
   };
 }
 
@@ -1279,6 +1327,90 @@ function buildReservationMessage(
     .join("\n");
 }
 
+function getCriticalIncidentPriorities() {
+  return (
+    process.env.CRITICAL_INCIDENT_PRIORITIES || "urgent"
+  )
+    .split(",")
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function isCriticalIncidentPriority(priority: ConciergeResponse["priority"]) {
+  return getCriticalIncidentPriorities().includes(priority);
+}
+
+function buildIncidentNotificationMessage({
+  title,
+  description,
+  priority,
+  propertyContext,
+  customerName,
+  customerEmail,
+  conversationId,
+  incidentId,
+}: {
+  title: string;
+  description: string;
+  priority: ConciergeResponse["priority"];
+  propertyContext: PropertyContext | null;
+  customerName: string | null;
+  customerEmail: string | null;
+  conversationId: string | null;
+  incidentId: string | null;
+}) {
+  return [
+    "Kritischer Vorfall - Saas-Fee AI Concierge",
+    "",
+    `Unterkunft: ${propertyContext?.propertyName ?? "-"}`,
+    propertyContext?.address ? `Adresse: ${propertyContext.address}` : null,
+    `Priorität: ${priority}`,
+    `Titel: ${title}`,
+    "",
+    `Beschreibung: ${description}`,
+    "",
+    customerName ? `Gast: ${customerName}` : null,
+    customerEmail ? `Kontakt: ${customerEmail}` : null,
+    conversationId ? `Conversation ID: ${conversationId}` : null,
+    incidentId ? `Incident ID: ${incidentId}` : null,
+    "",
+    "Bitte so schnell wie möglich prüfen.",
+  ]
+    .filter((line): line is string => line !== null)
+    .join("\n");
+}
+
+function getTwilioIncidentContentVariables({
+  title,
+  description,
+  priority,
+  propertyContext,
+  customerName,
+  customerEmail,
+  conversationId,
+  incidentId,
+}: {
+  title: string;
+  description: string;
+  priority: ConciergeResponse["priority"];
+  propertyContext: PropertyContext | null;
+  customerName: string | null;
+  customerEmail: string | null;
+  conversationId: string | null;
+  incidentId: string | null;
+}): Record<string, string> {
+  return {
+    "1": propertyContext?.propertyName ?? "-",
+    "2": priority,
+    "3": title,
+    "4": description,
+    "5": customerName ?? "-",
+    "6": customerEmail ?? "-",
+    "7": conversationId ?? "-",
+    "8": incidentId ?? "-",
+  };
+}
+
 function formatTwilioWhatsAppAddress(phone: string) {
   if (phone.startsWith("whatsapp:")) {
     return phone;
@@ -1304,6 +1436,94 @@ function getTwilioReservationContentVariables(
     "8": draft.specialRequests ?? "-",
     "9": reservationId ?? "-",
   };
+}
+
+async function sendTwilioWhatsAppMessage({
+  toPhone,
+  body,
+  contentSid,
+  contentVariables,
+  invalidPhoneMessage = "Invalid WhatsApp phone number.",
+}: {
+  toPhone: string;
+  body: string;
+  contentSid?: string;
+  contentVariables?: Record<string, string>;
+  invalidPhoneMessage?: string;
+}) {
+  const config = getWhatsAppConfig();
+
+  if (!config.twilioAccountSid || !config.twilioAuthToken) {
+    throw new Error("Missing TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN.");
+  }
+
+  if (!config.twilioWhatsAppFrom && !config.twilioMessagingServiceSid) {
+    throw new Error(
+      "Missing TWILIO_WHATSAPP_FROM or TWILIO_MESSAGING_SERVICE_SID."
+    );
+  }
+
+  const to = formatTwilioWhatsAppAddress(toPhone);
+
+  if (!to) {
+    throw new Error(invalidPhoneMessage);
+  }
+
+  const params = new URLSearchParams();
+  params.set("To", to);
+
+  if (config.twilioMessagingServiceSid) {
+    params.set("MessagingServiceSid", config.twilioMessagingServiceSid);
+  } else if (config.twilioWhatsAppFrom) {
+    const from = formatTwilioWhatsAppAddress(config.twilioWhatsAppFrom);
+
+    if (!from) {
+      throw new Error("Invalid TWILIO_WHATSAPP_FROM.");
+    }
+
+    params.set("From", from);
+  }
+
+  if (contentSid) {
+    params.set("ContentSid", contentSid);
+
+    if (contentVariables) {
+      params.set("ContentVariables", JSON.stringify(contentVariables));
+    }
+  } else {
+    params.set("Body", body);
+  }
+
+  const auth = Buffer.from(
+    `${config.twilioAccountSid}:${config.twilioAuthToken}`
+  ).toString("base64");
+  const response = await fetch(
+    `https://api.twilio.com/2010-04-01/Accounts/${config.twilioAccountSid}/Messages.json`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params,
+      signal: AbortSignal.timeout(8000),
+    }
+  );
+  const responseText = await response.text();
+  const data = responseText
+    ? (JSON.parse(responseText) as Record<string, unknown>)
+    : {};
+
+  if (!response.ok) {
+    const message =
+      typeof data.message === "string"
+        ? data.message
+        : `Twilio returned ${response.status}`;
+    const code = typeof data.code === "number" ? ` (${data.code})` : "";
+    throw new Error(`${message}${code}`);
+  }
+
+  return typeof data.sid === "string" ? data.sid : null;
 }
 
 async function sendMetaWhatsAppReservationMessage(
@@ -1395,83 +1615,15 @@ async function sendTwilioWhatsAppReservationMessage(
 ) {
   const config = getWhatsAppConfig();
 
-  if (!config.twilioAccountSid || !config.twilioAuthToken) {
-    throw new Error("Missing TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN.");
-  }
-
-  if (!config.twilioWhatsAppFrom && !config.twilioMessagingServiceSid) {
-    throw new Error(
-      "Missing TWILIO_WHATSAPP_FROM or TWILIO_MESSAGING_SERVICE_SID."
-    );
-  }
-
-  const to = formatTwilioWhatsAppAddress(toPhone);
-
-  if (!to) {
-    throw new Error("Invalid restaurant WhatsApp phone number.");
-  }
-
-  const params = new URLSearchParams();
-  params.set("To", to);
-
-  if (config.twilioMessagingServiceSid) {
-    params.set("MessagingServiceSid", config.twilioMessagingServiceSid);
-  } else if (config.twilioWhatsAppFrom) {
-    const from = formatTwilioWhatsAppAddress(config.twilioWhatsAppFrom);
-
-    if (!from) {
-      throw new Error("Invalid TWILIO_WHATSAPP_FROM.");
-    }
-
-    params.set("From", from);
-  }
-
-  if (config.twilioReservationContentSid) {
-    params.set("ContentSid", config.twilioReservationContentSid);
-    params.set(
-      "ContentVariables",
-      JSON.stringify(
-        getTwilioReservationContentVariables(
-          draft,
-          propertyContext,
-          reservationId
-        )
-      )
-    );
-  } else {
-    params.set("Body", body);
-  }
-
-  const auth = Buffer.from(
-    `${config.twilioAccountSid}:${config.twilioAuthToken}`
-  ).toString("base64");
-  const response = await fetch(
-    `https://api.twilio.com/2010-04-01/Accounts/${config.twilioAccountSid}/Messages.json`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: params,
-      signal: AbortSignal.timeout(8000),
-    }
-  );
-  const responseText = await response.text();
-  const data = responseText
-    ? (JSON.parse(responseText) as Record<string, unknown>)
-    : {};
-
-  if (!response.ok) {
-    const message =
-      typeof data.message === "string"
-        ? data.message
-        : `Twilio returned ${response.status}`;
-    const code = typeof data.code === "number" ? ` (${data.code})` : "";
-    throw new Error(`${message}${code}`);
-  }
-
-  return typeof data.sid === "string" ? data.sid : null;
+  return sendTwilioWhatsAppMessage({
+    toPhone,
+    body,
+    contentSid: config.twilioReservationContentSid,
+    contentVariables: config.twilioReservationContentSid
+      ? getTwilioReservationContentVariables(draft, propertyContext, reservationId)
+      : undefined,
+    invalidPhoneMessage: "Invalid restaurant WhatsApp phone number.",
+  });
 }
 
 async function sendWhatsAppReservationMessage(
@@ -1499,6 +1651,210 @@ async function sendWhatsAppReservationMessage(
     propertyContext,
     body
   );
+}
+
+async function sendMetaWhatsAppIncidentMessage(
+  toPhone: string,
+  body: string,
+  variables: ReturnType<typeof getTwilioIncidentContentVariables>
+) {
+  const config = getWhatsAppConfig();
+
+  if (!config.accessToken || !config.phoneNumberId) {
+    throw new Error(
+      "Missing WHATSAPP_ACCESS_TOKEN or WHATSAPP_PHONE_NUMBER_ID."
+    );
+  }
+
+  const url = `https://graph.facebook.com/${config.graphApiVersion}/${config.phoneNumberId}/messages`;
+  const payload = config.metaIncidentTemplateName
+    ? {
+        messaging_product: "whatsapp",
+        to: toPhone,
+        type: "template",
+        template: {
+          name: config.metaIncidentTemplateName,
+          language: { code: config.metaIncidentTemplateLanguage },
+          components: [
+            {
+              type: "body",
+              parameters: Object.keys(variables)
+                .sort((left, right) => Number(left) - Number(right))
+                .map((key) => ({ type: "text", text: variables[key] ?? "-" })),
+            },
+          ],
+        },
+      }
+    : {
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: toPhone,
+        type: "text",
+        text: {
+          preview_url: false,
+          body,
+        },
+      };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${config.accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(8000),
+  });
+  const responseText = await response.text();
+  const data = responseText
+    ? (JSON.parse(responseText) as Record<string, unknown>)
+    : {};
+
+  if (!response.ok) {
+    const error = data.error as Record<string, unknown> | undefined;
+    throw new Error(
+      typeof error?.message === "string"
+        ? error.message
+        : `WhatsApp returned ${response.status}`
+    );
+  }
+
+  const messages = Array.isArray(data.messages) ? data.messages : [];
+  const firstMessage = messages[0] as Record<string, unknown> | undefined;
+
+  return typeof firstMessage?.id === "string" ? firstMessage.id : null;
+}
+
+async function notifyPropertyContactAboutCriticalIncident({
+  title,
+  description,
+  priority,
+  propertyContext,
+  customerName,
+  customerEmail,
+  conversationId,
+  incidentId,
+}: {
+  title: string;
+  description: string;
+  priority: ConciergeResponse["priority"];
+  propertyContext: PropertyContext | null;
+  customerName: string | null;
+  customerEmail: string | null;
+  conversationId: string | null;
+  incidentId: string | null;
+}): Promise<IncidentNotificationResult> {
+  const config = getWhatsAppConfig();
+
+  if (!isCriticalIncidentPriority(priority)) {
+    return {
+      attempted: false,
+      sent: false,
+      provider: config.provider,
+      toPhone: null,
+      messageId: null,
+      error: null,
+      reason: "priority_not_critical",
+    };
+  }
+
+  if (!propertyContext?.localAccessGranted || !propertyContext.propertyId) {
+    return {
+      attempted: false,
+      sent: false,
+      provider: config.provider,
+      toPhone: null,
+      messageId: null,
+      error: null,
+      reason: "no_property_context",
+    };
+  }
+
+  const toPhone = normalizeWhatsAppPhone(propertyContext.whatsapp);
+
+  if (!toPhone) {
+    return {
+      attempted: false,
+      sent: false,
+      provider: config.provider,
+      toPhone: null,
+      messageId: null,
+      error: null,
+      reason: "missing_property_whatsapp",
+    };
+  }
+
+  if (!isWhatsAppConfigured()) {
+    return {
+      attempted: false,
+      sent: false,
+      provider: config.provider,
+      toPhone,
+      messageId: null,
+      error: null,
+      reason: "missing_whatsapp_config",
+    };
+  }
+
+  const body = buildIncidentNotificationMessage({
+    title,
+    description,
+    priority,
+    propertyContext,
+    customerName,
+    customerEmail,
+    conversationId,
+    incidentId,
+  });
+  const variables = getTwilioIncidentContentVariables({
+    title,
+    description,
+    priority,
+    propertyContext,
+    customerName,
+    customerEmail,
+    conversationId,
+    incidentId,
+  });
+
+  try {
+    const messageId =
+      config.provider === "twilio"
+        ? await sendTwilioWhatsAppMessage({
+            toPhone,
+            body,
+            contentSid: config.twilioIncidentContentSid,
+            contentVariables: config.twilioIncidentContentSid
+              ? variables
+              : undefined,
+            invalidPhoneMessage: "Invalid property WhatsApp phone number.",
+          })
+        : await sendMetaWhatsAppIncidentMessage(toPhone, body, variables);
+
+    return {
+      attempted: true,
+      sent: true,
+      provider: config.provider,
+      toPhone,
+      messageId,
+      error: null,
+      reason: null,
+    };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unknown WhatsApp error.";
+    console.error(`Critical incident WhatsApp notification failed: ${message}`);
+
+    return {
+      attempted: true,
+      sent: false,
+      provider: config.provider,
+      toPhone,
+      messageId: null,
+      error: message,
+      reason: "send_failed",
+    };
+  }
 }
 
 async function insertRestaurantReservation(
@@ -2148,6 +2504,7 @@ export async function POST(req: Request) {
     }
 
     let incident: InsertResult | null = null;
+    let incidentNotification: IncidentNotificationResult | null = null;
 
     if (ai.incident_required) {
       const title = ai.incident_title || "Customer support incident";
@@ -2284,6 +2641,26 @@ export async function POST(req: Request) {
         conversation.id,
         incident.id
       );
+
+      if (incident) {
+        incidentNotification =
+          await notifyPropertyContactAboutCriticalIncident({
+            title,
+            description,
+            priority: ai.priority,
+            propertyContext,
+            customerName,
+            customerEmail,
+            conversationId: conversation.id,
+            incidentId: incident.id,
+          });
+        await updateIncidentNotificationMetadata(
+          supabase,
+          incident.table,
+          incident,
+          incidentNotification
+        );
+      }
     }
 
     await insertQueryAnalytics(
@@ -2304,6 +2681,7 @@ export async function POST(req: Request) {
       incidentId: incident?.id ?? null,
       incidentTable: incident?.table ?? null,
       priority: incident ? ai.priority : null,
+      incidentWhatsAppNotification: incidentNotification,
       reservationCreated: Boolean(reservation?.id),
       reservationId: reservation?.id ?? null,
       reservationStatus: reservation?.status ?? null,

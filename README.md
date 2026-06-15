@@ -43,8 +43,12 @@ TWILIO_AUTH_TOKEN=...
 TWILIO_WHATSAPP_FROM=whatsapp:+15559671989
 TWILIO_RESERVATION_CONTENT_SID=HX...
 TWILIO_GUEST_CONFIRMATION_CONTENT_SID=HX...
+TWILIO_INCIDENT_CONTENT_SID=HX...
 TWILIO_WEBHOOK_AUTH_TOKEN=...
 TWILIO_WEBHOOK_PUBLIC_URL=https://willyhaase-saas-fee-ai-concierge.vercel.app/api/twilio/whatsapp
+
+# Optional: which incident priorities notify the property owner on WhatsApp
+CRITICAL_INCIDENT_PRIORITIES=urgent
 
 # Optional: Meta WhatsApp Cloud API fallback
 WHATSAPP_ACCESS_TOKEN=EA...
@@ -52,6 +56,8 @@ WHATSAPP_PHONE_NUMBER_ID=1234567890
 WHATSAPP_GRAPH_API_VERSION=v23.0
 WHATSAPP_RESERVATION_TEMPLATE_NAME=restaurant_reservation_request
 WHATSAPP_RESERVATION_TEMPLATE_LANGUAGE=de
+WHATSAPP_INCIDENT_TEMPLATE_NAME=property_critical_incident
+WHATSAPP_INCIDENT_TEMPLATE_LANGUAGE=de
 WHATSAPP_WEBHOOK_VERIFY_TOKEN=make-a-long-random-string
 ```
 
@@ -67,9 +73,11 @@ WHATSAPP_WEBHOOK_VERIFY_TOKEN=make-a-long-random-string
 - `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` и `TWILIO_WHATSAPP_FROM=whatsapp:+15559671989` нужны для Twilio Messages API.
 - `TWILIO_RESERVATION_CONTENT_SID` рекомендуется для первого исходящего сообщения ресторану. Это approved WhatsApp template в Twilio Content Template Builder, обычно начинается с `HX...`.
 - `TWILIO_GUEST_CONFIRMATION_CONTENT_SID` используется для WhatsApp template, который отправляется гостю после подтверждения ресторана.
+- `TWILIO_INCIDENT_CONTENT_SID` используется для WhatsApp template, который отправляет владельцу/контакту недвижимости уведомление о критическом инциденте.
 - `TWILIO_WEBHOOK_AUTH_TOKEN` используется для проверки подписи входящих Twilio webhooks. Можно указать тот же секрет, что и `TWILIO_AUTH_TOKEN`.
 - `TWILIO_WEBHOOK_PUBLIC_URL` должен совпадать с URL webhook, указанным в Twilio. Это помогает корректно проверять подпись webhook на Vercel.
 - Если `TWILIO_RESERVATION_CONTENT_SID` не задан, приложение попробует отправить обычный `Body`, но WhatsApp/Twilio может отклонить сообщение вне разрешённого 24-часового окна переписки.
+- `CRITICAL_INCIDENT_PRIORITIES=urgent` означает, что WhatsApp владельцу отправляется только для `urgent` инцидентов. Можно указать `urgent,high`, если нужно уведомлять и о high.
 - `WHATSAPP_ACCESS_TOKEN` и `WHATSAPP_PHONE_NUMBER_ID` нужны только если используется `WHATSAPP_PROVIDER=meta` для Meta WhatsApp Cloud API.
 - `WHATSAPP_WEBHOOK_VERIFY_TOKEN` нужен для настройки Webhooks в Meta. Это не access token, а любая длинная секретная строка, которую ты сам задаёшь одинаково в Vercel и Meta.
 
@@ -503,6 +511,66 @@ from public.restaurant_reservations
 order by created_at desc
 limit 20;
 ```
+
+## WhatsApp уведомления по критическим инцидентам
+
+Когда `/api/chat` создаёт инцидент с priority из `CRITICAL_INCIDENT_PRIORITIES`, приложение отправляет WhatsApp уведомление контакту недвижимости из:
+
+```text
+public.property_contacts.whatsapp
+```
+
+По умолчанию критическим считается только:
+
+```text
+urgent
+```
+
+Чтобы уведомлять также по `high`, добавь в Vercel:
+
+```text
+CRITICAL_INCIDENT_PRIORITIES=urgent,high
+```
+
+Для Twilio рекомендуется создать approved WhatsApp template и указать его SID:
+
+```text
+TWILIO_INCIDENT_CONTENT_SID=HX...
+```
+
+Код передаёт 8 значений как `ContentVariables`:
+
+```text
+1 = propertyName
+2 = priority
+3 = incidentTitle
+4 = incidentDescription
+5 = customerName
+6 = customerEmail
+7 = conversationId
+8 = incidentId
+```
+
+Пример немецкого template:
+
+```text
+Kritischer Vorfall - Saas-Fee AI Concierge
+
+Unterkunft: {{1}}
+Priorität: {{2}}
+Titel: {{3}}
+Beschreibung: {{4}}
+Gast: {{5}}
+Kontakt: {{6}}
+Conversation ID: {{7}}
+Incident ID: {{8}}
+
+Bitte so schnell wie möglich prüfen.
+```
+
+Если `TWILIO_INCIDENT_CONTENT_SID` не задан, приложение попробует отправить обычный WhatsApp `Body`. Twilio/WhatsApp может отклонить такое сообщение вне разрешённого окна переписки, поэтому template надёжнее.
+
+Уведомление не заменяет создание инцидента: если WhatsApp отправка не удалась или у объекта нет `property_contacts.whatsapp`, инцидент всё равно будет создан, а результат попадёт в `incidentWhatsAppNotification` в API-ответе и, если доступно поле `metadata`, в `incidents.metadata.property_owner_whatsapp_notification`.
 
 ## Статистика запросов
 
