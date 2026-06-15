@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Saas-Fee AI Concierge",
-  description: "Guest concierge chat for Saas-Fee stays.",
+  description:
+    "KI-Concierge und Gästeservice für Ferienwohnungen in Saas-Fee.",
   icons: {
     icon: [
       { url: "/icon.png", type: "image/png", sizes: "1024x1024" },
