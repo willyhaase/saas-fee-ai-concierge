@@ -57,19 +57,18 @@ export default function LandingPage({ locale }: LandingPageProps) {
         <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-5 py-6 sm:px-8 lg:px-10">
           <header className="flex flex-col items-start justify-between gap-4 text-white sm:flex-row sm:items-center">
             <Link
-              className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.16em]"
+              aria-label="Saas-Fee AI Concierge"
+              className="flex shrink-0 items-center rounded-lg bg-white/96 px-3 py-2 shadow-lg shadow-black/15 transition hover:bg-white"
               href={copy.path}
             >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white p-1 shadow-lg shadow-black/15">
-                <Image
-                  src="/saas-fee-ai-concierge-logo.svg"
-                  alt=""
-                  width={36}
-                  height={36}
-                  className="h-9 w-9"
-                />
-              </span>
-              <span className="leading-5">Saas-Fee AI Concierge</span>
+              <Image
+                src="/saas-fee-logo.png"
+                alt="Saas-Fee AI Concierge"
+                width={96}
+                height={96}
+                className="h-[70px] w-[70px] sm:h-20 sm:w-20"
+                priority
+              />
             </Link>
             <nav className="flex flex-wrap items-center gap-2 text-sm">
               <a
