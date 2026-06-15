@@ -13,7 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Saas-Fee AI Concierge",
+  metadataBase: new URL("https://willyhaase-saas-fee-ai-concierge.vercel.app"),
+  title: {
+    default: "Saas-Fee AI Concierge",
+    template: "%s",
+  },
   description:
     "KI-Concierge und Gästeservice für Ferienwohnungen in Saas-Fee.",
   icons: {
@@ -32,7 +36,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="de-CH"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

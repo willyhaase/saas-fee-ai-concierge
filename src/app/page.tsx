@@ -1,7 +1,70 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import FeedbackForm from "./feedback-form";
+
+const pageTitle =
+  "Saas-Fee AI Concierge | KI-Gästeservice für Ferienwohnungen";
+const pageDescription =
+  "KI-Concierge für Ferienwohnungen in Saas-Fee: beantwortet Gästeanfragen rund um die Uhr, nutzt objektbezogenes Wissen und informiert Teams per WhatsApp.";
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description: pageDescription,
+  keywords: [
+    "Saas-Fee AI Concierge",
+    "KI Concierge Saas-Fee",
+    "Gästeservice Ferienwohnungen",
+    "Ferienwohnung Saas-Fee",
+    "WhatsApp Gästeservice",
+    "Hotel KI Chatbot",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: pageTitle,
+    description: pageDescription,
+    url: "/",
+    siteName: "Saas-Fee AI Concierge",
+    locale: "de_CH",
+    type: "website",
+    images: [
+      {
+        url: "/story/saas-fee-story-bg-clean.png",
+        width: 941,
+        height: 1672,
+        alt: "Saas-Fee Bergpanorama mit Ferienwohnungen",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: pageTitle,
+    description: pageDescription,
+    images: ["/story/saas-fee-story-bg-clean.png"],
+  },
+};
 
 export default function Home() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Saas-Fee AI Concierge",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    description: pageDescription,
+    areaServed: {
+      "@type": "Place",
+      name: "Saas-Fee, Schweiz",
+    },
+    offers: {
+      "@type": "Offer",
+      availability: "https://schema.org/InStock",
+      priceCurrency: "CHF",
+    },
+  };
+
   const features = [
     {
       title: "Antworten rund um die Uhr",
@@ -65,6 +128,12 @@ export default function Home() {
               >
                 Module
               </a>
+              <a
+                className="rounded-md px-3 py-2 font-medium text-white/82 transition hover:bg-white/12 hover:text-white"
+                href="#kontakt"
+              >
+                Kontakt
+              </a>
               <Link
                 className="rounded-md bg-white px-4 py-2 font-semibold text-[#17362b] transition hover:bg-[#eef1e8]"
                 href="/chat"
@@ -89,20 +158,6 @@ export default function Home() {
                 und WhatsApp-Benachrichtigungen für Situationen, in denen ein
                 Mensch reagieren muss.
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link
-                  className="rounded-md bg-[#f0c85a] px-5 py-3 text-sm font-bold text-[#1e2418] transition hover:bg-[#ffd86b]"
-                  href="/chat"
-                >
-                  Öffentlichen Chat testen
-                </Link>
-                <Link
-                  className="rounded-md border border-white/42 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
-                  href="/story"
-                >
-                  Story ansehen
-                </Link>
-              </div>
             </div>
 
             <div className="rounded-lg border border-white/22 bg-white/92 p-5 text-[#18211d] shadow-2xl shadow-black/20 backdrop-blur">
@@ -214,6 +269,26 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="kontakt" className="bg-white py-20">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:px-10">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#3e6d5a]">
+              Kontakt
+            </p>
+            <h2 className="mt-3 text-4xl font-semibold tracking-normal">
+              Möchten Sie den KI-Concierge für Ihre Unterkunft testen?
+            </h2>
+            <p className="mt-5 text-base leading-7 text-[#59665f]">
+              Senden Sie eine kurze Nachricht. Die Anfrage wird direkt in
+              HubSpot erfasst, damit sie sauber nachverfolgt werden kann.
+            </p>
+          </div>
+          <div className="rounded-lg border border-[#d8d8ce] bg-[#fbfaf5] p-5 shadow-sm sm:p-6">
+            <FeedbackForm />
+          </div>
+        </div>
+      </section>
+
       <section className="bg-[#1d2d27] px-5 py-16 text-white sm:px-8 lg:px-10">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>
@@ -232,6 +307,10 @@ export default function Home() {
           </Link>
         </div>
       </section>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
     </main>
   );
 }

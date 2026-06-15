@@ -36,6 +36,12 @@ REQUIRE_GUEST_ACCESS_TOKEN=false
 # Optional: protect /api/stats and /stats
 STATS_ACCESS_TOKEN=change-me
 
+# Optional: HubSpot feedback form on the landing page
+HUBSPOT_PORTAL_ID=123456
+HUBSPOT_FEEDBACK_FORM_ID=00000000-0000-0000-0000-000000000000
+HUBSPOT_FEEDBACK_MESSAGE_FIELD=message
+HUBSPOT_FEEDBACK_SOURCE_FIELD=lead_source
+
 # Optional: WhatsApp via Twilio for restaurant reservations
 WHATSAPP_PROVIDER=twilio
 TWILIO_ACCOUNT_SID=AC...
@@ -69,6 +75,9 @@ WHATSAPP_WEBHOOK_VERIFY_TOKEN=make-a-long-random-string
 - Если таблицы называются иначе, укажи реальные имена в Vercel.
 - `REQUIRE_GUEST_ACCESS_TOKEN=true` включает строгий режим: локальная информация жилья выдаётся только по гостевой ссылке с access token.
 - `STATS_ACCESS_TOKEN` включает защиту статистики. Если переменная задана, открывай `/stats?token=<STATS_ACCESS_TOKEN>`.
+- `HUBSPOT_PORTAL_ID` и `HUBSPOT_FEEDBACK_FORM_ID` включают форму обратной связи на лендинге. Значения берутся из HubSpot формы.
+- `HUBSPOT_FEEDBACK_MESSAGE_FIELD` задаёт internal name поля сообщения в HubSpot форме. По умолчанию используется `message`.
+- `HUBSPOT_FEEDBACK_SOURCE_FIELD` можно указать, если в форме есть поле для источника лида.
 - `WHATSAPP_PROVIDER=twilio` включает отправку WhatsApp через Twilio.
 - `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` и `TWILIO_WHATSAPP_FROM=whatsapp:+15559671989` нужны для Twilio Messages API.
 - `TWILIO_RESERVATION_CONTENT_SID` рекомендуется для первого исходящего сообщения ресторану. Это approved WhatsApp template в Twilio Content Template Builder, обычно начинается с `HX...`.
