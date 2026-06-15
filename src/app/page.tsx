@@ -80,7 +80,8 @@ export default function Home() {
                 KI-Concierge für Ferienwohnungen und Gäste in Saas-Fee
               </p>
               <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] tracking-normal sm:text-6xl lg:text-7xl">
-                Gästeservice, der sofort antwortet und Wichtiges ans Team weitergibt.
+                Ein Gästeservice, der umgehend reagiert und Gästen rund um die
+                Uhr zur Seite steht.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-white/86">
                 Die Lösung verbindet einen öffentlichen Saas-Fee-Chat,
