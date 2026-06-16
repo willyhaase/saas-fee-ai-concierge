@@ -58,15 +58,15 @@ export default function LandingPage({ locale }: LandingPageProps) {
           <header className="flex flex-col items-start justify-between gap-4 text-white sm:flex-row sm:items-center">
             <Link
               aria-label="Saas-Fee AI Concierge"
-              className="flex shrink-0 items-center rounded-lg bg-white/96 px-3 py-2 shadow-lg shadow-black/15 transition hover:bg-white"
+              className="flex shrink-0 items-center transition hover:opacity-90"
               href={copy.path}
             >
               <Image
                 src="/saas-fee-logo.png"
                 alt="Saas-Fee AI Concierge"
-                width={96}
-                height={96}
-                className="h-[70px] w-[70px] sm:h-20 sm:w-20"
+                width={160}
+                height={160}
+                className="h-28 w-28 drop-shadow-[0_14px_24px_rgba(0,0,0,0.28)] sm:h-32 sm:w-32 lg:h-36 lg:w-36"
                 priority
               />
             </Link>
@@ -119,12 +119,12 @@ export default function LandingPage({ locale }: LandingPageProps) {
             </nav>
           </header>
 
-          <div className="grid flex-1 items-end gap-10 pb-20 pt-16 lg:grid-cols-[minmax(0,1fr)_360px] lg:pb-28">
-            <div className="max-w-3xl text-white">
+          <div className="grid flex-1 items-center gap-10 pb-24 pt-10 lg:grid-cols-[minmax(0,1.2fr)_340px] lg:pb-28 lg:pt-4">
+            <div className="max-w-5xl text-white lg:-translate-y-6">
               <p className="mb-5 text-sm font-semibold uppercase tracking-[0.2em] text-[#d7e8d9]">
                 {copy.hero.eyebrow}
               </p>
-              <h1 className="max-w-4xl text-balance text-4xl font-semibold leading-[1.05] tracking-normal sm:text-5xl lg:text-6xl">
+              <h1 className="max-w-5xl text-balance text-4xl font-semibold leading-[1.05] tracking-normal sm:text-5xl lg:text-6xl">
                 {copy.hero.title}
               </h1>
               <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-white/86">
