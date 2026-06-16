@@ -117,6 +117,11 @@ with rows(category, title, content) as (
     ),
     (
       'activities',
+      'Sportplatz Kalbermatten sports grounds',
+      'Saas-Fee has sports grounds at Sportplatz Kalbermatten, 3906 Saas-Fee. In summer the facilities include a football field with artificial turf, 90 x 50 metres, 6 tennis courts, volleyball, basketball, children playground, land hockey, golf driving range and skating park. In winter the facilities include a natural ice rink, curling with 4 rinks and Eisstockschiessen. Summer home games of FC Saas-Fee and TC Saas-Fee and winter home games of EHC Saastal are held there. For questions or reservations, guests should contact the Swiss Ski and Snowboard School Saas-Fee, phone +41 27 957 24 54, email info@skischule-saas-fee.ch. Map location supplied by property team: https://maps.app.goo.gl/DDrDUWemyfh5uhTY9. Important: if a guest asks whether Saas-Fee has a football field, answer yes and mention the artificial-turf football field at Sportplatz Kalbermatten.'
+    ),
+    (
+      'activities',
       'Saas Valley experience worlds',
       'Use the Saas Valley Erlebniswelten as a structured way to recommend activities. The main worlds are: Allalin for summer skiing, world records, glacier views and first 4000 m ambitions; Längfluh for glacier trekking, glacier views and the glacier lake; Spielboden for marmots and family-friendly wildlife encounters; Hannig for sunny walking, animals and relaxed mountain time; Kreuzboden for families, a large playground, water games and Bike Skills Park; Hohsaas for mountain biking, adrenaline and big 4000 m views; Furggstalden and Heidbodmen for relaxation, sun and adventure paths; Mattmark for hiking and biking by the water and border hikes toward Italy. When guests ask what to do, pick the experience world that matches their mood instead of giving a generic list.'
     ),
