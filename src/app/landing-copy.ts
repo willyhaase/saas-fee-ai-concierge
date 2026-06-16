@@ -117,7 +117,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         { value: "5", label: "Sprachen im Interface" },
         { value: "24/7", label: "Antworten für Gäste" },
         { value: "2", label: "Wissensebenen" },
-        { value: "WA", label: "Meldungen und Reservationen" },
+        { value: "WhatsApp", label: "Meldungen und Reservationen" },
       ],
     },
     product: {
@@ -232,7 +232,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         { value: "5", label: "Interface languages" },
         { value: "24/7", label: "Answers for guests" },
         { value: "2", label: "Knowledge layers" },
-        { value: "WA", label: "Alerts and reservations" },
+        { value: "WhatsApp", label: "Alerts and reservations" },
       ],
     },
     product: {
@@ -343,7 +343,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         { value: "5", label: "Langues d'interface" },
         { value: "24/7", label: "Réponses aux invités" },
         { value: "2", label: "Niveaux de connaissance" },
-        { value: "WA", label: "Alertes et réservations" },
+        { value: "WhatsApp", label: "Alertes et réservations" },
       ],
     },
     product: {
@@ -458,7 +458,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         { value: "5", label: "Lingue dell'interfaccia" },
         { value: "24/7", label: "Risposte agli ospiti" },
         { value: "2", label: "Livelli di conoscenza" },
-        { value: "WA", label: "Avvisi e prenotazioni" },
+        { value: "WhatsApp", label: "Avvisi e prenotazioni" },
       ],
     },
     product: {

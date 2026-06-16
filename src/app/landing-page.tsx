@@ -139,7 +139,13 @@ export default function LandingPage({ locale }: LandingPageProps) {
               <dl className="mt-5 grid grid-cols-2 gap-4">
                 {copy.metrics.items.map((item) => (
                   <div key={`${item.value}-${item.label}`}>
-                    <dt className="text-3xl font-semibold">{item.value}</dt>
+                    <dt
+                      className={`font-semibold ${
+                        item.value.length > 4 ? "text-2xl" : "text-3xl"
+                      }`}
+                    >
+                      {item.value}
+                    </dt>
                     <dd className="mt-1 text-sm text-[#53615a]">
                       {item.label}
                     </dd>
