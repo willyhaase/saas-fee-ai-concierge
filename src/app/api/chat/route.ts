@@ -456,7 +456,34 @@ function classifyQuery(message: string): QueryAnalytics {
     category = "activities";
   } else if (includesAny(text, ["weather", "forecast", "погода", "прогноз"])) {
     category = "weather";
-  } else if (includesAny(text, ["bus", "taxi", "parking", "car", "transport", "парков", "автобус", "такси"])) {
+  } else if (
+    includesAny(text, [
+      "bus",
+      "postbus",
+      "postauto",
+      "shuttle",
+      "ortsbus",
+      "skibus",
+      "taxi",
+      "parking",
+      "car",
+      "arrival",
+      "arrive",
+      "getting to",
+      "transport",
+      "visp",
+      "642",
+      "643",
+      "644",
+      "511",
+      "парков",
+      "автобус",
+      "такси",
+      "как добраться",
+      "доехать",
+      "транспорт",
+    ])
+  ) {
     category = "transport";
   } else if (includesAny(text, ["wifi", "wi-fi", "key", "check-in", "checkout", "apartment", "квартира", "ключ", "заезд", "выезд"])) {
     category = "property";

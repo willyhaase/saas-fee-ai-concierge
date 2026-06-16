@@ -91,6 +91,36 @@ with rows(category, title, content) as (
       'For currency exchange, use Erlebnisbank/Raiffeisen Saas-Fee at Obere Dorfstrasse 65. Exchange rates can change, so answer with propertyContext.liveExchangeRates if current rates are available in chat. If liveExchangeRates has no rates, do not invent a rate; tell guests that the live rate is not available in chat right now and recommend confirming directly with the bank before exchanging cash.'
     ),
     (
+      'transport',
+      'Arrival in Saas-Fee by public transport',
+      'For arrival by public transport, guests should travel by train to Visp and then take PostBus 511 in the direction of Saas-Fee. The PostBus runs directly from Visp to Saas-Fee/Saas Valley about every half hour. Public transport from Zurich, Geneva, Basel Euro Airport and Milan airports takes about three hours. For exact live times, guests should check SBB/PostAuto, but in chat answer the route clearly: train to Visp, then PostBus 511 to Saas-Fee.'
+    ),
+    (
+      'transport',
+      'Arrival in Saas-Fee by car',
+      'For arrival by car, drive to Visp and then south towards Saas-Fee. After Stalden, at the Killerhof roundabout, take the second exit towards Saas-Fee. In Saas-Grund, turn right after the church towards Saas-Fee. From the north, travellers can use the Loetschberg car train between Kandersteg and Goppenstein; from the east the Furka Pass or Furka car transport; from the south the Simplon Pass or Simplon car transport; from the west drive via Lausanne along the Rhone valley to Visp. Saas-Fee is car-free, so guests park at the Saas-Fee car park/parking area and continue on foot, by hotel transfer or local electric taxi/service.'
+    ),
+    (
+      'transport',
+      'PostAuto winter local transport Saas-Fee/Saas Valley',
+      'PostAuto operates winter local transport in the Saas-Fee/Saas Valley region with electric buses. Routes: 642 Bidermatten - Saas-Grund - Saas-Fee Busterminal - Alpin Express; 643 Saas-Almagell Sportplatz - Saas-Grund - Saas-Fee Busterminal - Alpin Express; 644 Saas-Fee Parkplatz Nord - Saas-Fee Busterminal - Alpin Express. The service helps guests reach the Alpin Express and ski area without changing at the village entrance. During the winter season until 19 April 2026, the buses run daily; the electric buses run every 15 minutes, and from Saas-Grund there can be 7.5-minute intervals because two routes serve the corridor.'
+    ),
+    (
+      'transport',
+      'Saas-Fee winter Ortsbus and Skibus',
+      'The Saas-Fee Ortsbus/Skibus carries guests and locals free of charge to the ski areas and back during the winter season. The main winter route links the Wildi area, including obere Wildi and Grosses Moos, with the ski area and back. Normal winter operating pattern from the municipality: Sunday to Friday 08:30-17:30; Saturday 09:00-12:30 and 14:30-17:00. Fleet includes Allalino nostalgic train, Intersport bus, Raiffeisen bus and Energie bus. Contact for Orts- und Skibus: Dorfplatz 8, 3906 Saas-Fee, phone +41 27 958 11 70, email bernd.kalbermatten@3906.ch.'
+    ),
+    (
+      'transport',
+      'Saas-Fee shuttle bus winter 2025-26 lines',
+      'Winter shuttle bus timetable 2025-26 runs from 20/21 December 2025 to 19 April 2026 depending on the line. Line 1 runs daily except Saturday between Felsenegg, Sunnmattu, Grosses Moos, Royal, Allalin, Central, Dorfplatz, Gletscherbruecke and Spielbodenbahn. Line 2 runs daily between Felsenegg, Sunnmattu, Grosses Moos, Royal, Allalin, Central, Dorfplatz, Gletscherbruecke, Spielbodenbahn and Alpin Express, with return service via Alpin Express, Spielbodenbahn, Gletscherbruecke, Dorfplatz, Central, Busterminal, Parkhaus, Allalin, Royal, Grosses Moos, Sunnmattu and Felsenegg. Line 3 runs daily between Alphitta, Etoile, Royal, Allalin, Central, Dorfplatz, Gletscherbruecke and Spielbodenbahn. Stops shown on the timetable include Spielbodenbahn, Gletscherbruecke, Alpin Express, Busterminal, Parkhaus, Parkplatz Nord, Felsenegg, Sunnmattu, Grosses Moos, Alphitta, Atlantic, Etoile, All Inn, Royal, Allalin, Central and Dorfplatz. Line 1 and Line 3 may be cancelled during heavy snowfall or when mountain railways are closed.'
+    ),
+    (
+      'transport',
+      'Summer and autumn village transport in Saas-Fee',
+      'According to Saas-Fee/Saastal arrival information, there are no regular buses operating within the village of Saas-Fee during summer and autumn. For journeys within the village or to mountain railways, guests should use local taxi companies, hotel transfers or walk. The municipality also describes summer Allalino village tours: four village tours are usually operated, with information in German, French and English; prices listed by the municipality are CHF 6 per adult and CHF 4 per child.'
+    ),
+    (
       'activities',
       'Summer activities',
       'Popular warm-season activities in Saas-Fee/Saastal include hiking, biking, climbing and mountaineering, gorge/alpine canyon experiences, glacier experience tours, trail running and summer skiing. For an easy day, suggest a village walk plus a gentle hike or cable-car viewpoint. For active guests, suggest hiking, biking or a guided glacier experience. For families, suggest easier hikes, cable-car viewpoints and summer mountain experiences.'
