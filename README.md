@@ -36,6 +36,9 @@ REQUIRE_GUEST_ACCESS_TOKEN=false
 # Optional: protect /api/stats and /stats
 STATS_ACCESS_TOKEN=change-me
 
+# Optional: Google Analytics measurement ID
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-MHL3TGDKC6
+
 # Optional: HubSpot feedback form on the landing page
 HUBSPOT_PORTAL_ID=123456
 HUBSPOT_FEEDBACK_FORM_ID=00000000-0000-0000-0000-000000000000
@@ -75,6 +78,7 @@ WHATSAPP_WEBHOOK_VERIFY_TOKEN=make-a-long-random-string
 - Если таблицы называются иначе, укажи реальные имена в Vercel.
 - `REQUIRE_GUEST_ACCESS_TOKEN=true` включает строгий режим: локальная информация жилья выдаётся только по гостевой ссылке с access token.
 - `STATS_ACCESS_TOKEN` включает защиту статистики. Если переменная задана, открывай `/stats?token=<STATS_ACCESS_TOKEN>`.
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID` включает Google Analytics на всех страницах. Сейчас в коде есть fallback `G-MHL3TGDKC6`, но в Vercel лучше указать переменную явно.
 - `HUBSPOT_PORTAL_ID` и `HUBSPOT_FEEDBACK_FORM_ID` включают форму обратной связи на лендинге. Значения берутся из HubSpot формы.
 - `HUBSPOT_FEEDBACK_MESSAGE_FIELD` задаёт internal name поля сообщения в HubSpot форме. По умолчанию используется `message`.
 - `HUBSPOT_FEEDBACK_SOURCE_FIELD` можно указать, если в форме есть поле для источника лида.
