@@ -600,6 +600,7 @@ supabase/migrations/20260611_add_query_analytics.sql
 - интересующие рестораны
 - интересующие активности
 - другие найденные сущности
+- `property_id`, если запрос был сделан через гостевую ссылку конкретной недвижимости
 
 Статистика доступна:
 
@@ -608,12 +609,23 @@ supabase/migrations/20260611_add_query_analytics.sql
 /api/stats
 ```
 
+Для отдельной недвижимости используй slug объекта:
+
+```text
+/stats/properties/studio-atlantic
+/api/stats?propertySlug=studio-atlantic
+```
+
 Если задан `STATS_ACCESS_TOKEN`, используй:
 
 ```text
 /stats?token=<STATS_ACCESS_TOKEN>
 /api/stats?token=<STATS_ACCESS_TOKEN>
+/stats/properties/studio-atlantic?token=<STATS_ACCESS_TOKEN>
+/api/stats?propertySlug=studio-atlantic&token=<STATS_ACCESS_TOKEN>
 ```
+
+Общая страница `/stats` показывает список объектов с количеством запросов за выбранный период. Страница `/stats/properties/<PROPERTY_SLUG>` показывает только вопросы гостей этой недвижимости: рестораны, активности, другие темы, намерения и последние вопросы. Это удобно давать владельцам, чтобы они видели, чем интересуются гости и что можно улучшить в сервисе.
 
 ## Локальный запуск
 
