@@ -61,7 +61,7 @@ function formatDate(value: string | null) {
     return "";
   }
 
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat("de-CH", {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
@@ -95,7 +95,7 @@ function StatList({
             </div>
           ))
         ) : (
-          <p className="text-sm text-[#667268]">Пока нет данных.</p>
+          <p className="text-sm text-[#667268]">Noch keine Daten.</p>
         )}
       </div>
     </section>
@@ -128,7 +128,7 @@ function QuestionsList({
             </div>
           ))
         ) : (
-          <p className="text-sm text-[#667268]">Пока нет вопросов.</p>
+          <p className="text-sm text-[#667268]">Noch keine Fragen.</p>
         )}
       </div>
     </section>
@@ -155,15 +155,15 @@ function PropertyList({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-base font-semibold text-[#151815]">
-            Статистика по недвижимости
+            Statistik nach Unterkunft
           </h2>
           <p className="mt-1 text-sm text-[#667268]">
-            Открой отдельную страницу объекта, чтобы владелец видел только
-            запросы своих гостей.
+            Oeffnen Sie eine Unterkunftsseite, damit Eigentuemer nur die
+            Fragen ihrer eigenen Gaeste sehen.
           </p>
         </div>
         <span className="text-sm text-[#667268]">
-          {visibleProperties.length} объектов
+          {visibleProperties.length} Unterkuenfte
         </span>
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -258,11 +258,11 @@ export default function StatsDashboard({
   }, [days, propertySlug, token]);
 
   const pageTitle = stats?.property
-    ? `Статистика: ${stats.property.name ?? stats.property.slug}`
-    : "Статистика запросов";
+    ? `Statistik: ${stats.property.name ?? stats.property.slug}`
+    : "Gaesteanfragen-Statistik";
   const pageDescription = stats?.property
-    ? "Что гости этого объекта ищут, спрашивают и чем интересуются."
-    : "Рестораны, активности, темы и последние вопросы гостей.";
+    ? "Was Gaeste dieser Unterkunft suchen, fragen und interessant finden."
+    : "Restaurants, Aktivitaeten, Themen und aktuelle Gaestefragen.";
 
   return (
     <main className="min-h-screen bg-[#f7f7f2] text-[#1f2421]">
@@ -291,11 +291,11 @@ export default function StatsDashboard({
                   className="text-sm font-medium text-[#1f5f46] underline-offset-4 hover:underline"
                   href={token ? `/stats?token=${token}` : "/stats"}
                 >
-                  Все объекты
+                  Alle Unterkuenfte
                 </Link>
               ) : null}
               <label className="flex items-center gap-2 text-sm text-[#4f5b52]">
-                Дней
+                Zeitraum
                 <select
                   className="h-10 rounded-md border border-[#c8c8bc] bg-white px-3 outline-none focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
                   onChange={(event) => setDays(Number(event.target.value))}
@@ -318,30 +318,32 @@ export default function StatsDashboard({
         ) : null}
 
         {isLoading ? (
-          <p className="mt-5 text-sm text-[#5b6b5f]">Загружаю статистику...</p>
+          <p className="mt-5 text-sm text-[#5b6b5f]">
+            Statistik wird geladen...
+          </p>
         ) : null}
 
         {stats ? (
           <div className="py-5">
             <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-lg border border-[#d8d8ce] bg-white p-4 shadow-sm">
-                <p className="text-sm text-[#5b6b5f]">Всего запросов</p>
+                <p className="text-sm text-[#5b6b5f]">Anfragen gesamt</p>
                 <p className="mt-2 text-3xl font-semibold">{stats.total}</p>
               </div>
               <div className="rounded-lg border border-[#d8d8ce] bg-white p-4 shadow-sm">
-                <p className="text-sm text-[#5b6b5f]">Про рестораны</p>
+                <p className="text-sm text-[#5b6b5f]">Restaurants</p>
                 <p className="mt-2 text-3xl font-semibold">
                   {stats.restaurants.total}
                 </p>
               </div>
               <div className="rounded-lg border border-[#d8d8ce] bg-white p-4 shadow-sm">
-                <p className="text-sm text-[#5b6b5f]">Про активности</p>
+                <p className="text-sm text-[#5b6b5f]">Aktivitaeten</p>
                 <p className="mt-2 text-3xl font-semibold">
                   {stats.activities.total}
                 </p>
               </div>
               <div className="rounded-lg border border-[#d8d8ce] bg-white p-4 shadow-sm">
-                <p className="text-sm text-[#5b6b5f]">Другие вопросы</p>
+                <p className="text-sm text-[#5b6b5f]">Andere Fragen</p>
                 <p className="mt-2 text-3xl font-semibold">
                   {stats.otherQuestions.total}
                 </p>
@@ -359,42 +361,42 @@ export default function StatsDashboard({
             <section className="mt-5 grid gap-5 lg:grid-cols-3">
               <StatList
                 items={stats.restaurants.topRestaurants}
-                title="Какие рестораны интересовали"
+                title="Interessante Restaurants"
               />
               <StatList
                 items={stats.activities.topActivities}
-                title="Какие активности интересовали"
+                title="Interessante Aktivitaeten"
               />
-              <StatList items={stats.categories} title="Категории вопросов" />
+              <StatList items={stats.categories} title="Fragekategorien" />
             </section>
 
             <section className="mt-5 grid gap-5 lg:grid-cols-3">
               <StatList
                 items={stats.restaurants.topIntents}
-                title="Что спрашивали про рестораны"
+                title="Worum es bei Restaurants ging"
               />
               <StatList
                 items={stats.activities.topIntents}
-                title="Что спрашивали про активности"
+                title="Worum es bei Aktivitaeten ging"
               />
               <StatList
                 items={stats.otherQuestions.topCategories}
-                title="Другие темы"
+                title="Weitere Themen"
               />
             </section>
 
             <section className="mt-5 grid gap-5 lg:grid-cols-3">
               <QuestionsList
                 questions={stats.restaurants.recentQuestions}
-                title="Последние вопросы про рестораны"
+                title="Aktuelle Restaurantfragen"
               />
               <QuestionsList
                 questions={stats.activities.recentQuestions}
-                title="Последние вопросы про активности"
+                title="Aktuelle Aktivitaetsfragen"
               />
               <QuestionsList
                 questions={stats.otherQuestions.recentQuestions}
-                title="Последние другие вопросы"
+                title="Aktuelle weitere Fragen"
               />
             </section>
           </div>
