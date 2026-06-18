@@ -42,7 +42,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
   return (
     <main className="min-h-screen bg-[#f5f4ed] text-[#18211d]">
       <HtmlLang lang={copy.lang} />
-      <section className="relative flex min-h-[92vh] overflow-hidden">
+      <section className="relative flex min-h-[88vh] overflow-hidden sm:min-h-[92vh]">
         <Image
           src="/story/saas-fee-story-bg-clean.png"
           alt={copy.hero.imageAlt}
@@ -66,7 +66,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
                 alt="Saas-Fee AI Concierge"
                 width={160}
                 height={160}
-                className="h-28 w-28 drop-shadow-[0_14px_24px_rgba(0,0,0,0.28)] sm:h-32 sm:w-32 lg:h-36 lg:w-36"
+                className="h-24 w-24 drop-shadow-[0_14px_24px_rgba(0,0,0,0.28)] sm:h-32 sm:w-32 lg:h-36 lg:w-36"
                 priority
               />
             </Link>
@@ -96,7 +96,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
                   return (
                     <Link
                       aria-current={item === locale ? "page" : undefined}
-                      className={`rounded px-2 py-1 text-xs font-bold transition ${
+                      className={`flex min-h-10 min-w-11 items-center justify-center rounded px-2 py-1 text-xs font-bold transition ${
                         item === locale
                           ? "bg-white text-[#17362b]"
                           : "text-white/76 hover:bg-white/12 hover:text-white"
@@ -119,20 +119,20 @@ export default function LandingPage({ locale }: LandingPageProps) {
             </nav>
           </header>
 
-          <div className="grid flex-1 items-center gap-10 pb-24 pt-10 lg:grid-cols-[minmax(0,1.2fr)_340px] lg:pb-28 lg:pt-4">
+          <div className="grid flex-1 items-center gap-8 pb-20 pt-10 md:gap-10 lg:grid-cols-[minmax(0,1.2fr)_340px] lg:pb-28 lg:pt-4">
             <div className="max-w-5xl text-white lg:-translate-y-6">
-              <p className="mb-5 text-sm font-semibold uppercase tracking-[0.2em] text-[#d7e8d9]">
+              <p className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-[#d7e8d9] sm:mb-5 sm:tracking-[0.2em]">
                 {copy.hero.eyebrow}
               </p>
               <h1 className="max-w-5xl text-balance text-4xl font-semibold leading-[1.05] tracking-normal sm:text-5xl lg:text-6xl">
                 {copy.hero.title}
               </h1>
-              <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-white/86">
+              <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-white/86 sm:mt-6 sm:text-lg sm:leading-8">
                 {copy.hero.description}
               </p>
             </div>
 
-            <div className="rounded-lg border border-white/22 bg-white/92 p-5 text-[#18211d] shadow-2xl shadow-black/20 backdrop-blur">
+            <div className="hidden rounded-lg border border-white/22 bg-white/92 p-5 text-[#18211d] shadow-2xl shadow-black/20 backdrop-blur md:block">
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#3e6d5a]">
                 {copy.metrics.eyebrow}
               </p>
@@ -166,7 +166,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#3e6d5a]">
               {copy.product.eyebrow}
             </p>
-            <h2 className="mt-3 text-balance text-4xl font-semibold tracking-normal text-[#15221d]">
+            <h2 className="mt-3 text-balance text-3xl font-semibold tracking-normal text-[#15221d] sm:text-4xl">
               {copy.product.title}
             </h2>
           </div>
@@ -194,7 +194,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#9b3f35]">
               {copy.useCases.eyebrow}
             </p>
-            <h2 className="mt-3 text-balance text-4xl font-semibold tracking-normal">
+            <h2 className="mt-3 text-balance text-3xl font-semibold tracking-normal sm:text-4xl">
               {copy.useCases.title}
             </h2>
           </div>
@@ -225,7 +225,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#315f7d]">
               {copy.architecture.eyebrow}
             </p>
-            <h2 className="mt-3 text-balance text-4xl font-semibold tracking-normal">
+            <h2 className="mt-3 text-balance text-3xl font-semibold tracking-normal sm:text-4xl">
               {copy.architecture.title}
             </h2>
             <p className="mt-5 text-base leading-7 text-[#59665f]">
@@ -251,7 +251,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#3e6d5a]">
               {copy.contact.eyebrow}
             </p>
-            <h2 className="mt-3 text-balance text-4xl font-semibold tracking-normal">
+            <h2 className="mt-3 text-balance text-3xl font-semibold tracking-normal sm:text-4xl">
               {copy.contact.title}
             </h2>
             <p className="mt-5 text-base leading-7 text-[#59665f]">

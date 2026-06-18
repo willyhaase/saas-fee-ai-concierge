@@ -108,7 +108,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       title:
         "Ein Gästeservice, der umgehend reagiert und Gästen rund um die Uhr zur Seite steht.",
       description:
-        "Die Lösung verbindet einen öffentlichen Saas-Fee-Chat, geschütztes Wissen pro Unterkunft, Auswertungen der Gästeanfragen und WhatsApp-Benachrichtigungen für Situationen, in denen ein Mensch reagieren muss.",
+        "Die Lösung verbindet einen öffentlichen Saas-Fee-Chat, geschütztes Wissen pro Unterkunft, Auswertungen der Gästeanfragen und WhatsApp-Benachrichtigungen, wenn ein Mensch reagieren sollte.",
       imageAlt: "Saas-Fee Bergpanorama mit Ferienwohnungen",
     },
     metrics: {
@@ -116,7 +116,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       items: [
         { value: "5", label: "Sprachen im Interface" },
         { value: "24/7", label: "Antworten für Gäste" },
-        { value: "2", label: "Wissensebenen" },
+        { value: "2", label: "Wissensbereiche" },
         { value: "WhatsApp", label: "Meldungen und Reservationen" },
       ],
     },
@@ -153,7 +153,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     architecture: {
       eyebrow: "Architektur",
       title:
-        "Next.js, OpenAI, Supabase und WhatsApp in einem einsatznahen Prototyp.",
+        "Next.js, OpenAI, Supabase und WhatsApp in einem einsatzbereiten Prototyp.",
       text: "Die Anwendung speichert Dialoge, trennt allgemeines und objektbezogenes Wissen, arbeitet mit sicheren Gästelinks und ist für den Betrieb auf Vercel vorbereitet.",
       modules: [
         "KI-Chat auf der Website",
@@ -223,7 +223,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       title:
         "A guest service that responds immediately and supports guests around the clock.",
       description:
-        "The solution combines a public Saas-Fee chat, protected knowledge for each property, guest request analytics, and WhatsApp notifications for situations where a person needs to respond.",
+        "The solution combines a public Saas-Fee chat, protected knowledge for each property, guest request analytics, and WhatsApp notifications when a person should step in.",
       imageAlt: "Saas-Fee mountain panorama with holiday apartments",
     },
     metrics: {
@@ -231,7 +231,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       items: [
         { value: "5", label: "Interface languages" },
         { value: "24/7", label: "Answers for guests" },
-        { value: "2", label: "Knowledge layers" },
+        { value: "2", label: "Knowledge areas" },
         { value: "WhatsApp", label: "Alerts and reservations" },
       ],
     },
@@ -265,8 +265,9 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     },
     architecture: {
       eyebrow: "Architecture",
-      title: "Next.js, OpenAI, Supabase, and WhatsApp in a deployment-ready prototype.",
-      text: "The application stores conversations, separates general and property-specific knowledge, works with secure guest links, and is ready to run on Vercel.",
+      title:
+        "Next.js, OpenAI, Supabase, and WhatsApp in a deployment-ready prototype.",
+      text: "The application stores conversations, separates general and property-specific knowledge, uses secure guest links, and is ready to run on Vercel.",
       modules: [
         "AI chat on the website",
         "Guest links with access tokens",
@@ -279,7 +280,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     contact: {
       eyebrow: "Contact",
       title: "Would you like to test the AI concierge for your property?",
-      text: "Send a short message. The request is recorded directly in HubSpot so it can be followed up cleanly.",
+      text: "Send a short message. The request is recorded directly in HubSpot for a clear follow-up.",
     },
     demo: {
       eyebrow: "Demo",
@@ -334,7 +335,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       title:
         "Un service invités qui répond immédiatement et accompagne les invités 24 h/24.",
       description:
-        "La solution réunit un chat public pour Saas-Fee, des informations protégées par logement, l'analyse des demandes invités et des notifications WhatsApp pour les situations nécessitant une intervention humaine.",
+        "La solution réunit un chat public pour Saas-Fee, des informations protégées par logement, l'analyse des demandes et des notifications WhatsApp lorsqu'une intervention humaine est nécessaire.",
       imageAlt: "Panorama de montagne à Saas-Fee avec appartements de vacances",
     },
     metrics: {
@@ -342,7 +343,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       items: [
         { value: "5", label: "Langues d'interface" },
         { value: "24/7", label: "Réponses aux invités" },
-        { value: "2", label: "Niveaux de connaissance" },
+        { value: "2", label: "Sources de connaissance" },
         { value: "WhatsApp", label: "Alertes et réservations" },
       ],
     },
@@ -398,7 +399,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     demo: {
       eyebrow: "Démo",
       title:
-        "Testez la manière dont le concierge IA répond dans la véritable interface invité.",
+        "Testez la manière dont le concierge IA répond dans l'interface dédiée aux invités.",
       cta: "Lancer le chat",
     },
     form: {
@@ -449,7 +450,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       title:
         "Un servizio ospiti che risponde subito e assiste gli ospiti 24 ore su 24.",
       description:
-        "La soluzione unisce una chat pubblica per Saas-Fee, conoscenze protette per ogni alloggio, analisi delle richieste degli ospiti e notifiche WhatsApp per le situazioni che richiedono una risposta umana.",
+        "La soluzione unisce una chat pubblica per Saas-Fee, informazioni protette per ogni alloggio, analisi delle richieste degli ospiti e notifiche WhatsApp quando serve un intervento umano.",
       imageAlt: "Panorama montano di Saas-Fee con appartamenti vacanza",
     },
     metrics: {
@@ -457,7 +458,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       items: [
         { value: "5", label: "Lingue dell'interfaccia" },
         { value: "24/7", label: "Risposte agli ospiti" },
-        { value: "2", label: "Livelli di conoscenza" },
+        { value: "2", label: "Aree di conoscenza" },
         { value: "WhatsApp", label: "Avvisi e prenotazioni" },
       ],
     },
@@ -494,8 +495,8 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     architecture: {
       eyebrow: "Architettura",
       title:
-        "Next.js, OpenAI, Supabase e WhatsApp in un prototipo pronto al deploy.",
-      text: "L'applicazione salva le conversazioni, separa conoscenze generali e specifiche della proprietà, usa link ospite sicuri ed è pronta per Vercel.",
+        "Next.js, OpenAI, Supabase e WhatsApp in un prototipo pronto per il deploy.",
+      text: "L'applicazione salva le conversazioni, separa conoscenze generali e informazioni specifiche dell'alloggio, usa link ospite sicuri ed è pronta per Vercel.",
       modules: [
         "Chat IA sul sito",
         "Link ospite con token di accesso",
@@ -513,7 +514,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     demo: {
       eyebrow: "Demo",
       title:
-        "Provi come il concierge IA risponde nella vera interfaccia ospite.",
+        "Provi come il concierge IA risponde nell'interfaccia dedicata agli ospiti.",
       cta: "Avvia chat",
     },
     form: {
