@@ -351,6 +351,12 @@ supabase/seed_schaeferstube_restaurant.sql
 supabase/seed_walliserkanne_restaurant.sql
 ```
 
+Для Ristorante Pizzeria DON CICCIO с официальным адресом, телефоном, email, описанием, правилами бронирования, gluten-free опциями, Speisekarte Winter, Dolci, Getränke, Weinkarte, Grappa и ценами выполни:
+
+```text
+supabase/seed_don_ciccio_restaurant.sql
+```
+
 Для официального каталога ресторанов Saas-Fee/Saastal из Deskline POI Saas-Fee Tourism выполни:
 
 ```text
