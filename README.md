@@ -231,6 +231,12 @@ supabase/seed_saas_fee_global_knowledge.sql
 
 Погода не хранится как статичный прогноз в базе. `/api/chat` добавляет в контекст live weather snapshot для Saas-Fee через Open-Meteo, а для точной проверки рекомендует официальные страницы Saas-Fee weather/webcams.
 
+Открытость подъёмников, трасс, hiking/bike trails, mountain restaurants, via ferrata и leisure facilities тоже не хранится как статичный seed. `/api/chat` подтягивает live-статус с официальной страницы Saas-Fee/Saastal `https://www.saas-fee.ch/en/open-lifts/all`, кэширует его на короткое время и использует `propertyContext.liveFacilities`. Для быстрой проверки JSON доступен endpoint:
+
+```text
+GET /api/open-facilities
+```
+
 Курс валют тоже не хранится как статичная цифра. `/api/chat` пытается получить актуальный курс со страницы Erlebnisbank Saas-Fee; если курс недоступен в машиночитаемом виде, чат отвечает адресом банка и не придумывает значения.
 
 ## Мероприятия и активности

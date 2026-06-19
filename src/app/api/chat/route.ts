@@ -1,6 +1,10 @@
 import { createHash } from "crypto";
 import OpenAI from "openai";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import {
+  getLiveSaasFeeOpenFacilities,
+  type LiveFacilities,
+} from "@/lib/saas-fee-live-status";
 
 type ChatRequest = {
   message?: unknown;
@@ -164,6 +168,7 @@ type PropertyContext = {
   restaurantContacts: RestaurantContact[];
   liveWeather: LiveWeather | null;
   liveExchangeRates: LiveExchangeRates | null;
+  liveFacilities: LiveFacilities | null;
 };
 
 export const runtime = "nodejs";
@@ -441,6 +446,33 @@ function classifyQuery(
     restaurants.length > 0
   ) {
     category = "restaurants";
+  } else if (
+    includesAny(text, [
+      "lift",
+      "lifts",
+      "cable car",
+      "gondola",
+      "open facilities",
+      "anlage",
+      "anlagen",
+      "bahn",
+      "bahnen",
+      "piste",
+      "pisten",
+      "wanderweg",
+      "wanderwege",
+      "подъемник",
+      "подъёмник",
+      "подъемники",
+      "подъёмники",
+      "канатка",
+      "трасса",
+      "трассы",
+      "открыто",
+      "закрыто",
+    ])
+  ) {
+    category = "live_facilities";
   } else if (
     includesAny(text, [
       "activity",
@@ -789,6 +821,7 @@ async function getConciergeResponse(
           "If reservation details are missing, ask a concise follow-up question in the reply language.",
           "When the guest wants a restaurant reservation, include restaurant_reservation in the JSON. Use requested=true. Set readyToSend=true only when restaurantName, reservationDate as YYYY-MM-DD, reservationTime, partySize, guestName, and guestContact are all present. Otherwise set readyToSend=false and list missingFields.",
           "For weather questions, use propertyContext.liveWeather when it is available and mention that mountain weather can change quickly.",
+          "For questions about whether lifts, cable cars, slopes, hiking trails, bike trails, via ferrata, mountain restaurants, or leisure facilities are open, use propertyContext.liveFacilities when it is available. Give the exact open/closed status and, for broad questions, summarize counts by category before listing relevant objects. Mention that the status is live/official and can change during the day. If liveFacilities is missing, say that live status is not available in chat right now and do not invent statuses.",
           "For currency exchange questions, use propertyContext.liveExchangeRates when rates are present. If rates are missing, provide the bank address and explain that the live exchange-rate table is not available in chat right now; never invent exchange rates.",
           "Only use local housing information when propertyContext.localAccessGranted is true.",
           "If localAccessGranted is false and the guest asks about a specific apartment, access, Wi-Fi, host contact, or private housing instructions, ask them to open their guest-specific link.",
@@ -835,9 +868,10 @@ async function getPropertyContext(
   const localEvents = await getLocalEvents(supabase);
   const restaurantMenus = await getRestaurantMenus(supabase);
   const restaurantContacts = await getRestaurantContacts(supabase);
-  const [liveWeather, liveExchangeRates] = await Promise.all([
+  const [liveWeather, liveExchangeRates, liveFacilities] = await Promise.all([
     getLiveSaasFeeWeather(),
     getLiveExchangeRates(),
+    getLiveSaasFeeOpenFacilities(),
   ]);
   const propertyId =
     accessMode === "apartment"
@@ -871,6 +905,7 @@ async function getPropertyContext(
       restaurantContacts,
       liveWeather,
       liveExchangeRates,
+      liveFacilities,
     };
   }
 
@@ -921,6 +956,7 @@ async function getPropertyContext(
     restaurantContacts,
     liveWeather,
     liveExchangeRates,
+    liveFacilities,
   };
 }
 
