@@ -339,6 +339,12 @@ https://de.cdn-website.com/3dca206eb97244728f6472178d501c4d/files/uploaded/Winte
 supabase/seed_zur_muehle_restaurant.sql
 ```
 
+Для ресторана Schäferstube с официальным адресом, телефоном, email, описанием, маршрутом пешком, правилами бронирования только по телефону, средним чеком и ценами из PDF-меню выполни:
+
+```text
+supabase/seed_schaeferstube_restaurant.sql
+```
+
 Для официального каталога ресторанов Saas-Fee/Saastal из Deskline POI Saas-Fee Tourism выполни:
 
 ```text
