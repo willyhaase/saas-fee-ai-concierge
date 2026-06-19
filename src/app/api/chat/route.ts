@@ -354,27 +354,48 @@ function extractNamedMatches(
     .map((candidate) => candidate.name);
 }
 
-function classifyQuery(message: string): QueryAnalytics {
+function classifyQuery(
+  message: string,
+  propertyContext: PropertyContext | null
+): QueryAnalytics {
   const text = message.toLowerCase();
-  const restaurants = extractNamedMatches(text, [
-    { name: "Hannig", keywords: ["hannig", "ханниг"] },
-    { name: "Schäferstube", keywords: ["schäferstube", "schaferstube"] },
-    { name: "Zer Schlucht", keywords: ["zer schlucht", "zur schlucht", "schlucht"] },
-    { name: "Brasserie 1809", keywords: ["brasserie 1809", "1809"] },
-    { name: "The Capra", keywords: ["capra", "the capra"] },
-    { name: "Walliserhof", keywords: ["walliserhof"] },
-    { name: "Zur Mühle", keywords: ["zur mühle", "zur muehle", "mühle", "muehle"] },
-    { name: "Allalin", keywords: ["allalin", "алалин"] },
-    { name: "Spielboden", keywords: ["spielboden"] },
-    { name: "Morenia", keywords: ["morenia"] },
-    { name: "Längfluh", keywords: ["längfluh", "langfluh"] },
-    { name: "Hohsaas", keywords: ["hohsaas"] },
-    { name: "Felskinn", keywords: ["felskinn"] },
-    { name: "Gletschergrotte", keywords: ["gletschergrotte"] },
-    { name: "Alpenblick", keywords: ["alpenblick"] },
-    { name: "Almagelleralp", keywords: ["almagelleralp"] },
-    { name: "Kreuzboden", keywords: ["kreuzboden"] },
-    { name: "Furggstalden", keywords: ["furggstalden"] },
+  const knownRestaurants = getKnownRestaurantCandidates(propertyContext)
+    .map((name) => ({
+      name,
+      normalized: normalizeLookup(name),
+    }))
+    .filter((item) => item.normalized);
+  const dynamicRestaurants = knownRestaurants
+    .filter((item) => normalizeLookup(message).includes(item.normalized))
+    .map((item) => item.name);
+  const restaurants = unique([
+    ...dynamicRestaurants,
+    ...extractNamedMatches(text, [
+      { name: "Hannig", keywords: ["hannig", "ханниг"] },
+      { name: "Schäferstube", keywords: ["schäferstube", "schaferstube"] },
+      {
+        name: "Zer Schlucht",
+        keywords: ["zer schlucht", "zur schlucht", "schlucht"],
+      },
+      { name: "Brasserie 1809", keywords: ["brasserie 1809", "1809"] },
+      { name: "The Capra", keywords: ["capra", "the capra"] },
+      { name: "Walliserhof", keywords: ["walliserhof"] },
+      {
+        name: "Zur Mühle",
+        keywords: ["zur mühle", "zur muehle", "mühle", "muehle"],
+      },
+      { name: "Allalin", keywords: ["allalin", "алалин"] },
+      { name: "Spielboden", keywords: ["spielboden"] },
+      { name: "Morenia", keywords: ["morenia"] },
+      { name: "Längfluh", keywords: ["längfluh", "langfluh"] },
+      { name: "Hohsaas", keywords: ["hohsaas"] },
+      { name: "Felskinn", keywords: ["felskinn"] },
+      { name: "Gletschergrotte", keywords: ["gletschergrotte"] },
+      { name: "Alpenblick", keywords: ["alpenblick"] },
+      { name: "Almagelleralp", keywords: ["almagelleralp"] },
+      { name: "Kreuzboden", keywords: ["kreuzboden"] },
+      { name: "Furggstalden", keywords: ["furggstalden"] },
+    ]),
   ]);
   const activities = extractNamedMatches(text, [
     { name: "Hiking", keywords: ["hiking", "hike", "trail", "walk", "поход", "маршрут", "тропа"] },
@@ -1072,7 +1093,7 @@ async function getRestaurantMenus(supabase: SupabaseClient) {
     .eq("is_active", true)
     .order("restaurant_name", { ascending: true })
     .order("menu_category", { ascending: true })
-    .limit(500);
+    .limit(1000);
 
   if (error || !data) {
     return [];
@@ -1102,7 +1123,7 @@ async function getRestaurantContacts(supabase: SupabaseClient) {
       "restaurant_name, whatsapp_phone, phone, email, accepts_whatsapp_reservations, reservation_notes"
     )
     .eq("is_active", true)
-    .limit(100);
+    .limit(300);
 
   if (error || !data) {
     if (error && !isMissingTableError(error.message)) {
@@ -2475,7 +2496,7 @@ export async function POST(req: Request) {
         customerEmail
       )
     );
-    const analytics = classifyQuery(message);
+    const analytics = classifyQuery(message, propertyContext);
     const metadata = {
       requestConversationId,
       accessMode,

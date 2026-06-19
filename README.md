@@ -333,6 +333,14 @@ https://de.cdn-website.com/3dca206eb97244728f6472178d501c4d/files/uploaded/Winte
 supabase/seed_zur_muehle_restaurant.sql
 ```
 
+Для официального каталога ресторанов Saas-Fee/Saastal из Deskline POI Saas-Fee Tourism выполни:
+
+```text
+supabase/seed_saas_fee_official_restaurants.sql
+```
+
+Файл добавляет/обновляет `public.restaurant_contacts`, создаёт строки `official_profile` в `public.restaurant_menus` и добавляет сводку в `public.global_knowledge`. Он содержит контакты и описания, но не добавляет цены меню. Для новых ресторанов WhatsApp-резервирование выключено, пока номер не проверен как WhatsApp-enabled; уже вручную добавленные WhatsApp-номера не затираются.
+
 Шаблон создаёт строки для:
 
 - Hannig
