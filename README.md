@@ -345,6 +345,12 @@ supabase/seed_zur_muehle_restaurant.sql
 supabase/seed_schaeferstube_restaurant.sql
 ```
 
+Для ресторана Walliserkanne в Hotel Allalin с официальным адресом, телефоном, email, описанием, часами работы, меню ужина, seasonal menu, напитками, средним чеком и ценами выполни:
+
+```text
+supabase/seed_walliserkanne_restaurant.sql
+```
+
 Для официального каталога ресторанов Saas-Fee/Saastal из Deskline POI Saas-Fee Tourism выполни:
 
 ```text
