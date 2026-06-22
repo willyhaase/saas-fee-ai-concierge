@@ -135,6 +135,7 @@ type PropertyContext = {
   propertyId: string | null;
   propertySlug: string | null;
   propertyName: string | null;
+  propertyType: string | null;
   address: string | null;
   localAccessGranted: boolean;
   hostName: string | null;
@@ -249,7 +250,12 @@ function getAccessMode(context: Record<string, unknown> | null): AccessMode {
       asOptionalString(context?.access)
   );
 
-  if (mode === "apartment" || (!mode && hasLocalSelector)) {
+  if (
+    mode === "apartment" ||
+    mode === "hotel" ||
+    mode === "property" ||
+    (!mode && hasLocalSelector)
+  ) {
     return "apartment";
   }
 
@@ -815,6 +821,7 @@ async function getConciergeResponse(
           "If several options fit, recommend 3-5 concrete choices and briefly explain who each option is good for.",
           "When mentioning restaurant names in replies, format each restaurant name in bold Markdown, for example **Hannig**.",
           "Property context has two layers: globalKnowledge and localRecommendations are general information; property details, contacts, instructions, and FAQ are local housing information.",
+          "propertyContext.propertyType tells you what kind of object the guest is staying in. If it is hotel, call it a hotel, not an apartment. If it is apartment or missing, use accommodation/Unterkunft unless the guest says apartment.",
           "For event questions, use propertyContext.localEvents first. Mention dates, village/location, time, price or registration details when available. Do not recommend events whose endDate is before today.",
           "For restaurant menu and price questions, use propertyContext.restaurantMenus first. Give a concise summary with the most relevant dishes/prices, and when a sourceUrl is available include one Markdown link to the full PDF menu, for example [PDF-Menü ansehen](https://example.com/menu.pdf). Mention the sourceUpdatedAt date when available, but phrase it in the reply language. If no menu price is present for a restaurant or dish, say in the reply language that the current menu price is not available in the chat data yet; never invent menu prices or average checks.",
           "For restaurant table reservation requests, collect restaurant name, date, time, party size, guest name, and guest phone or WhatsApp contact. Do not say the table is confirmed. Say it is a reservation request until the restaurant confirms.",
@@ -824,7 +831,7 @@ async function getConciergeResponse(
           "For questions about whether lifts, cable cars, slopes, hiking trails, bike trails, via ferrata, mountain restaurants, or leisure facilities are open, use propertyContext.liveFacilities when it is available. Give the exact open/closed status and, for broad questions, summarize counts by category before listing relevant objects. Mention that the status is live/official and can change during the day. If liveFacilities is missing, say that live status is not available in chat right now and do not invent statuses.",
           "For currency exchange questions, use propertyContext.liveExchangeRates when rates are present. If rates are missing, provide the bank address and explain that the live exchange-rate table is not available in chat right now; never invent exchange rates.",
           "Only use local housing information when propertyContext.localAccessGranted is true.",
-          "If localAccessGranted is false and the guest asks about a specific apartment, access, Wi-Fi, host contact, or private housing instructions, ask them to open their guest-specific link.",
+          "If localAccessGranted is false and the guest asks about a specific accommodation, apartment, hotel, access, Wi-Fi, host contact, or private housing instructions, ask them to open their guest-specific link.",
           "If the guest asks for WhatsApp, support contact, host contact, or how to reach the property team, provide the WhatsApp number from propertyContext only when localAccessGranted is true and whatsapp is available.",
           "If a fact is not present in propertyContext, say that you do not have it and offer to notify the host.",
           "Create incidents for broken heating, appliances, access issues, safety concerns, urgent maintenance, guest escalations, or anything requiring staff follow-up.",
@@ -888,6 +895,7 @@ async function getPropertyContext(
       propertyId: null,
       propertySlug: null,
       propertyName: null,
+      propertyType: null,
       address: null,
       localAccessGranted: false,
       hostName: null,
@@ -912,7 +920,7 @@ async function getPropertyContext(
   const query = supabase
     .from("properties")
     .select(
-      "id, slug, name, address, property_contacts(host_name, whatsapp, emergency_medical, police, fire, taxi)"
+      "id, slug, name, address, property_type, property_contacts(host_name, whatsapp, emergency_medical, police, fire, taxi)"
     )
     .eq("id", propertyId);
 
@@ -939,6 +947,7 @@ async function getPropertyContext(
     propertyId: asOptionalString(property.id),
     propertySlug: asOptionalString(property.slug),
     propertyName: asOptionalString(property.name),
+    propertyType: asOptionalString(property.property_type),
     address: asOptionalString(property.address),
     localAccessGranted: true,
     hostName: asOptionalString(contact?.host_name),

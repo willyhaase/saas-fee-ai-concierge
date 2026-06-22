@@ -5,6 +5,7 @@ type GuestContextResponse = {
   propertyId: string | null;
   propertySlug: string | null;
   propertyName: string | null;
+  propertyType: string | null;
   localAccessGranted: boolean;
 };
 
@@ -117,7 +118,7 @@ async function resolvePropertyId(
 }
 
 function isApartmentMode(value: string | null) {
-  return value === "apartment";
+  return value === "apartment" || value === "hotel" || value === "property";
 }
 
 export async function GET(req: Request) {
@@ -137,6 +138,7 @@ export async function GET(req: Request) {
       propertyId: null,
       propertySlug: null,
       propertyName: null,
+      propertyType: null,
       localAccessGranted: false,
     };
 
@@ -157,7 +159,7 @@ export async function GET(req: Request) {
 
     const { data, error } = await supabase
       .from("properties")
-      .select("id, slug, name")
+      .select("id, slug, name, property_type")
       .eq("id", resolved.propertyId)
       .limit(1)
       .maybeSingle();
@@ -172,6 +174,7 @@ export async function GET(req: Request) {
       propertyId: asOptionalString(property.id),
       propertySlug: asOptionalString(property.slug),
       propertyName: asOptionalString(property.name),
+      propertyType: asOptionalString(property.property_type),
       localAccessGranted: resolved.localAccessGranted,
     } satisfies GuestContextResponse);
   } catch (error) {

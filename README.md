@@ -144,6 +144,14 @@ https://your-domain.vercel.app/apartments/<PROPERTY_SLUG>?access=<RAW_GUEST_TOKE
 
 Главная страница `https://your-domain.vercel.app/` работает как общий Saas-Fee чат и не получает доступ к локальной информации апартаментов. Локальная информация жилья доступна только на странице `/apartments/<PROPERTY_SLUG>` при валидном `access` token.
 
+Для объектов типа hotel можно использовать красивый URL:
+
+```text
+https://your-domain.vercel.app/hotels/<PROPERTY_SLUG>?access=<RAW_GUEST_TOKEN>
+```
+
+Старый URL `/apartments/<PROPERTY_SLUG>` остаётся рабочим для обратной совместимости, но для отелей лучше выдавать гостям `/hotels/...`.
+
 Для красивого URL сначала задайте slug объекту:
 
 ```sql
@@ -361,6 +369,12 @@ supabase/seed_don_ciccio_restaurant.sql
 
 ```text
 supabase/seed_hotel_bristol.sql
+```
+
+Чтобы добавить Hotel Bristol как отдельный guest-access объект с `property_type='hotel'`, slug `hotel-bristol`, локальными инструкциями и FAQ, выполни:
+
+```text
+supabase/seed_hotel_bristol_property.sql
 ```
 
 Для официального каталога ресторанов Saas-Fee/Saastal из Deskline POI Saas-Fee Tourism выполни:

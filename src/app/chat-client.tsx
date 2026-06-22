@@ -30,11 +30,12 @@ type GuestContextResponse = {
   propertyId?: string | null;
   propertySlug?: string | null;
   propertyName?: string | null;
+  propertyType?: string | null;
   localAccessGranted?: boolean;
   error?: string;
 };
 
-type ChatMode = "public" | "apartment";
+type ChatMode = "public" | "apartment" | "hotel" | "property";
 
 type ChatClientProps = {
   mode: ChatMode;
@@ -302,13 +303,17 @@ function getVisitorErrorMessage(
   return message;
 }
 
+function hasLocalAccessMode(mode: ChatMode) {
+  return mode !== "public";
+}
+
 function getGuestContextFromUrl(mode: ChatMode, propertySlug?: string) {
   if (typeof window === "undefined") {
     return { accessMode: mode, propertySlug };
   }
 
   const params = new URLSearchParams(window.location.search);
-  const propertyId = mode === "apartment"
+  const propertyId = hasLocalAccessMode(mode)
     ? params.get("propertyId") || undefined
     : undefined;
   const guestAccessToken =
@@ -317,7 +322,7 @@ function getGuestContextFromUrl(mode: ChatMode, propertySlug?: string) {
   return {
     accessMode: mode,
     propertyId,
-    propertySlug: mode === "apartment" ? propertySlug : undefined,
+    propertySlug: hasLocalAccessMode(mode) ? propertySlug : undefined,
     guestAccessToken,
   };
 }
@@ -600,7 +605,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
           </div>
           <div className="flex items-center gap-2 text-sm text-[#5b6b5f]">
             <span className="h-2.5 w-2.5 rounded-full bg-[#2f7d59]" />
-            {mode === "apartment" && guestContext.guestAccessToken
+            {hasLocalAccessMode(mode) && guestContext.guestAccessToken
               ? ui.guestLinkActive
               : ui.online}
           </div>
