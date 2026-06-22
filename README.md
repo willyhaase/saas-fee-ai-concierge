@@ -357,6 +357,12 @@ supabase/seed_walliserkanne_restaurant.sql
 supabase/seed_don_ciccio_restaurant.sql
 ```
 
+Для Hotel Bristol Saas-Fee с описанием отеля, контактом, рестораном, подтверждённой ценой 4-course dinner, Fondue Chinoise, комнатами и пакетами Yoga & Hiking, Bike & Hike, Wellbeing, Summer Ski, Early Bird, Golf и Winter Package with Ski Pass выполни:
+
+```text
+supabase/seed_hotel_bristol.sql
+```
+
 Для официального каталога ресторанов Saas-Fee/Saastal из Deskline POI Saas-Fee Tourism выполни:
 
 ```text
