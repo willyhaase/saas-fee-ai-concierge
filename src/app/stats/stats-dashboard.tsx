@@ -203,6 +203,97 @@ function PropertyList({
   );
 }
 
+function buildOwnerInsights(stats: StatsResponse) {
+  const insights: Array<{ title: string; text: string }> = [];
+  const topCategory = stats.categories[0];
+  const topRestaurant = stats.restaurants.topRestaurants[0];
+  const topActivity = stats.activities.topActivities[0];
+  const otherTopic = stats.otherQuestions.topCategories[0];
+
+  if (!stats.total) {
+    return [
+      {
+        title: "Noch keine belastbaren Muster",
+        text: "Sobald Gaeste den Concierge nutzen, erscheinen hier konkrete Hinweise fuer bessere Gaesteinformationen.",
+      },
+    ];
+  }
+
+  if (topCategory) {
+    insights.push({
+      title: `Haeufigstes Thema: ${topCategory.name}`,
+      text: `${topCategory.count} Anfragen in diesem Zeitraum. Pruefen Sie, ob diese Information im Gaestelink direkt sichtbar und klar formuliert ist.`,
+    });
+  }
+
+  if (topRestaurant) {
+    insights.push({
+      title: `Restaurant-Interesse: ${topRestaurant.name}`,
+      text: `${topRestaurant.count} Nachfrage(n). Gute Gelegenheit, eine persoenliche Empfehlung, Wegbeschreibung oder Reservierungsoption prominent anzubieten.`,
+    });
+  }
+
+  if (topActivity) {
+    insights.push({
+      title: `Aktivitaet gefragt: ${topActivity.name}`,
+      text: `${topActivity.count} Nachfrage(n). Ergaenzen Sie praktische Details wie Dauer, Schwierigkeit, Preis, Treffpunkt oder Schlechtwetter-Alternative.`,
+    });
+  }
+
+  if (otherTopic && otherTopic.name !== topCategory?.name) {
+    insights.push({
+      title: `Weiteres Servicethema: ${otherTopic.name}`,
+      text: `${otherTopic.count} Anfrage(n). Wenn das wiederholt auftritt, lohnt sich ein FAQ-Eintrag oder eine klarere Vorabinformation.`,
+    });
+  }
+
+  if (stats.recentQuestions.length >= 5) {
+    insights.push({
+      title: "Aktuelle Fragen regelmaessig pruefen",
+      text: "Die letzten Gaestefragen zeigen oft schneller als Bewertungen, wo Informationen fehlen oder missverstaendlich sind.",
+    });
+  }
+
+  return insights.slice(0, 4);
+}
+
+function OwnerInsights({ stats }: { stats: StatsResponse }) {
+  const insights = buildOwnerInsights(stats);
+
+  return (
+    <section className="mt-5 rounded-lg border border-[#d8d8ce] bg-white p-4 shadow-sm">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-base font-semibold text-[#151815]">
+            Empfehlungen fuer Eigentuemer
+          </h2>
+          <p className="mt-1 text-sm text-[#667268]">
+            Was aus den Gaestefragen praktisch verbessert werden kann.
+          </p>
+        </div>
+        <span className="text-sm font-semibold text-[#1f5f46]">
+          {stats.total} Anfragen
+        </span>
+      </div>
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
+        {insights.map((insight) => (
+          <div
+            className="rounded-md border border-[#ecece3] bg-[#fbfbf7] p-3"
+            key={insight.title}
+          >
+            <p className="text-sm font-semibold text-[#151815]">
+              {insight.title}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-[#4f5b52]">
+              {insight.text}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function StatsDashboard({
   propertySlug,
 }: {
@@ -357,6 +448,8 @@ export default function StatsDashboard({
                 token={token}
               />
             ) : null}
+
+            <OwnerInsights stats={stats} />
 
             <section className="mt-5 grid gap-5 lg:grid-cols-3">
               <StatList

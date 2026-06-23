@@ -81,6 +81,11 @@ const UI_TEXT: Record<
     caseLabel: string;
     created: string;
     priority: string;
+    quickActions: string;
+    restaurantShortcuts: string;
+    ask: string;
+    showMenu: string;
+    language: string;
   }
 > = {
   de: {
@@ -122,6 +127,11 @@ const UI_TEXT: Record<
     caseLabel: "Vorgang",
     created: "erstellt",
     priority: "Priorität",
+    quickActions: "Schnell fragen",
+    restaurantShortcuts: "Restaurants",
+    ask: "Fragen",
+    showMenu: "Menü",
+    language: "Sprache",
   },
   en: {
     welcome: (propertyName) =>
@@ -161,6 +171,11 @@ const UI_TEXT: Record<
     caseLabel: "Case",
     created: "created",
     priority: "Priority",
+    quickActions: "Quick questions",
+    restaurantShortcuts: "Restaurants",
+    ask: "Ask",
+    showMenu: "Menu",
+    language: "Language",
   },
   ru: {
     welcome: (propertyName) =>
@@ -200,6 +215,11 @@ const UI_TEXT: Record<
     caseLabel: "Заявка",
     created: "создана",
     priority: "Приоритет",
+    quickActions: "Быстрые вопросы",
+    restaurantShortcuts: "Рестораны",
+    ask: "Спросить",
+    showMenu: "Меню",
+    language: "Язык",
   },
   fr: {
     welcome: (propertyName) =>
@@ -239,6 +259,11 @@ const UI_TEXT: Record<
     caseLabel: "Dossier",
     created: "créé",
     priority: "Priorité",
+    quickActions: "Questions rapides",
+    restaurantShortcuts: "Restaurants",
+    ask: "Demander",
+    showMenu: "Menu",
+    language: "Langue",
   },
   it: {
     welcome: (propertyName) =>
@@ -278,8 +303,21 @@ const UI_TEXT: Record<
     caseLabel: "Caso",
     created: "creato",
     priority: "Priorità",
+    quickActions: "Domande rapide",
+    restaurantShortcuts: "Ristoranti",
+    ask: "Chiedi",
+    showMenu: "Menu",
+    language: "Lingua",
   },
 };
+
+const LANGUAGE_OPTIONS: Array<{ code: UiLanguage; label: string }> = [
+  { code: "de", label: "DE" },
+  { code: "en", label: "EN" },
+  { code: "fr", label: "FR" },
+  { code: "it", label: "IT" },
+  { code: "ru", label: "RU" },
+];
 
 function getBrowserLanguage(): UiLanguage {
   if (typeof window === "undefined") {
@@ -307,6 +345,10 @@ const RESTAURANT_ACTIONS = [
   { name: "Brasserie 1809", aliases: ["Brasserie 1809"] },
   { name: "The Capra", aliases: ["The Capra", "Capra"] },
   { name: "Walliserhof", aliases: ["Walliserhof"] },
+  {
+    name: "Hotel Restaurant Bristol",
+    aliases: ["Hotel Restaurant Bristol", "Restaurant Bristol", "Bristol"],
+  },
   { name: "Zur Mühle", aliases: ["Zur Mühle", "Zur Muehle", "Mühle", "Muehle"] },
   { name: "Hohsaas", aliases: ["Hohsaas"] },
   { name: "Felskinn", aliases: ["Felskinn"] },
@@ -316,6 +358,71 @@ const RESTAURANT_ACTIONS = [
   { name: "Kreuzboden", aliases: ["Kreuzboden"] },
   { name: "Furggstalden", aliases: ["Furggstalden"] },
 ];
+
+const RESTAURANT_CARDS = [
+  {
+    name: "Hannig",
+    note: "Sonniger Berglunch, erste Empfehlung",
+    price: "CHF 35-55",
+  },
+  {
+    name: "Hotel Restaurant Bristol",
+    note: "Hotel-Dinner und Fondue Chinoise",
+    price: "CHF 45+",
+  },
+  {
+    name: "Zur Mühle",
+    note: "Dorfrestaurant mit WhatsApp-Anfrage",
+    price: "CHF 40-75",
+  },
+];
+
+function getQuickActions(language: UiLanguage) {
+  const actions: Record<UiLanguage, Array<{ label: string; prompt: string }>> = {
+    de: [
+      { label: "Anreise", prompt: "Wie komme ich am besten hierher?" },
+      { label: "WLAN", prompt: "Wie funktioniert das WLAN?" },
+      { label: "Check-in", prompt: "Was muss ich zum Check-in wissen?" },
+      { label: "Restaurants", prompt: "Welche Restaurants empfehlen Sie heute?" },
+      { label: "Aktivitäten", prompt: "Welche Aktivitäten empfehlen Sie in Saas-Fee?" },
+      { label: "Problem melden", prompt: "Ich möchte ein Problem melden." },
+    ],
+    en: [
+      { label: "Arrival", prompt: "What is the best way to get here?" },
+      { label: "Wi-Fi", prompt: "How does the Wi-Fi work?" },
+      { label: "Check-in", prompt: "What should I know about check-in?" },
+      { label: "Restaurants", prompt: "Which restaurants do you recommend today?" },
+      { label: "Activities", prompt: "Which activities do you recommend in Saas-Fee?" },
+      { label: "Report issue", prompt: "I would like to report a problem." },
+    ],
+    ru: [
+      { label: "Как добраться", prompt: "Как лучше добраться сюда?" },
+      { label: "Wi-Fi", prompt: "Как подключиться к Wi-Fi?" },
+      { label: "Заезд", prompt: "Что нужно знать про check-in?" },
+      { label: "Рестораны", prompt: "Какие рестораны вы сегодня рекомендуете?" },
+      { label: "Активности", prompt: "Какие активности посоветуете в Saas-Fee?" },
+      { label: "Проблема", prompt: "Я хочу сообщить о проблеме." },
+    ],
+    fr: [
+      { label: "Arrivée", prompt: "Quel est le meilleur moyen d'arriver ici ?" },
+      { label: "Wi-Fi", prompt: "Comment fonctionne le Wi-Fi ?" },
+      { label: "Check-in", prompt: "Que dois-je savoir pour le check-in ?" },
+      { label: "Restaurants", prompt: "Quels restaurants recommandez-vous aujourd'hui ?" },
+      { label: "Activités", prompt: "Quelles activités recommandez-vous à Saas-Fee ?" },
+      { label: "Signaler", prompt: "Je souhaite signaler un problème." },
+    ],
+    it: [
+      { label: "Arrivo", prompt: "Qual è il modo migliore per arrivare qui?" },
+      { label: "Wi-Fi", prompt: "Come funziona il Wi-Fi?" },
+      { label: "Check-in", prompt: "Cosa devo sapere per il check-in?" },
+      { label: "Ristoranti", prompt: "Quali ristoranti consigliate oggi?" },
+      { label: "Attività", prompt: "Quali attività consigliate a Saas-Fee?" },
+      { label: "Problema", prompt: "Vorrei segnalare un problema." },
+    ],
+  };
+
+  return actions[language];
+}
 
 function createMessageId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -556,8 +663,9 @@ function MessageContent({
 }
 
 export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
-  const [language] = useState<UiLanguage>(() => getBrowserLanguage());
+  const [language, setLanguage] = useState<UiLanguage>(() => getBrowserLanguage());
   const ui = UI_TEXT[language];
+  const quickActions = useMemo(() => getQuickActions(language), [language]);
   const [guestContext] = useState<{
     accessMode: ChatMode;
     propertyId?: string;
@@ -613,6 +721,19 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    setMessages((current) =>
+      current.map((item) =>
+        item.id === "welcome"
+          ? {
+              ...item,
+              content: getWelcomeMessage(language, propertyName),
+            }
+          : item
+      )
+    );
+  }, [language, propertyName]);
 
   useEffect(() => {
     let cancelled = false;
@@ -862,16 +983,106 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
               {propertyName ? `${propertyName} Concierge` : "KI-Concierge"}
             </h1>
           </div>
-          <div className="flex items-center gap-2 text-sm text-[#5b6b5f]">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#2f7d59]" />
-            {hasLocalAccessMode(mode) && guestContext.guestAccessToken
-              ? ui.guestLinkActive
-              : ui.online}
+          <div className="flex flex-col gap-3 sm:items-end">
+            <div className="flex items-center gap-2 text-sm text-[#5b6b5f]">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#2f7d59]" />
+              {hasLocalAccessMode(mode) && guestContext.guestAccessToken
+                ? ui.guestLinkActive
+                : ui.online}
+            </div>
+            <div
+              aria-label={ui.language}
+              className="flex rounded-md border border-[#c8c8bc] bg-white p-1"
+            >
+              {LANGUAGE_OPTIONS.map((option) => (
+                <button
+                  className={`h-8 min-w-9 rounded px-2 text-xs font-semibold transition ${
+                    option.code === language
+                      ? "bg-[#1f5f46] text-white"
+                      : "text-[#4f5b52] hover:bg-[#eef3ed]"
+                  }`}
+                  key={option.code}
+                  onClick={() => setLanguage(option.code)}
+                  type="button"
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
         </header>
 
         <section className="grid flex-1 gap-5 py-5 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="flex min-h-[66vh] flex-col overflow-hidden rounded-lg border border-[#d8d8ce] bg-white shadow-sm">
+            <div className="border-b border-[#ecece3] bg-[#fbfbf7] px-4 py-4 sm:px-6">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b6b5f]">
+                  {ui.quickActions}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {quickActions.map((action) => (
+                    <button
+                      className="rounded-md border border-[#c8c8bc] bg-white px-3 py-2 text-sm font-medium text-[#1f2421] transition hover:border-[#2f7d59] hover:bg-[#eef3ed] disabled:cursor-not-allowed disabled:opacity-60"
+                      disabled={isSending || needsGuestIdentity}
+                      key={action.label}
+                      onClick={() => sendChatMessage(action.prompt)}
+                      type="button"
+                    >
+                      {action.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b6b5f]">
+                  {ui.restaurantShortcuts}
+                </p>
+                <div className="mt-3 grid gap-2 md:grid-cols-3">
+                  {RESTAURANT_CARDS.map((restaurant) => (
+                    <div
+                      className="rounded-md border border-[#d8d8ce] bg-white p-3"
+                      key={restaurant.name}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-sm font-semibold text-[#151815]">
+                            {restaurant.name}
+                          </p>
+                          <p className="mt-1 text-xs leading-5 text-[#5b6b5f]">
+                            {restaurant.note}
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded bg-[#eef3ed] px-2 py-1 text-xs font-semibold text-[#1f5f46]">
+                          {restaurant.price}
+                        </span>
+                      </div>
+                      <div className="mt-3 flex gap-2">
+                        <button
+                          className="h-8 flex-1 rounded-md border border-[#c8c8bc] text-xs font-semibold text-[#1f5f46] transition hover:border-[#1f5f46] disabled:cursor-not-allowed disabled:opacity-60"
+                          disabled={isSending || needsGuestIdentity}
+                          onClick={() =>
+                            sendChatMessage(
+                              `${ui.ask}: ${restaurant.name}`
+                            )
+                          }
+                          type="button"
+                        >
+                          {ui.ask}
+                        </button>
+                        <button
+                          className="h-8 flex-1 rounded-md bg-[#1f5f46] text-xs font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
+                          disabled={isSending || needsGuestIdentity}
+                          onClick={() => requestRestaurantMenu(restaurant.name)}
+                          type="button"
+                        >
+                          {ui.showMenu}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
             <div className="flex-1 space-y-4 overflow-y-auto px-4 py-5 sm:px-6">
               {messages.map((item) => (
                 <div
