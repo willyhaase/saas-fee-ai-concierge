@@ -26,6 +26,14 @@ type ChatResponse = {
   error?: string;
 };
 
+type ReservationResponse = {
+  success?: boolean;
+  reservationId?: string | null;
+  status?: string;
+  message?: string;
+  error?: string;
+};
+
 type GuestContextResponse = {
   propertyId?: string | null;
   propertySlug?: string | null;
@@ -85,6 +93,16 @@ const UI_TEXT: Record<
     restaurantShortcuts: string;
     ask: string;
     showMenu: string;
+    reserve: string;
+    reservationTitle: string;
+    restaurant: string;
+    date: string;
+    time: string;
+    partySize: string;
+    specialRequests: string;
+    cancel: string;
+    sendReservation: string;
+    reservationSentFallback: string;
     language: string;
   }
 > = {
@@ -131,6 +149,17 @@ const UI_TEXT: Record<
     restaurantShortcuts: "Restaurants",
     ask: "Fragen",
     showMenu: "Menü",
+    reserve: "Reservieren",
+    reservationTitle: "Tischreservierung",
+    restaurant: "Restaurant",
+    date: "Datum",
+    time: "Uhrzeit",
+    partySize: "Personen",
+    specialRequests: "Besondere Wünsche",
+    cancel: "Abbrechen",
+    sendReservation: "Anfrage senden",
+    reservationSentFallback:
+      "Die Reservierungsanfrage wurde gespeichert. Die Reservierung ist erst nach Bestätigung des Restaurants verbindlich.",
     language: "Sprache",
   },
   en: {
@@ -175,6 +204,17 @@ const UI_TEXT: Record<
     restaurantShortcuts: "Restaurants",
     ask: "Ask",
     showMenu: "Menu",
+    reserve: "Reserve",
+    reservationTitle: "Table reservation",
+    restaurant: "Restaurant",
+    date: "Date",
+    time: "Time",
+    partySize: "People",
+    specialRequests: "Special requests",
+    cancel: "Cancel",
+    sendReservation: "Send request",
+    reservationSentFallback:
+      "The reservation request has been saved. The reservation is only binding after the restaurant confirms it.",
     language: "Language",
   },
   ru: {
@@ -219,6 +259,17 @@ const UI_TEXT: Record<
     restaurantShortcuts: "Рестораны",
     ask: "Спросить",
     showMenu: "Меню",
+    reserve: "Забронировать",
+    reservationTitle: "Бронирование столика",
+    restaurant: "Ресторан",
+    date: "Дата",
+    time: "Время",
+    partySize: "Гостей",
+    specialRequests: "Особые пожелания",
+    cancel: "Отмена",
+    sendReservation: "Отправить запрос",
+    reservationSentFallback:
+      "Запрос на бронирование сохранён. Бронь действительна только после подтверждения ресторана.",
     language: "Язык",
   },
   fr: {
@@ -263,6 +314,17 @@ const UI_TEXT: Record<
     restaurantShortcuts: "Restaurants",
     ask: "Demander",
     showMenu: "Menu",
+    reserve: "Réserver",
+    reservationTitle: "Réservation de table",
+    restaurant: "Restaurant",
+    date: "Date",
+    time: "Heure",
+    partySize: "Personnes",
+    specialRequests: "Demandes spéciales",
+    cancel: "Annuler",
+    sendReservation: "Envoyer la demande",
+    reservationSentFallback:
+      "La demande de réservation a été enregistrée. La réservation n'est définitive qu'après confirmation du restaurant.",
     language: "Langue",
   },
   it: {
@@ -307,6 +369,17 @@ const UI_TEXT: Record<
     restaurantShortcuts: "Ristoranti",
     ask: "Chiedi",
     showMenu: "Menu",
+    reserve: "Prenota",
+    reservationTitle: "Prenotazione tavolo",
+    restaurant: "Ristorante",
+    date: "Data",
+    time: "Ora",
+    partySize: "Persone",
+    specialRequests: "Richieste speciali",
+    cancel: "Annulla",
+    sendReservation: "Invia richiesta",
+    reservationSentFallback:
+      "La richiesta di prenotazione è stata salvata. La prenotazione è valida solo dopo la conferma del ristorante.",
     language: "Lingua",
   },
 };
@@ -500,6 +573,15 @@ type SavedChatState = {
   customerName?: string;
   customerEmail?: string;
   customerPhone?: string;
+};
+
+type ReservationFormState = {
+  isOpen: boolean;
+  restaurantName: string;
+  reservationDate: string;
+  reservationTime: string;
+  partySize: string;
+  specialRequests: string;
 };
 
 function getChatStorageKey(
@@ -756,8 +838,17 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
   const [conversationId, setConversationId] = useState<string | null>(
     () => savedState?.conversationId ?? null
   );
+  const [reservationForm, setReservationForm] = useState<ReservationFormState>({
+    isOpen: false,
+    restaurantName: "",
+    reservationDate: "",
+    reservationTime: "",
+    partySize: "2",
+    specialRequests: "",
+  });
   const [isStorageLoaded, setIsStorageLoaded] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [isReservationSending, setIsReservationSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const hasGuestAccessLink = hasLocalAccessMode(mode)
@@ -1024,6 +1115,81 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
     await sendChatMessage(ui.menuPrompt(restaurantName));
   }
 
+  function openReservationForm(restaurantName: string) {
+    setError(null);
+    setReservationForm((current) => ({
+      ...current,
+      isOpen: true,
+      restaurantName,
+      partySize: current.partySize || "2",
+    }));
+  }
+
+  async function sendReservationRequest(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (needsGuestIdentity) {
+      setError(ui.identityRequired);
+      return;
+    }
+
+    setError(null);
+    setIsReservationSending(true);
+
+    try {
+      const response = await fetch("/api/restaurants/reservations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurantName: reservationForm.restaurantName,
+          reservationDate: reservationForm.reservationDate,
+          reservationTime: reservationForm.reservationTime,
+          partySize: Number(reservationForm.partySize),
+          guestName: customerName.trim(),
+          guestContact: customerPhone.trim(),
+          specialRequests: reservationForm.specialRequests.trim() || undefined,
+          conversationId: conversationId ?? undefined,
+          context: guestContext,
+        }),
+      });
+      const data = (await response.json()) as ReservationResponse;
+
+      if (!response.ok || data.error) {
+        throw new Error(data.error || ui.unavailable);
+      }
+
+      setReservationForm((current) => ({
+        ...current,
+        isOpen: false,
+        specialRequests: "",
+      }));
+      setMessages((current) => [
+        ...current,
+        {
+          id: createMessageId(),
+          role: "assistant",
+          content: data.message || ui.reservationSentFallback,
+          meta: data.reservationId
+            ? `Reservierung ${data.reservationId}${
+                data.status ? `, Status: ${data.status}` : ""
+              }`
+            : undefined,
+        },
+      ]);
+    } catch (reservationError) {
+      const message =
+        reservationError instanceof Error
+          ? reservationError.message
+          : ui.unavailable;
+
+      setError(getVisitorErrorMessage(message, ui));
+    } finally {
+      setIsReservationSending(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-[#f7f7f2] text-[#1f2421]">
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-5 sm:px-6 lg:px-8">
@@ -1123,12 +1289,20 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                           {ui.ask}
                         </button>
                         <button
-                          className="h-8 flex-1 rounded-md bg-[#1f5f46] text-xs font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
+                          className="h-8 flex-1 rounded-md border border-[#c8c8bc] text-xs font-semibold text-[#1f5f46] transition hover:border-[#1f5f46] disabled:cursor-not-allowed disabled:opacity-60"
                           disabled={isSending || needsGuestIdentity}
                           onClick={() => requestRestaurantMenu(restaurant.name)}
                           type="button"
                         >
                           {ui.showMenu}
+                        </button>
+                        <button
+                          className="h-8 flex-1 rounded-md bg-[#1f5f46] text-xs font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
+                          disabled={isSending || needsGuestIdentity}
+                          onClick={() => openReservationForm(restaurant.name)}
+                          type="button"
+                        >
+                          {ui.reserve}
                         </button>
                       </div>
                     </div>
@@ -1136,6 +1310,136 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                 </div>
               </div>
             </div>
+            {reservationForm.isOpen ? (
+              <form
+                className="border-b border-[#ecece3] bg-white px-4 py-4 sm:px-6"
+                onSubmit={sendReservationRequest}
+              >
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b6b5f]">
+                      {ui.reservationTitle}
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-[#151815]">
+                      {reservationForm.restaurantName}
+                    </p>
+                  </div>
+                  <button
+                    className="self-start text-sm font-medium text-[#5b6b5f] underline-offset-4 hover:underline sm:self-auto"
+                    onClick={() =>
+                      setReservationForm((current) => ({
+                        ...current,
+                        isOpen: false,
+                      }))
+                    }
+                    type="button"
+                  >
+                    {ui.cancel}
+                  </button>
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <label className="block">
+                    <span className="text-sm font-medium text-[#4f5b52]">
+                      {ui.date}
+                    </span>
+                    <input
+                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                      min={new Date().toISOString().slice(0, 10)}
+                      onChange={(event) =>
+                        setReservationForm((current) => ({
+                          ...current,
+                          reservationDate: event.target.value,
+                        }))
+                      }
+                      required
+                      type="date"
+                      value={reservationForm.reservationDate}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-medium text-[#4f5b52]">
+                      {ui.time}
+                    </span>
+                    <input
+                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                      onChange={(event) =>
+                        setReservationForm((current) => ({
+                          ...current,
+                          reservationTime: event.target.value,
+                        }))
+                      }
+                      required
+                      type="time"
+                      value={reservationForm.reservationTime}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-medium text-[#4f5b52]">
+                      {ui.partySize}
+                    </span>
+                    <input
+                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                      max={30}
+                      min={1}
+                      onChange={(event) =>
+                        setReservationForm((current) => ({
+                          ...current,
+                          partySize: event.target.value,
+                        }))
+                      }
+                      required
+                      type="number"
+                      value={reservationForm.partySize}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-medium text-[#4f5b52]">
+                      {ui.phone}
+                    </span>
+                    <input
+                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                      onChange={(event) => setCustomerPhone(event.target.value)}
+                      required
+                      type="tel"
+                      value={customerPhone}
+                    />
+                  </label>
+                </div>
+                <label className="mt-3 block">
+                  <span className="text-sm font-medium text-[#4f5b52]">
+                    {ui.specialRequests}{" "}
+                    <span className="font-normal text-[#7a857d]">
+                      ({ui.optionalEmail})
+                    </span>
+                  </span>
+                  <textarea
+                    className="mt-1 min-h-20 w-full resize-none rounded-md border border-[#c8c8bc] px-3 py-2 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                    onChange={(event) =>
+                      setReservationForm((current) => ({
+                        ...current,
+                        specialRequests: event.target.value,
+                      }))
+                    }
+                    value={reservationForm.specialRequests}
+                  />
+                </label>
+                <div className="mt-4 flex justify-end">
+                  <button
+                    className="h-11 rounded-md bg-[#1f5f46] px-4 text-sm font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
+                    disabled={
+                      isReservationSending ||
+                      needsGuestIdentity ||
+                      !reservationForm.reservationDate ||
+                      !reservationForm.reservationTime ||
+                      !reservationForm.partySize
+                    }
+                    type="submit"
+                  >
+                    {isReservationSending ? ui.sending : ui.sendReservation}
+                  </button>
+                </div>
+              </form>
+            ) : null}
             <div className="flex-1 space-y-4 overflow-y-auto px-4 py-5 sm:px-6">
               {messages.map((item) => (
                 <div
