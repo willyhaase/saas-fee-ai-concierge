@@ -379,6 +379,10 @@ function removeCoordinateLabelBeforeDirections(reply: string) {
       ""
     )
     .replace(
+      /\*\*(?:coordinates?|koordinaten|координаты|coordonnées|coordinate)\*\*\s*:?\s*(?=\[[^\]]+\]\(https:\/\/www\.google\.com\/maps\/dir\/\?api=1&destination=46\.)/giu,
+      ""
+    )
+    .replace(
       /\b(?:coordinates?|koordinaten|координаты|coordonnées|coordinate)\s+(?:are|is|sind|ist|:)\s*(?=\[[^\]]+\]\(https:\/\/www\.google\.com\/maps\/dir\/\?api=1&destination=46\.)/giu,
       ""
     )
