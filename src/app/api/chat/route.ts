@@ -189,10 +189,184 @@ type ResolvedGuestAccess = {
   guestyReservationId: string | null;
 };
 
+type RateLimitEntry = {
+  count: number;
+  resetAt: number;
+};
+
+type RateLimitResult = {
+  allowed: boolean;
+  limit: number;
+  remaining: number;
+  resetAt: number;
+  retryAfter: number;
+};
+
 export const runtime = "nodejs";
+
+const rateLimitStore = globalThis as typeof globalThis & {
+  __chatRateLimitStore?: Map<string, RateLimitEntry>;
+};
 
 function getEnv(name: string, fallback?: string) {
   return process.env[name] || (fallback ? process.env[fallback] : undefined);
+}
+
+function getIntegerEnv(name: string, fallback: number) {
+  const value = Number.parseInt(process.env[name] ?? "", 10);
+
+  return Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
+function getClientIp(req: Request) {
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  const firstForwardedIp = forwardedFor?.split(",")[0]?.trim();
+
+  return (
+    firstForwardedIp ||
+    req.headers.get("x-real-ip") ||
+    req.headers.get("cf-connecting-ip") ||
+    req.headers.get("x-vercel-forwarded-for") ||
+    "unknown"
+  );
+}
+
+function getRateLimitKey(req: Request) {
+  const ipHash = createHash("sha256").update(getClientIp(req)).digest("hex");
+
+  return `chat:${ipHash}`;
+}
+
+function buildRateLimitResult(count: number, limit: number, resetAt: number) {
+  const retryAfter = Math.max(1, Math.ceil((resetAt - Date.now()) / 1000));
+
+  return {
+    allowed: count <= limit,
+    limit,
+    remaining: Math.max(0, limit - count),
+    resetAt,
+    retryAfter,
+  };
+}
+
+function checkLocalRateLimit(
+  key: string,
+  limit: number,
+  windowSeconds: number
+) {
+  const now = Date.now();
+  const resetAt = now + windowSeconds * 1000;
+  const store =
+    rateLimitStore.__chatRateLimitStore ??
+    new Map<string, RateLimitEntry>();
+  rateLimitStore.__chatRateLimitStore = store;
+
+  for (const [storedKey, entry] of store.entries()) {
+    if (entry.resetAt <= now) {
+      store.delete(storedKey);
+    }
+  }
+
+  const existing = store.get(key);
+
+  if (!existing || existing.resetAt <= now) {
+    store.set(key, { count: 1, resetAt });
+
+    return buildRateLimitResult(1, limit, resetAt);
+  }
+
+  existing.count += 1;
+  store.set(key, existing);
+
+  return buildRateLimitResult(existing.count, limit, existing.resetAt);
+}
+
+async function checkUpstashRateLimit(
+  key: string,
+  limit: number,
+  windowSeconds: number
+) {
+  const url = process.env.UPSTASH_REDIS_REST_URL?.replace(/\/$/, "");
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) {
+    return null;
+  }
+
+  const response = await fetch(`${url}/pipeline`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify([
+      ["INCR", key],
+      ["TTL", key],
+    ]),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Upstash rate limit failed: ${response.status}`);
+  }
+
+  const results = (await response.json()) as Array<{
+    result?: unknown;
+    error?: string;
+  }>;
+  const count = Number(results[0]?.result ?? 0);
+  let ttl = Number(results[1]?.result ?? -1);
+
+  if (results[0]?.error || results[1]?.error || !Number.isFinite(count)) {
+    throw new Error("Upstash rate limit returned an invalid response.");
+  }
+
+  if (ttl < 0) {
+    await fetch(`${url}/expire/${encodeURIComponent(key)}/${windowSeconds}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    ttl = windowSeconds;
+  }
+
+  return buildRateLimitResult(count, limit, Date.now() + ttl * 1000);
+}
+
+async function checkChatRateLimit(req: Request): Promise<RateLimitResult> {
+  const limit = getIntegerEnv("CHAT_RATE_LIMIT_MAX_REQUESTS", 20);
+  const windowSeconds = getIntegerEnv("CHAT_RATE_LIMIT_WINDOW_SECONDS", 60);
+  const key = getRateLimitKey(req);
+
+  try {
+    const upstashResult = await checkUpstashRateLimit(
+      key,
+      limit,
+      windowSeconds
+    );
+
+    if (upstashResult) {
+      return upstashResult;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+
+  return checkLocalRateLimit(key, limit, windowSeconds);
+}
+
+function getRateLimitHeaders(result: RateLimitResult) {
+  const headers = new Headers({
+    "X-RateLimit-Limit": String(result.limit),
+    "X-RateLimit-Remaining": String(result.remaining),
+    "X-RateLimit-Reset": String(Math.ceil(result.resetAt / 1000)),
+  });
+
+  if (!result.allowed) {
+    headers.set("Retry-After", String(result.retryAfter));
+  }
+
+  return headers;
 }
 
 function getSupabase() {
@@ -2601,18 +2775,39 @@ function mergeReservationDrafts(
 }
 
 export async function POST(req: Request) {
+  const rateLimit = await checkChatRateLimit(req);
+
+  if (!rateLimit.allowed) {
+    return Response.json(
+      {
+        error: "Too many chat requests. Please wait and try again.",
+        retryAfter: rateLimit.retryAfter,
+      },
+      {
+        status: 429,
+        headers: getRateLimitHeaders(rateLimit),
+      }
+    );
+  }
+
   let payload: ChatRequest;
 
   try {
     payload = (await req.json()) as ChatRequest;
   } catch {
-    return Response.json({ error: "Request body must be valid JSON." }, { status: 400 });
+    return Response.json(
+      { error: "Request body must be valid JSON." },
+      { status: 400, headers: getRateLimitHeaders(rateLimit) }
+    );
   }
 
   const message = asOptionalString(payload.message);
 
   if (!message) {
-    return Response.json({ error: "A non-empty message is required." }, { status: 400 });
+    return Response.json(
+      { error: "A non-empty message is required." },
+      { status: 400, headers: getRateLimitHeaders(rateLimit) }
+    );
   }
 
   try {
@@ -2922,21 +3117,24 @@ export async function POST(req: Request) {
       analytics
     );
 
-    return Response.json({
-      success: true,
-      reply: finalReply,
-      conversationId: conversation.id,
-      conversationTable: conversation.table,
-      incidentCreated: Boolean(incident),
-      incidentId: incident?.id ?? null,
-      incidentTable: incident?.table ?? null,
-      priority: incident ? ai.priority : null,
-      incidentWhatsAppNotification: incidentNotification,
-      reservationCreated: Boolean(reservation?.id),
-      reservationId: reservation?.id ?? null,
-      reservationStatus: reservation?.status ?? null,
-      whatsappMessageId: reservation?.whatsappMessageId ?? null,
-    });
+    return Response.json(
+      {
+        success: true,
+        reply: finalReply,
+        conversationId: conversation.id,
+        conversationTable: conversation.table,
+        incidentCreated: Boolean(incident),
+        incidentId: incident?.id ?? null,
+        incidentTable: incident?.table ?? null,
+        priority: incident ? ai.priority : null,
+        incidentWhatsAppNotification: incidentNotification,
+        reservationCreated: Boolean(reservation?.id),
+        reservationId: reservation?.id ?? null,
+        reservationStatus: reservation?.status ?? null,
+        whatsappMessageId: reservation?.whatsappMessageId ?? null,
+      },
+      { headers: getRateLimitHeaders(rateLimit) }
+    );
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unexpected chat route error.";
