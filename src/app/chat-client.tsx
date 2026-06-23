@@ -440,15 +440,13 @@ function getRestaurantByAlias(value: string) {
   );
 }
 
-function getAssistantTokenMatcher() {
+function getRestaurantAliasMatcher() {
   const aliases = RESTAURANT_ACTIONS.flatMap((restaurant) => restaurant.aliases)
     .sort((a, b) => b.length - a.length)
     .map(escapeRegex);
 
   return new RegExp(
-    `\\[([^\\]]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)|(\\*\\*)?(${aliases.join(
-      "|"
-    )})(\\*\\*)?`,
+    `(?<![\\p{L}\\p{N}])(${aliases.join("|")})(?![\\p{L}\\p{N}])`,
     "giu"
   );
 }
@@ -585,6 +583,113 @@ function isGoogleMapsUrl(value: string) {
   }
 }
 
+function stripMarkdownHeadings(value: string) {
+  return value.replace(/^#{1,6}\s+/gm, "");
+}
+
+function renderAssistantInline(
+  text: string,
+  isSending: boolean,
+  onRestaurantClick: (restaurantName: string) => void,
+  keyPrefix: string
+): ReactNode[] {
+  const tokenMatcher = /(\[([^\]]+)\]\((https?:\/\/[^\s)]+)\))|(\*\*([^*]+)\*\*)/giu;
+  const nodes: ReactNode[] = [];
+  let lastIndex = 0;
+  let tokenIndex = 0;
+
+  function pushRestaurantAwareText(segment: string) {
+    if (!segment) {
+      return;
+    }
+
+    const matcher = getRestaurantAliasMatcher();
+    let segmentLastIndex = 0;
+
+    for (const match of segment.matchAll(matcher)) {
+      const matchIndex = match.index ?? 0;
+      const alias = match[1];
+      const restaurant = getRestaurantByAlias(alias);
+
+      if (!restaurant) {
+        continue;
+      }
+
+      if (matchIndex > segmentLastIndex) {
+        nodes.push(segment.slice(segmentLastIndex, matchIndex));
+      }
+
+      nodes.push(
+        <button
+          className="inline rounded-sm font-semibold text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d] disabled:cursor-wait disabled:opacity-60"
+          disabled={isSending}
+          key={`${keyPrefix}-restaurant-${tokenIndex++}`}
+          onClick={() => onRestaurantClick(restaurant.name)}
+          title={`Menü und Preise anzeigen: ${restaurant.name}`}
+          type="button"
+        >
+          {alias}
+        </button>
+      );
+
+      segmentLastIndex = matchIndex + alias.length;
+    }
+
+    if (segmentLastIndex < segment.length) {
+      nodes.push(segment.slice(segmentLastIndex));
+    }
+  }
+
+  for (const match of text.matchAll(tokenMatcher)) {
+    const matchIndex = match.index ?? 0;
+    const fullMatch = match[0];
+    const linkText = match[2];
+    const linkUrl = match[3];
+    const boldText = match[5];
+
+    if (matchIndex > lastIndex) {
+      pushRestaurantAwareText(text.slice(lastIndex, matchIndex));
+    }
+
+    if (linkText && linkUrl) {
+      const isMapLink = isGoogleMapsUrl(linkUrl);
+
+      nodes.push(
+        <a
+          className={
+            isMapLink
+              ? "my-1 inline-flex items-center rounded-md bg-[#1f5f46] px-3 py-1.5 text-sm font-semibold text-white no-underline transition hover:bg-[#184936]"
+              : "font-semibold text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d]"
+          }
+          href={linkUrl}
+          key={`${keyPrefix}-link-${tokenIndex++}`}
+          rel="noreferrer"
+          target="_blank"
+        >
+          {linkText}
+        </a>
+      );
+    } else if (boldText) {
+      nodes.push(
+        <strong
+          className="font-semibold text-[#151815]"
+          key={`${keyPrefix}-bold-${tokenIndex++}`}
+        >
+          {boldText}
+        </strong>
+      );
+    }
+
+    lastIndex = matchIndex + fullMatch.length;
+  }
+
+  if (lastIndex < text.length) {
+    pushRestaurantAwareText(text.slice(lastIndex));
+  }
+
+  return nodes;
+}
+
 function MessageContent({
   content,
   isAssistant,
@@ -600,64 +705,12 @@ function MessageContent({
     return <p className="whitespace-pre-wrap break-words">{content}</p>;
   }
 
-  const matcher = getAssistantTokenMatcher();
-  const nodes: ReactNode[] = [];
-  let lastIndex = 0;
-
-  for (const match of content.matchAll(matcher)) {
-    const matchIndex = match.index ?? 0;
-    const linkText = match[1];
-    const linkUrl = match[2];
-    const alias = match[4];
-    const restaurant = alias ? getRestaurantByAlias(alias) : undefined;
-
-    if (!restaurant && (!linkText || !linkUrl)) {
-      continue;
-    }
-
-    if (matchIndex > lastIndex) {
-      nodes.push(content.slice(lastIndex, matchIndex));
-    }
-
-    if (linkText && linkUrl) {
-      const isMapLink = isGoogleMapsUrl(linkUrl);
-
-      nodes.push(
-        <a
-          className={
-            isMapLink
-              ? "my-1 inline-flex items-center rounded-md bg-[#1f5f46] px-3 py-1.5 text-sm font-semibold text-white no-underline transition hover:bg-[#184936]"
-              : "font-semibold text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d]"
-          }
-          href={linkUrl}
-          key={`${linkUrl}-${matchIndex}`}
-          rel="noreferrer"
-          target="_blank"
-        >
-          {linkText}
-        </a>
-      );
-    } else if (restaurant) {
-      nodes.push(
-        <button
-          className="inline rounded-sm font-semibold text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d] disabled:cursor-wait disabled:opacity-60"
-          disabled={isSending}
-          key={`${restaurant.name}-${matchIndex}`}
-          onClick={() => onRestaurantClick(restaurant.name)}
-          title={`Menü und Preise anzeigen: ${restaurant.name}`}
-          type="button"
-        >
-          {restaurant.name}
-        </button>
-      );
-    }
-
-    lastIndex = matchIndex + match[0].length;
-  }
-
-  if (lastIndex < content.length) {
-    nodes.push(content.slice(lastIndex));
-  }
+  const nodes = renderAssistantInline(
+    stripMarkdownHeadings(content),
+    isSending,
+    onRestaurantClick,
+    "assistant-message"
+  );
 
   return <p className="whitespace-pre-wrap break-words">{nodes}</p>;
 }
