@@ -378,6 +378,14 @@ function removeCoordinateLabelBeforeDirections(reply: string) {
       /\b(?:coordinates?|koordinaten|координаты|coordonnées|coordinate)\s*:?\s*(?=\[[^\]]+\]\(https:\/\/www\.google\.com\/maps\/dir\/\?api=1&destination=46\.)/giu,
       ""
     )
+    .replace(
+      /\b(?:coordinates?|koordinaten|координаты|coordonnées|coordinate)\s+(?:are|is|sind|ist|:)\s*(?=\[[^\]]+\]\(https:\/\/www\.google\.com\/maps\/dir\/\?api=1&destination=46\.)/giu,
+      ""
+    )
+    .replace(
+      /\s*(?:You can find these toilets based on your proximity to (?:these )?coordinates\.?|Choose based on your proximity to (?:these )?coordinates\.?)/giu,
+      ""
+    )
     .replace(/\s+([.,;:])/g, "$1");
 }
 
