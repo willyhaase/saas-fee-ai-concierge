@@ -10,6 +10,7 @@ type ChatRequest = {
   message?: unknown;
   customerName?: unknown;
   customerEmail?: unknown;
+  customerPhone?: unknown;
   conversationId?: unknown;
   context?: unknown;
   createIncident?: unknown;
@@ -138,6 +139,12 @@ type PropertyContext = {
   propertyType: string | null;
   address: string | null;
   localAccessGranted: boolean;
+  guestName: string | null;
+  guestEmail: string | null;
+  guestPhone: string | null;
+  checkIn: string | null;
+  checkOut: string | null;
+  guestyReservationId: string | null;
   hostName: string | null;
   whatsapp: string | null;
   emergencyMedical: string | null;
@@ -170,6 +177,16 @@ type PropertyContext = {
   liveWeather: LiveWeather | null;
   liveExchangeRates: LiveExchangeRates | null;
   liveFacilities: LiveFacilities | null;
+};
+
+type ResolvedGuestAccess = {
+  propertyId: string;
+  guestName: string | null;
+  guestEmail: string | null;
+  guestPhone: string | null;
+  checkIn: string | null;
+  checkOut: string | null;
+  guestyReservationId: string | null;
 };
 
 export const runtime = "nodejs";
@@ -825,6 +842,7 @@ async function getConciergeResponse(
           "For event questions, use propertyContext.localEvents first. Mention dates, village/location, time, price or registration details when available. Do not recommend events whose endDate is before today.",
           "For restaurant menu and price questions, use propertyContext.restaurantMenus first. Give a concise summary with the most relevant dishes/prices, and when a sourceUrl is available include one Markdown link to the full PDF menu, for example [PDF-Menü ansehen](https://example.com/menu.pdf). Mention the sourceUpdatedAt date when available, but phrase it in the reply language. If no menu price is present for a restaurant or dish, say in the reply language that the current menu price is not available in the chat data yet; never invent menu prices or average checks.",
           "For restaurant table reservation requests, collect restaurant name, date, time, party size, guest name, and guest phone or WhatsApp contact. Do not say the table is confirmed. Say it is a reservation request until the restaurant confirms.",
+          "If propertyContext contains guestName, guestPhone, guestEmail, checkIn, or checkOut, use them as the known guest stay details. Do not ask again for guest name or phone when those values are already present.",
           "If reservation details are missing, ask a concise follow-up question in the reply language.",
           "When the guest wants a restaurant reservation, include restaurant_reservation in the JSON. Use requested=true. Set readyToSend=true only when restaurantName, reservationDate as YYYY-MM-DD, reservationTime, partySize, guestName, and guestContact are all present. Otherwise set readyToSend=false and list missingFields.",
           "For weather questions, use propertyContext.liveWeather when it is available and mention that mountain weather can change quickly.",
@@ -844,6 +862,7 @@ async function getConciergeResponse(
           message,
           customerName: asOptionalString(payload.customerName),
           customerEmail: asOptionalString(payload.customerEmail),
+          customerPhone: asOptionalString(payload.customerPhone),
           conversationId: asOptionalString(payload.conversationId),
           context: payload.context ?? null,
           preferredLanguage,
@@ -880,7 +899,7 @@ async function getPropertyContext(
     getLiveExchangeRates(),
     getLiveSaasFeeOpenFacilities(),
   ]);
-  const propertyId =
+  const resolvedAccess =
     accessMode === "apartment"
       ? await resolvePropertyId(
           supabase,
@@ -890,7 +909,7 @@ async function getPropertyContext(
         )
       : null;
 
-  if (!propertyId) {
+  if (!resolvedAccess) {
     return {
       propertyId: null,
       propertySlug: null,
@@ -898,6 +917,12 @@ async function getPropertyContext(
       propertyType: null,
       address: null,
       localAccessGranted: false,
+      guestName: null,
+      guestEmail: null,
+      guestPhone: null,
+      checkIn: null,
+      checkOut: null,
+      guestyReservationId: null,
       hostName: null,
       whatsapp: null,
       emergencyMedical: null,
@@ -922,7 +947,7 @@ async function getPropertyContext(
     .select(
       "id, slug, name, address, property_type, property_contacts(host_name, whatsapp, emergency_medical, police, fire, taxi)"
     )
-    .eq("id", propertyId);
+    .eq("id", resolvedAccess.propertyId);
 
   const { data, error } = await query.limit(1).maybeSingle();
 
@@ -939,8 +964,8 @@ async function getPropertyContext(
     ? (contactsValue[0] as Record<string, unknown> | undefined)
     : (contactsValue as Record<string, unknown> | null);
   const [instructions, faq] = await Promise.all([
-    getPropertyInstructions(supabase, propertyId),
-    getPropertyFaq(supabase, propertyId),
+    getPropertyInstructions(supabase, resolvedAccess.propertyId),
+    getPropertyFaq(supabase, resolvedAccess.propertyId),
   ]);
 
   return {
@@ -950,6 +975,12 @@ async function getPropertyContext(
     propertyType: asOptionalString(property.property_type),
     address: asOptionalString(property.address),
     localAccessGranted: true,
+    guestName: resolvedAccess.guestName,
+    guestEmail: resolvedAccess.guestEmail,
+    guestPhone: resolvedAccess.guestPhone,
+    checkIn: resolvedAccess.checkIn,
+    checkOut: resolvedAccess.checkOut,
+    guestyReservationId: resolvedAccess.guestyReservationId,
     hostName: asOptionalString(contact?.host_name),
     whatsapp: asOptionalString(contact?.whatsapp),
     emergencyMedical: asOptionalString(contact?.emergency_medical),
@@ -974,7 +1005,7 @@ async function resolvePropertyId(
   requestedPropertyId: string | null,
   requestedPropertySlug: string | null,
   guestAccessToken: string | null
-) {
+): Promise<ResolvedGuestAccess | null> {
   if (!guestAccessToken) {
     return null;
   }
@@ -982,7 +1013,9 @@ async function resolvePropertyId(
   const tokenHash = hashAccessToken(guestAccessToken);
   const { data, error } = await supabase
     .from("guest_property_access")
-    .select("property_id, active, valid_from, valid_until")
+    .select(
+      "property_id, active, valid_from, valid_until, guest_name, guest_email, guest_phone, guesty_reservation_id, metadata"
+    )
     .eq("access_token_hash", tokenHash)
     .eq("active", true)
     .limit(1)
@@ -1022,7 +1055,22 @@ async function resolvePropertyId(
     }
   }
 
-  return propertyId;
+  const metadata =
+    access.metadata &&
+    typeof access.metadata === "object" &&
+    !Array.isArray(access.metadata)
+      ? (access.metadata as Record<string, unknown>)
+      : {};
+
+  return {
+    propertyId,
+    guestName: asOptionalString(access.guest_name),
+    guestEmail: asOptionalString(access.guest_email),
+    guestPhone: asOptionalString(access.guest_phone),
+    checkIn: asOptionalString(metadata.checkIn),
+    checkOut: asOptionalString(metadata.checkOut),
+    guestyReservationId: asOptionalString(access.guesty_reservation_id),
+  };
 }
 
 async function getPropertyInstructions(
@@ -2414,7 +2462,7 @@ function localReservationDraft(
   message: string,
   propertyContext: PropertyContext | null,
   customerName: string | null,
-  customerEmail: string | null
+  customerContact: string | null
 ): RestaurantReservationDraft | null {
   if (!isReservationRequest(message)) {
     return null;
@@ -2428,7 +2476,7 @@ function localReservationDraft(
     reservationTime: parseReservationTime(message),
     partySize: parsePartySize(message),
     guestName: parseGuestName(message) ?? customerName,
-    guestContact: parseGuestContact(message) ?? customerEmail,
+    guestContact: parseGuestContact(message) ?? customerContact,
     specialRequests: null,
     missingFields: [],
   };
@@ -2508,8 +2556,9 @@ export async function POST(req: Request) {
       "incident_reports",
       "tickets",
     ]);
-    const customerName = asOptionalString(payload.customerName);
-    const customerEmail = asOptionalString(payload.customerEmail);
+    const submittedCustomerName = asOptionalString(payload.customerName);
+    const submittedCustomerEmail = asOptionalString(payload.customerEmail);
+    const submittedCustomerPhone = asOptionalString(payload.customerPhone);
     const requestConversationId = asOptionalString(payload.conversationId);
     const requestContext = getPayloadContext(payload);
     const accessMode = getAccessMode(requestContext);
@@ -2526,9 +2575,20 @@ export async function POST(req: Request) {
       guestAccessToken,
       accessMode
     );
+    const customerName = submittedCustomerName ?? propertyContext?.guestName ?? null;
+    const customerEmail =
+      submittedCustomerEmail ?? propertyContext?.guestEmail ?? null;
+    const customerPhone =
+      submittedCustomerPhone ?? propertyContext?.guestPhone ?? null;
+    const customerContact = customerPhone ?? customerEmail;
     const ai = await getConciergeResponse(
       message,
-      payload,
+      {
+        ...payload,
+        customerName,
+        customerEmail,
+        customerPhone,
+      },
       propertyContext,
       responseLanguage
     );
@@ -2538,7 +2598,7 @@ export async function POST(req: Request) {
         message,
         propertyContext,
         customerName,
-        customerEmail
+        customerContact
       )
     );
     const analytics = classifyQuery(message, propertyContext);
@@ -2547,6 +2607,8 @@ export async function POST(req: Request) {
       accessMode,
       customerName,
       customerEmail,
+      customerPhone,
+      customerContact,
       responseLanguage,
       context: payload.context ?? null,
       analytics,

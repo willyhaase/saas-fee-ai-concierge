@@ -7,6 +7,12 @@ type GuestContextResponse = {
   propertyName: string | null;
   propertyType: string | null;
   localAccessGranted: boolean;
+  guestName: string | null;
+  guestEmail: string | null;
+  guestPhone: string | null;
+  checkIn: string | null;
+  checkOut: string | null;
+  guestyReservationId: string | null;
 };
 
 export const runtime = "nodejs";
@@ -53,13 +59,21 @@ async function resolvePropertyId(
     return {
       propertyId: null,
       localAccessGranted: false,
+      guestName: null,
+      guestEmail: null,
+      guestPhone: null,
+      checkIn: null,
+      checkOut: null,
+      guestyReservationId: null,
     };
   }
 
   const tokenHash = hashAccessToken(guestAccessToken);
   const { data, error } = await supabase
     .from("guest_property_access")
-    .select("property_id, active, valid_from, valid_until")
+    .select(
+      "property_id, active, valid_from, valid_until, guest_name, guest_email, guest_phone, guesty_reservation_id, metadata"
+    )
     .eq("access_token_hash", tokenHash)
     .eq("active", true)
     .limit(1)
@@ -69,6 +83,12 @@ async function resolvePropertyId(
     return {
       propertyId: null,
       localAccessGranted: false,
+      guestName: null,
+      guestEmail: null,
+      guestPhone: null,
+      checkIn: null,
+      checkOut: null,
+      guestyReservationId: null,
     };
   }
 
@@ -84,6 +104,12 @@ async function resolvePropertyId(
     return {
       propertyId: null,
       localAccessGranted: false,
+      guestName: null,
+      guestEmail: null,
+      guestPhone: null,
+      checkIn: null,
+      checkOut: null,
+      guestyReservationId: null,
     };
   }
 
@@ -91,6 +117,12 @@ async function resolvePropertyId(
     return {
       propertyId: null,
       localAccessGranted: false,
+      guestName: null,
+      guestEmail: null,
+      guestPhone: null,
+      checkIn: null,
+      checkOut: null,
+      guestyReservationId: null,
     };
   }
 
@@ -107,13 +139,32 @@ async function resolvePropertyId(
       return {
         propertyId: null,
         localAccessGranted: false,
+        guestName: null,
+        guestEmail: null,
+        guestPhone: null,
+        checkIn: null,
+        checkOut: null,
+        guestyReservationId: null,
       };
     }
   }
 
+  const metadata =
+    access.metadata &&
+    typeof access.metadata === "object" &&
+    !Array.isArray(access.metadata)
+      ? (access.metadata as Record<string, unknown>)
+      : {};
+
   return {
     propertyId,
     localAccessGranted: true,
+    guestName: asOptionalString(access.guest_name),
+    guestEmail: asOptionalString(access.guest_email),
+    guestPhone: asOptionalString(access.guest_phone),
+    checkIn: asOptionalString(metadata.checkIn),
+    checkOut: asOptionalString(metadata.checkOut),
+    guestyReservationId: asOptionalString(access.guesty_reservation_id),
   };
 }
 
@@ -140,6 +191,12 @@ export async function GET(req: Request) {
       propertyName: null,
       propertyType: null,
       localAccessGranted: false,
+      guestName: null,
+      guestEmail: null,
+      guestPhone: null,
+      checkIn: null,
+      checkOut: null,
+      guestyReservationId: null,
     };
 
     if (!isApartmentMode(accessMode)) {
@@ -176,6 +233,12 @@ export async function GET(req: Request) {
       propertyName: asOptionalString(property.name),
       propertyType: asOptionalString(property.property_type),
       localAccessGranted: resolved.localAccessGranted,
+      guestName: resolved.guestName,
+      guestEmail: resolved.guestEmail,
+      guestPhone: resolved.guestPhone,
+      checkIn: resolved.checkIn,
+      checkOut: resolved.checkOut,
+      guestyReservationId: resolved.guestyReservationId,
     } satisfies GuestContextResponse);
   } catch (error) {
     console.error(

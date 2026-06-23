@@ -33,6 +33,16 @@ SUPABASE_INCIDENTS_TABLE=incidents
 # Optional: require guest links for property-local data
 REQUIRE_GUEST_ACCESS_TOKEN=false
 
+# Optional: Guesty reservation sync for guest links
+GUESTY_CLIENT_ID=...
+GUESTY_CLIENT_SECRET=...
+GUESTY_GUEST_LINK_SECRET=make-a-long-random-string
+GUESTY_SYNC_TOKEN=make-another-long-random-string
+GUESTY_GUEST_LINK_BASE_URL=https://your-domain.vercel.app
+GUESTY_API_BASE_URL=https://open-api.guesty.com/v1
+GUESTY_TOKEN_URL=https://open-api.guesty.com/oauth2/token
+GUESTY_RESERVATION_STATUSES=confirmed,reserved,checked_in,checked-in
+
 # Optional: protect /api/stats and /stats
 STATS_ACCESS_TOKEN=change-me
 
@@ -77,6 +87,12 @@ WHATSAPP_WEBHOOK_VERIFY_TOKEN=make-a-long-random-string
 - Если таблицы называются `conversations` и `incidents`, переменные `SUPABASE_CONVERSATIONS_TABLE` и `SUPABASE_INCIDENTS_TABLE` можно не задавать.
 - Если таблицы называются иначе, укажи реальные имена в Vercel.
 - `REQUIRE_GUEST_ACCESS_TOKEN=true` включает строгий режим: локальная информация жилья выдаётся только по гостевой ссылке с access token.
+- `GUESTY_CLIENT_ID` и `GUESTY_CLIENT_SECRET` включают серверную интеграцию с Guesty Open API.
+- `GUESTY_GUEST_LINK_SECRET` нужен для генерации стабильных гостевых access token из Guesty reservation id. Не меняй его после запуска, иначе ранее выданные ссылки перестанут проходить проверку.
+- `GUESTY_SYNC_TOKEN` защищает endpoint синхронизации `POST /api/guesty/sync`. Передавай его как `Authorization: Bearer <token>` или `?token=<token>`.
+- `GUESTY_GUEST_LINK_BASE_URL` задаёт публичный домен, который попадёт в гостевые ссылки.
+- `GUESTY_API_BASE_URL`, `GUESTY_TOKEN_URL`, `GUESTY_RESERVATIONS_PATH`, `GUESTY_OAUTH_SCOPE`, `GUESTY_SYNC_PAST_DAYS`, `GUESTY_SYNC_FUTURE_DAYS`, `GUESTY_SYNC_LIMIT` можно переопределить, если в аккаунте Guesty используются другие endpoint или лимиты.
+- `GUESTY_RESERVATION_STATUSES` задаёт статусы броней, для которых создаются гостевые ссылки.
 - `STATS_ACCESS_TOKEN` включает защиту статистики. Если переменная задана, открывай `/stats?token=<STATS_ACCESS_TOKEN>`.
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID` включает Google Analytics на всех страницах. Сейчас в коде есть fallback `G-MHL3TGDKC6`, но в Vercel лучше указать переменную явно.
 - `HUBSPOT_PORTAL_ID` и `HUBSPOT_FEEDBACK_FORM_ID` включают форму обратной связи на лендинге. Значения берутся из HubSpot формы.
@@ -159,6 +175,58 @@ update public.properties
 set slug = 'studio-atlantic'
 where id = '<PROPERTY_ID>'::uuid;
 ```
+
+Для Guesty-синхронизации каждому объекту нужно сопоставить listing id из Guesty:
+
+```sql
+update public.properties
+set guesty_listing_id = '<GUESTY_LISTING_ID>'
+where slug = 'studio-atlantic';
+```
+
+Затем запусти миграцию:
+
+```text
+supabase/migrations/20260622_add_guesty_integration.sql
+```
+
+Проверить синхронизацию без записи в базу:
+
+```bash
+curl -X POST "https://your-domain.vercel.app/api/guesty/sync?dryRun=true" \
+  -H "Authorization: Bearer <GUESTY_SYNC_TOKEN>"
+```
+
+Запустить реальную синхронизацию:
+
+```bash
+curl -X POST "https://your-domain.vercel.app/api/guesty/sync" \
+  -H "Authorization: Bearer <GUESTY_SYNC_TOKEN>"
+```
+
+Endpoint создаёт или обновляет записи в `guest_property_access` для активных Guesty reservations. Сырые access token не сохраняются в базе; они детерминированно вычисляются из `GUESTY_GUEST_LINK_SECRET` и Guesty reservation id, а в Supabase остаётся только SHA-256 hash.
+
+Персональная гостевая ссылка подтягивает из Guesty-синхронизации:
+
+- имя гостя
+- email
+- телефон / WhatsApp
+- даты check-in и check-out
+- Guesty reservation id
+
+Эти данные возвращаются через `/api/guest-context`, показываются в боковой панели чата и автоматически используются при запросе бронирования столика. Если у Guesty reservation есть телефон гостя, чат не будет повторно спрашивать контакт для ресторанной заявки.
+
+История чата сохраняется в браузере в `localStorage` отдельно для каждой гостевой ссылки. Если гость перезагрузит страницу, сообщения, `conversationId` и заполненные данные гостя восстановятся.
+
+Для объектов без Guesty или броней по телефону можно использовать QR-сценарий:
+
+1. Создай обычный `guest_property_access` token для объекта без имени конкретного гостя.
+2. Размести QR-код со ссылкой вида `https://your-domain.vercel.app/apartments/<PROPERTY_SLUG>?access=<RAW_GUEST_TOKEN>` в апартаментах или номере.
+3. При первом открытии гость вводит имя и телефон / WhatsApp в чате.
+4. Чат сохраняет эти данные в браузере и отправляет их в `/api/chat` с каждым сообщением.
+5. Заявки, инциденты и ресторанные бронирования получают имя и телефон из этой идентификации.
+
+Если Guesty-бронь уже содержит имя и телефон, эти поля просто заполняются автоматически. Если Guesty нет, тот же поток работает через ручной ввод гостя после сканирования QR.
 
 API хэширует `access` через SHA-256 и ищет его в `guest_property_access.access_token_hash`. Сырой token не хранится в базе.
 

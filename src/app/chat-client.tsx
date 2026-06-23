@@ -32,6 +32,12 @@ type GuestContextResponse = {
   propertyName?: string | null;
   propertyType?: string | null;
   localAccessGranted?: boolean;
+  guestName?: string | null;
+  guestEmail?: string | null;
+  guestPhone?: string | null;
+  checkIn?: string | null;
+  checkOut?: string | null;
+  guestyReservationId?: string | null;
   error?: string;
 };
 
@@ -53,6 +59,9 @@ const UI_TEXT: Record<
     unavailable: string;
     fallbackReply: string;
     sendFailed: string;
+    identityRequired: string;
+    identityIntro: string;
+    optionalEmail: string;
     menuPrompt: (restaurantName: string) => string;
     thinking: string;
     placeholder: string;
@@ -61,6 +70,10 @@ const UI_TEXT: Record<
     guestData: string;
     name: string;
     email: string;
+    phone: string;
+    stay: string;
+    checkIn: string;
+    checkOut: string;
     guestLinkActive: string;
     online: string;
     privacy: string;
@@ -84,6 +97,11 @@ const UI_TEXT: Record<
       "Danke. Ich habe Ihre Nachricht aufgenommen und das Team wird sie in Kürze prüfen.",
     sendFailed:
       "Ich konnte diese Nachricht nicht senden. Bitte versuchen Sie es erneut.",
+    identityRequired:
+      "Bitte geben Sie zuerst Ihren Namen und Ihre Telefon-/WhatsApp-Nummer ein.",
+    identityIntro:
+      "Bitte identifizieren Sie sich einmalig mit Name und Telefon. So kann der Concierge Sie bei Anfragen und Restaurantreservierungen korrekt zuordnen.",
+    optionalEmail: "Optional",
     menuPrompt: (restaurantName) =>
       `Zeige mir das Menü von ${restaurantName} mit Preisen.`,
     thinking: "Ich denke nach...",
@@ -93,6 +111,10 @@ const UI_TEXT: Record<
     guestData: "Gästedaten",
     name: "Name",
     email: "E-Mail",
+    phone: "Telefon / WhatsApp",
+    stay: "Aufenthalt",
+    checkIn: "Check-in",
+    checkOut: "Check-out",
     guestLinkActive: "Gästelink aktiv",
     online: "Online",
     privacy: "Datenschutzerklärung",
@@ -114,6 +136,11 @@ const UI_TEXT: Record<
     fallbackReply:
       "Thank you. I have received your message and the team will review it shortly.",
     sendFailed: "I could not send this message. Please try again.",
+    identityRequired:
+      "Please enter your name and phone/WhatsApp number first.",
+    identityIntro:
+      "Please identify yourself once with your name and phone. This lets the concierge assign requests and restaurant reservations correctly.",
+    optionalEmail: "Optional",
     menuPrompt: (restaurantName) =>
       `Show me the menu of ${restaurantName} with prices.`,
     thinking: "Thinking...",
@@ -123,6 +150,10 @@ const UI_TEXT: Record<
     guestData: "Guest details",
     name: "Name",
     email: "Email",
+    phone: "Phone / WhatsApp",
+    stay: "Stay",
+    checkIn: "Check-in",
+    checkOut: "Check-out",
     guestLinkActive: "Guest link active",
     online: "Online",
     privacy: "Privacy Policy",
@@ -144,6 +175,11 @@ const UI_TEXT: Record<
     fallbackReply:
       "Спасибо. Я получил ваше сообщение, команда скоро его проверит.",
     sendFailed: "Не удалось отправить сообщение. Пожалуйста, попробуйте ещё раз.",
+    identityRequired:
+      "Сначала введите имя и номер телефона / WhatsApp.",
+    identityIntro:
+      "Пожалуйста, один раз укажите имя и телефон. Так консьерж сможет правильно привязать запросы и бронирования ресторанов к вам.",
+    optionalEmail: "Необязательно",
     menuPrompt: (restaurantName) =>
       `Покажи меню ресторана ${restaurantName} с ценами.`,
     thinking: "Думаю...",
@@ -153,6 +189,10 @@ const UI_TEXT: Record<
     guestData: "Данные гостя",
     name: "Имя",
     email: "E-mail",
+    phone: "Телефон / WhatsApp",
+    stay: "Проживание",
+    checkIn: "Заезд",
+    checkOut: "Выезд",
     guestLinkActive: "Гостевая ссылка активна",
     online: "Онлайн",
     privacy: "Политика конфиденциальности",
@@ -174,6 +214,11 @@ const UI_TEXT: Record<
     fallbackReply:
       "Merci. J'ai bien reçu votre message et l'équipe va l'examiner sous peu.",
     sendFailed: "Je n'ai pas pu envoyer ce message. Veuillez réessayer.",
+    identityRequired:
+      "Veuillez d'abord saisir votre nom et votre numéro de téléphone / WhatsApp.",
+    identityIntro:
+      "Veuillez vous identifier une seule fois avec votre nom et votre téléphone. Le concierge pourra ainsi associer correctement les demandes et réservations.",
+    optionalEmail: "Optionnel",
     menuPrompt: (restaurantName) =>
       `Montrez-moi le menu de ${restaurantName} avec les prix.`,
     thinking: "Je réfléchis...",
@@ -183,6 +228,10 @@ const UI_TEXT: Record<
     guestData: "Données du client",
     name: "Nom",
     email: "E-mail",
+    phone: "Téléphone / WhatsApp",
+    stay: "Séjour",
+    checkIn: "Arrivée",
+    checkOut: "Départ",
     guestLinkActive: "Lien client actif",
     online: "En ligne",
     privacy: "Politique de confidentialité",
@@ -204,6 +253,11 @@ const UI_TEXT: Record<
     fallbackReply:
       "Grazie. Ho ricevuto il tuo messaggio e il team lo controllerà a breve.",
     sendFailed: "Non sono riuscito a inviare questo messaggio. Riprova.",
+    identityRequired:
+      "Inserisci prima il tuo nome e numero di telefono / WhatsApp.",
+    identityIntro:
+      "Identificati una sola volta con nome e telefono. Così il concierge può associare correttamente richieste e prenotazioni.",
+    optionalEmail: "Opzionale",
     menuPrompt: (restaurantName) =>
       `Mostrami il menu di ${restaurantName} con i prezzi.`,
     thinking: "Sto pensando...",
@@ -213,6 +267,10 @@ const UI_TEXT: Record<
     guestData: "Dati ospite",
     name: "Nome",
     email: "E-mail",
+    phone: "Telefono / WhatsApp",
+    stay: "Soggiorno",
+    checkIn: "Check-in",
+    checkOut: "Check-out",
     guestLinkActive: "Link ospite attivo",
     online: "Online",
     privacy: "Informativa sulla privacy",
@@ -331,6 +389,83 @@ function getWelcomeMessage(language: UiLanguage, propertyName?: string | null) {
   return UI_TEXT[language].welcome(propertyName);
 }
 
+type SavedChatState = {
+  messages?: ChatMessage[];
+  conversationId?: string | null;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+};
+
+function getChatStorageKey(
+  mode: ChatMode,
+  propertySlug: string | undefined,
+  guestAccessToken: string | undefined
+) {
+  const scope = [
+    mode,
+    propertySlug ?? "public",
+    guestAccessToken ? guestAccessToken.slice(0, 16) : "anonymous",
+  ].join(":");
+
+  return `saas-fee-ai-concierge:chat:${scope}`;
+}
+
+function readSavedChatState(storageKey: string): SavedChatState | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    return raw ? (JSON.parse(raw) as SavedChatState) : null;
+  } catch {
+    return null;
+  }
+}
+
+function getInitialMessages(
+  language: UiLanguage,
+  savedState: SavedChatState | null
+) {
+  const savedMessages = Array.isArray(savedState?.messages)
+    ? savedState.messages.filter(
+        (item) =>
+          typeof item.id === "string" &&
+          (item.role === "user" || item.role === "assistant") &&
+          typeof item.content === "string"
+      )
+    : [];
+
+  return savedMessages.length
+    ? savedMessages
+    : [
+        {
+          id: "welcome",
+          role: "assistant" as const,
+          content: getWelcomeMessage(language),
+        },
+      ];
+}
+
+function formatStayDate(value: string | null) {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 function MessageContent({
   content,
   isAssistant,
@@ -405,35 +540,112 @@ function MessageContent({
 export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
   const [language] = useState<UiLanguage>(() => getBrowserLanguage());
   const ui = UI_TEXT[language];
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content: getWelcomeMessage(language),
-    },
-  ]);
-  const [propertyName, setPropertyName] = useState<string | null>(null);
-  const [message, setMessage] = useState("");
-  const [customerName, setCustomerName] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
-  const [isSending, setIsSending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [guestContext] = useState<{
     accessMode: ChatMode;
     propertyId?: string;
     propertySlug?: string;
     guestAccessToken?: string;
   }>(() => getGuestContextFromUrl(mode, propertySlug));
+  const storageKey = useMemo(
+    () =>
+      getChatStorageKey(
+        mode,
+        guestContext.propertySlug,
+        guestContext.guestAccessToken
+      ),
+    [guestContext.guestAccessToken, guestContext.propertySlug, mode]
+  );
+  const [savedState] = useState<SavedChatState | null>(() =>
+    readSavedChatState(storageKey)
+  );
+  const [messages, setMessages] = useState<ChatMessage[]>(() =>
+    getInitialMessages(language, savedState)
+  );
+  const [propertyName, setPropertyName] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
+  const [customerName, setCustomerName] = useState(
+    () => savedState?.customerName ?? ""
+  );
+  const [customerEmail, setCustomerEmail] = useState(
+    () => savedState?.customerEmail ?? ""
+  );
+  const [customerPhone, setCustomerPhone] = useState(
+    () => savedState?.customerPhone ?? ""
+  );
+  const [checkIn, setCheckIn] = useState<string | null>(null);
+  const [checkOut, setCheckOut] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(
+    () => savedState?.conversationId ?? null
+  );
+  const [isStorageLoaded, setIsStorageLoaded] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const hasGuestAccessLink = hasLocalAccessMode(mode)
+    ? Boolean(guestContext.guestAccessToken)
+    : false;
+  const needsGuestIdentity =
+    hasGuestAccessLink && (!customerName.trim() || !customerPhone.trim());
 
   const canSend = useMemo(
-    () => message.trim().length > 0 && !isSending,
-    [isSending, message]
+    () => message.trim().length > 0 && !isSending && !needsGuestIdentity,
+    [isSending, message, needsGuestIdentity]
   );
 
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (cancelled) {
+        return;
+      }
+
+      const latestSavedState = readSavedChatState(storageKey);
+
+      if (latestSavedState) {
+        setMessages(getInitialMessages(language, latestSavedState));
+        setConversationId(latestSavedState.conversationId ?? null);
+        setCustomerName(latestSavedState.customerName ?? "");
+        setCustomerEmail(latestSavedState.customerEmail ?? "");
+        setCustomerPhone(latestSavedState.customerPhone ?? "");
+      }
+
+      setIsStorageLoaded(true);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [language, storageKey]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !isStorageLoaded) {
+      return;
+    }
+
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        messages,
+        conversationId,
+        customerName,
+        customerEmail,
+        customerPhone,
+      } satisfies SavedChatState)
+    );
+  }, [
+    conversationId,
+    customerEmail,
+    customerName,
+    customerPhone,
+    isStorageLoaded,
+    messages,
+    storageKey,
+  ]);
 
   useEffect(() => {
     if (mode === "public") {
@@ -466,6 +678,24 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
       })
       .then((data) => {
         const loadedPropertyName = data?.propertyName?.trim();
+        const loadedGuestName = data?.guestName?.trim();
+        const loadedGuestEmail = data?.guestEmail?.trim();
+        const loadedGuestPhone = data?.guestPhone?.trim();
+
+        if (loadedGuestName) {
+          setCustomerName((current) => current || loadedGuestName);
+        }
+
+        if (loadedGuestEmail) {
+          setCustomerEmail((current) => current || loadedGuestEmail);
+        }
+
+        if (loadedGuestPhone) {
+          setCustomerPhone((current) => current || loadedGuestPhone);
+        }
+
+        setCheckIn(data?.checkIn ?? null);
+        setCheckOut(data?.checkOut ?? null);
 
         if (!loadedPropertyName) {
           return;
@@ -497,6 +727,11 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
       return;
     }
 
+    if (needsGuestIdentity) {
+      setError(ui.identityRequired);
+      return;
+    }
+
     setError(null);
     setIsSending(true);
     setMessage("");
@@ -519,6 +754,8 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
           message: text,
           customerName: customerName.trim() || undefined,
           customerEmail: customerEmail.trim() || undefined,
+          customerPhone: customerPhone.trim() || undefined,
+          conversationId: conversationId ?? undefined,
           context: {
             source: "website-chat",
             browserLanguage: navigator.language,
@@ -541,6 +778,10 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
 
       if (!response.ok || data.error) {
         throw new Error(data.error || ui.unavailable);
+      }
+
+      if (data.conversationId) {
+        setConversationId(data.conversationId);
       }
 
       setMessages((current) => [
@@ -660,6 +901,11 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                   {error}
                 </p>
               ) : null}
+              {needsGuestIdentity ? (
+                <p className="mb-3 rounded-md border border-[#d8d8ce] bg-white px-3 py-2 text-sm text-[#5b6b5f]">
+                  {ui.identityRequired}
+                </p>
+              ) : null}
               <div className="flex gap-3">
                 <textarea
                   ref={textareaRef}
@@ -684,6 +930,11 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
             <h2 className="text-base font-semibold text-[#151815]">
               {ui.guestData}
             </h2>
+            {hasGuestAccessLink ? (
+              <p className="mt-2 text-sm leading-5 text-[#5b6b5f]">
+                {ui.identityIntro}
+              </p>
+            ) : null}
             <div className="mt-4 space-y-3">
               <label className="block">
                 <span className="text-sm font-medium text-[#4f5b52]">
@@ -698,7 +949,10 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
               </label>
               <label className="block">
                 <span className="text-sm font-medium text-[#4f5b52]">
-                  {ui.email}
+                  {ui.email}{" "}
+                  <span className="font-normal text-[#7a857d]">
+                    ({ui.optionalEmail})
+                  </span>
                 </span>
                 <input
                   value={customerEmail}
@@ -708,6 +962,33 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                   type="email"
                 />
               </label>
+              <label className="block">
+                <span className="text-sm font-medium text-[#4f5b52]">
+                  {ui.phone}
+                </span>
+                <input
+                  value={customerPhone}
+                  onChange={(event) => setCustomerPhone(event.target.value)}
+                  className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                  autoComplete="tel"
+                  type="tel"
+                />
+              </label>
+              {checkIn || checkOut ? (
+                <div className="rounded-md border border-[#d8d8ce] bg-[#fbfbf7] px-3 py-3 text-sm text-[#4f5b52]">
+                  <p className="font-medium text-[#151815]">{ui.stay}</p>
+                  {checkIn ? (
+                    <p className="mt-1">
+                      {ui.checkIn}: {formatStayDate(checkIn)}
+                    </p>
+                  ) : null}
+                  {checkOut ? (
+                    <p className="mt-1">
+                      {ui.checkOut}: {formatStayDate(checkOut)}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           </aside>
         </section>
