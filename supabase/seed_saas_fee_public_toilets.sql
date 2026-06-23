@@ -18,7 +18,7 @@ with rows(category, title, content) as (
     (
       'public_toilets',
       'Öffentliche Toiletten in Saas-Fee',
-      'Wenn Gäste nach Toiletten, WC oder öffentlichen Toiletten fragen, antworte auf Deutsch und nenne konkrete nahe Optionen. Quelle: OpenStreetMap/Overpass amenity=toilets, OSM-Datenstand 2026-06-12T07:34:55Z. Wichtig: Einige OSM-Punkte haben keine offiziellen Namen; nenne dann den nächstliegenden Bereich und die Koordinaten. Wenn keine Öffnungszeiten angegeben sind, sage nicht, dass die Toilette sicher geöffnet ist.'
+      'Wenn Gäste nach Toiletten, WC oder öffentlichen Toiletten fragen, antworte in der Sprache des Gastes und nenne konkrete nahe Optionen. Quelle: OpenStreetMap/Overpass amenity=toilets, OSM-Datenstand 2026-06-12T07:34:55Z. Wichtig: Einige OSM-Punkte haben keine offiziellen Namen; nenne dann den nächstliegenden Bereich. Zeige Koordinaten nicht als Text an; nutze sie nur für einen Google-Maps-Link "Route planen" / "Get directions" / "Проложить маршрут". Wenn keine Öffnungszeiten angegeben sind, sage nicht, dass die Toilette sicher geöffnet ist.'
     ),
     (
       'public_toilets',
@@ -38,7 +38,7 @@ with rows(category, title, content) as (
     (
       'public_toilets',
       'WC südlicher Dorfbereich',
-      'Öffentliche Toilette als Gebäude im südlichen Dorfbereich, Koordinaten 46.1027821, 7.9266530. OSM-Tags: fee=no, female=yes, male=yes, wheelchair=yes. Nützlich für Gäste im unteren/südlichen Teil von Saas-Fee; wenn der Gast eine exakte Navigation braucht, nenne die Koordinaten.'
+      'Öffentliche Toilette als Gebäude im südlichen Dorfbereich, Koordinaten 46.1027821, 7.9266530. OSM-Tags: fee=no, female=yes, male=yes, wheelchair=yes. Nützlich für Gäste im unteren/südlichen Teil von Saas-Fee; wenn der Gast eine exakte Navigation braucht, gib einen Google-Maps-Link statt die Koordinaten als Text zu nennen.'
     ),
     (
       'public_toilets',
@@ -53,7 +53,7 @@ with rows(category, title, content) as (
     (
       'public_toilets',
       'Antwortstil für öffentliche Toiletten',
-      'Bei WC-Fragen nicht nur allgemein antworten. Frage nach dem aktuellen Standort des Gastes, falls unklar, und nenne dann 1-3 passende Optionen: Postplatz/Bus Terminal für Zentrum und Ankunft; westlicher Dorfbereich/Parking-Seite für Parking/Kinderwagen; unterer Dorfbereich/Bergbahnseite für Alpin Express und südliche Dorfseite. Wenn Öffnungszeiten fehlen, ehrlich sagen: Die Daten enthalten keine garantierten Öffnungszeiten.'
+      'Bei WC-Fragen nicht nur allgemein antworten. Frage nach dem aktuellen Standort des Gastes, falls unklar, und nenne dann 1-3 passende Optionen: Postplatz/Bus Terminal für Zentrum und Ankunft; westlicher Dorfbereich/Parking-Seite für Parking/Kinderwagen; unterer Dorfbereich/Bergbahnseite für Alpin Express und südliche Dorfseite. Beschreibe die Lage in Worten und setze pro Toilette einen Google-Maps-Link zum Routenplaner, aber zeige keine rohen Koordinaten im Antworttext. Wenn Öffnungszeiten fehlen, ehrlich sagen: Die Daten enthalten keine garantierten Öffnungszeiten.'
     )
 ),
 deleted as (

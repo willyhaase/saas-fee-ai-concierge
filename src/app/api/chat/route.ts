@@ -325,6 +325,68 @@ function getBooleanEnv(name: string) {
   return process.env[name]?.toLowerCase() === "true";
 }
 
+function getDirectionsLabel(language: ResponseLanguage) {
+  switch (language) {
+    case "German":
+      return "Route planen";
+    case "Russian":
+      return "Проложить маршрут";
+    case "French":
+      return "Itinéraire";
+    case "Italian":
+      return "Indicazioni";
+    case "English":
+    default:
+      return "Get directions";
+  }
+}
+
+function getGoogleMapsDirectionsUrl(latitude: string, longitude: string) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+}
+
+function replaceCoordinatesWithDirections(
+  reply: string,
+  language: ResponseLanguage
+) {
+  const label = getDirectionsLabel(language);
+  const coordinatePairPattern =
+    /(?:\b(?:coordinates?|koordinaten|координаты|coordonnées|coordinate)\s*:?\s*)?(46\.\d{4,7})\s*,\s*(7\.\d{4,7})/giu;
+
+  return reply.replace(
+    coordinatePairPattern,
+    (match, latitude, longitude, offset: number) => {
+      const lineStart = reply.lastIndexOf("\n", offset) + 1;
+      const linePrefix = reply.slice(lineStart, offset);
+
+      if (
+        linePrefix.includes("google.com/maps") ||
+        linePrefix.includes("maps/dir") ||
+        linePrefix.includes("maps/search")
+      ) {
+        return match;
+      }
+
+      return `[${label}](${getGoogleMapsDirectionsUrl(latitude, longitude)})`;
+    }
+  );
+}
+
+function removeCoordinateLabelBeforeDirections(reply: string) {
+  return reply
+    .replace(
+      /\b(?:coordinates?|koordinaten|координаты|coordonnées|coordinate)\s*:?\s*(?=\[[^\]]+\]\(https:\/\/www\.google\.com\/maps\/dir\/\?api=1&destination=46\.)/giu,
+      ""
+    )
+    .replace(/\s+([.,;:])/g, "$1");
+}
+
+function formatDirectionsLinks(reply: string, language: ResponseLanguage) {
+  return removeCoordinateLabelBeforeDirections(
+    replaceCoordinatesWithDirections(reply, language)
+  );
+}
+
 function hashAccessToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
@@ -840,6 +902,7 @@ async function getConciergeResponse(
           "Property context has two layers: globalKnowledge and localRecommendations are general information; property details, contacts, instructions, and FAQ are local housing information.",
           "propertyContext.propertyType tells you what kind of object the guest is staying in. If it is hotel, call it a hotel, not an apartment. If it is apartment or missing, use accommodation/Unterkunft unless the guest says apartment.",
           "For event questions, use propertyContext.localEvents first. Mention dates, village/location, time, price or registration details when available. Do not recommend events whose endDate is before today.",
+          "For public toilet/WC/restroom questions, describe where each toilet is located in plain language, but do not print raw coordinates. When coordinates are available, include a Markdown Google Maps directions link with link text matching the reply language, for example [Get directions](https://www.google.com/maps/dir/?api=1&destination=46.1086429,7.9295247).",
           "For restaurant menu and price questions, use propertyContext.restaurantMenus first. Give a concise summary with the most relevant dishes/prices, and when a sourceUrl is available include one Markdown link to the full PDF menu, for example [PDF-Menü ansehen](https://example.com/menu.pdf). Mention the sourceUpdatedAt date when available, but phrase it in the reply language. If no menu price is present for a restaurant or dish, say in the reply language that the current menu price is not available in the chat data yet; never invent menu prices or average checks.",
           "For restaurant table reservation requests, collect restaurant name, date, time, party size, guest name, and guest phone or WhatsApp contact. Do not say the table is confirmed. Say it is a reservation request until the restaurant confirms.",
           "If propertyContext contains guestName, guestPhone, guestEmail, checkIn, or checkOut, use them as the known guest stay details. Do not ask again for guest name or phone when those values are already present.",
@@ -2592,6 +2655,7 @@ export async function POST(req: Request) {
       propertyContext,
       responseLanguage
     );
+    ai.reply = formatDirectionsLinks(ai.reply, responseLanguage);
     const reservationDraft = mergeReservationDrafts(
       ai.restaurant_reservation,
       localReservationDraft(

@@ -466,6 +466,18 @@ function formatStayDate(value: string | null) {
   });
 }
 
+function isGoogleMapsUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return (
+      url.hostname === "www.google.com" &&
+      url.pathname.startsWith("/maps/")
+    );
+  } catch {
+    return false;
+  }
+}
+
 function MessageContent({
   content,
   isAssistant,
@@ -501,9 +513,15 @@ function MessageContent({
     }
 
     if (linkText && linkUrl) {
+      const isMapLink = isGoogleMapsUrl(linkUrl);
+
       nodes.push(
         <a
-          className="font-semibold text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d]"
+          className={
+            isMapLink
+              ? "my-1 inline-flex items-center rounded-md bg-[#1f5f46] px-3 py-1.5 text-sm font-semibold text-white no-underline transition hover:bg-[#184936]"
+              : "font-semibold text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d]"
+          }
           href={linkUrl}
           key={`${linkUrl}-${matchIndex}`}
           rel="noreferrer"
