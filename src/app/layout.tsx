@@ -12,8 +12,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const gaMeasurementId =
-  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-MHL3TGDKC6";
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://willyhaase-saas-fee-ai-concierge.vercel.app"),

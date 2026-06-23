@@ -47,7 +47,7 @@ GUESTY_RESERVATION_STATUSES=confirmed,reserved,checked_in,checked-in
 STATS_ACCESS_TOKEN=change-me
 
 # Optional: Google Analytics measurement ID
-NEXT_PUBLIC_GA_MEASUREMENT_ID=G-MHL3TGDKC6
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 
 # Optional: HubSpot feedback form on the landing page
 HUBSPOT_PORTAL_ID=123456
@@ -94,7 +94,7 @@ WHATSAPP_WEBHOOK_VERIFY_TOKEN=make-a-long-random-string
 - `GUESTY_API_BASE_URL`, `GUESTY_TOKEN_URL`, `GUESTY_RESERVATIONS_PATH`, `GUESTY_OAUTH_SCOPE`, `GUESTY_SYNC_PAST_DAYS`, `GUESTY_SYNC_FUTURE_DAYS`, `GUESTY_SYNC_LIMIT` можно переопределить, если в аккаунте Guesty используются другие endpoint или лимиты.
 - `GUESTY_RESERVATION_STATUSES` задаёт статусы броней, для которых создаются гостевые ссылки.
 - `STATS_ACCESS_TOKEN` включает защиту статистики. Если переменная задана, открывай `/stats?token=<STATS_ACCESS_TOKEN>`.
-- `NEXT_PUBLIC_GA_MEASUREMENT_ID` включает Google Analytics на всех страницах. Сейчас в коде есть fallback `G-MHL3TGDKC6`, но в Vercel лучше указать переменную явно.
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID` включает Google Analytics на всех страницах. Если переменная не задана, Google tag не рендерится.
 - `HUBSPOT_PORTAL_ID` и `HUBSPOT_FEEDBACK_FORM_ID` включают форму обратной связи на лендинге. Значения берутся из HubSpot формы.
 - `HUBSPOT_FEEDBACK_MESSAGE_FIELD` задаёт internal name поля сообщения в HubSpot форме. По умолчанию используется `message`.
 - `HUBSPOT_FEEDBACK_SOURCE_FIELD` можно указать, если в форме есть поле для источника лида.
