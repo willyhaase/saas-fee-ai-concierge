@@ -23,6 +23,15 @@ type ChatResponse = {
   incidentCreated?: boolean;
   incidentId?: string | null;
   priority?: string | null;
+  reservationRequested?: boolean;
+  reservationStatus?: string | null;
+  reservationDraft?: {
+    restaurantName?: string | null;
+    reservationDate?: string | null;
+    reservationTime?: string | null;
+    partySize?: number | null;
+    specialRequests?: string | null;
+  } | null;
   error?: string;
 };
 
@@ -522,6 +531,34 @@ function getRestaurantAliasMatcher() {
     `(?<![\\p{L}\\p{N}])(${aliases.join("|")})(?![\\p{L}\\p{N}])`,
     "giu"
   );
+}
+
+function inferRestaurantNameFromText(value: string) {
+  const match = value.match(getRestaurantAliasMatcher());
+  const alias = match?.[1] ?? match?.[0];
+
+  return alias ? getRestaurantByAlias(alias)?.name ?? null : null;
+}
+
+function inferReservationRestaurant(
+  userText: string,
+  messages: ChatMessage[]
+) {
+  const fromUserText = inferRestaurantNameFromText(userText);
+
+  if (fromUserText) {
+    return fromUserText;
+  }
+
+  for (const item of [...messages].reverse()) {
+    const restaurantName = inferRestaurantNameFromText(item.content);
+
+    if (restaurantName) {
+      return restaurantName;
+    }
+  }
+
+  return null;
 }
 
 function getVisitorErrorMessage(
@@ -1083,6 +1120,19 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
               : undefined,
         },
       ]);
+
+      if (
+        data.reservationRequested &&
+        data.reservationStatus === "missing_fields"
+      ) {
+        const restaurantName =
+          data.reservationDraft?.restaurantName ??
+          inferReservationRestaurant(text, messages);
+
+        if (restaurantName) {
+          openReservationForm(restaurantName, data.reservationDraft);
+        }
+      }
     } catch (sendError) {
       const errorMessage =
         sendError instanceof Error
@@ -1115,13 +1165,24 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
     await sendChatMessage(ui.menuPrompt(restaurantName));
   }
 
-  function openReservationForm(restaurantName: string) {
+  function openReservationForm(
+    restaurantName: string,
+    draft?: ChatResponse["reservationDraft"]
+  ) {
     setError(null);
     setReservationForm((current) => ({
       ...current,
       isOpen: true,
       restaurantName,
-      partySize: current.partySize || "2",
+      reservationDate:
+        draft?.reservationDate ?? current.reservationDate,
+      reservationTime:
+        draft?.reservationTime ?? current.reservationTime,
+      partySize: draft?.partySize
+        ? String(draft.partySize)
+        : current.partySize || "2",
+      specialRequests:
+        draft?.specialRequests ?? current.specialRequests,
     }));
   }
 

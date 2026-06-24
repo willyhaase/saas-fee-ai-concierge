@@ -3113,6 +3113,17 @@ export async function POST(req: Request) {
         reservationCreated: Boolean(reservation?.id),
         reservationId: reservation?.id ?? null,
         reservationStatus: reservation?.status ?? null,
+        reservationRequested: Boolean(reservationDraft?.requested),
+        reservationDraft: reservationDraft
+          ? {
+              restaurantName: reservationDraft.restaurantName,
+              reservationDate: reservationDraft.reservationDate,
+              reservationTime: reservationDraft.reservationTime,
+              partySize: reservationDraft.partySize,
+              specialRequests: reservationDraft.specialRequests,
+              missingFields: reservationDraft.missingFields,
+            }
+          : null,
         whatsappMessageId: reservation?.whatsappMessageId ?? null,
       },
       { headers: getRateLimitHeaders(rateLimit) }
