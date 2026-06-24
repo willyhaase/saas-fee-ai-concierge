@@ -186,6 +186,11 @@ with rows(category, title, content) as (
       'For hiking, biking, glacier tours, skiing or cable-car trips, advise guests to check weather, lift/trail status, wind and storm risk on the day itself. In poor visibility, storms, heavy rain, ice or strong wind, guests should choose village activities or ask the tourist office/guide office.'
     ),
     (
+      'safety',
+      'Fire ban in Valais',
+      'ACHTUNG Feuerverbot! Es gilt ein Verbot von jeglichem Feuern im Freien mit sofortiger Wirkung für das gesamte Kantonsgebiet. Eine Entspannung der Lage ist erst nach einer intensiven Regenperiode von mindestens 3 Tagen zu erwarten. Kurze Regenschauer und Gewitter vermögen die gefährliche Situation nicht zu entschärfen. Die offiziellen Kontrollorgane werden jegliche Widerhandlungen den zuständigen Behörden anzeigen. Bei einem Brandausbruch handeln Sie nach dem Grundsatz: ALARMIEREN (118) - RETTEN - LÖSCHEN. When guests ask about BBQ, fire pits, outdoor fires, grilling in nature, campfires or mountain safety, clearly state that all outdoor fires are forbidden throughout the canton. Answer in the guest language, but keep the emergency principle and fire number 118 clear.'
+    ),
+    (
       'tourist_information',
       'Saas-Fee tourist office',
       'For official destination information, guests can contact Saastal Tourismus AG, Obere Dorfstrasse 2, CH-3906 Saas-Fee, phone +41 27 958 18 58, email info@saas-fee.ch. Use this contact directly in chat when a guest needs tourist-office help.'

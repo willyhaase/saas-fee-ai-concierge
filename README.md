@@ -307,7 +307,7 @@ supabase/seed_saas_fee_global_knowledge.sql
 - hiking, biking, climbing/mountaineering
 - открытые подъёмники и расписания cable cars
 - SaastalCard
-- погода, webcams и mountain safety
+- погода, webcams, mountain safety и актуальный запрет на открытый огонь
 - банк, банкомат и обмен валют
 - контакт туристического офиса
 
