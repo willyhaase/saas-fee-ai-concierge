@@ -2410,27 +2410,9 @@ async function handleRestaurantReservation(
   const missingFields = getReservationMissingFields(draft);
 
   if (!draft.readyToSend || missingFields.length > 0) {
-    const messageBody = buildReservationMessage(draft, propertyContext);
-    const reservationId = await insertRestaurantReservation(supabase, {
-      conversation_id: conversationId,
-      property_id: propertyContext?.propertyId ?? null,
-      restaurant_name: draft.restaurantName ?? "Unbekannt",
-      restaurant_whatsapp: null,
-      guest_name: draft.guestName,
-      guest_contact: draft.guestContact,
-      party_size: draft.partySize,
-      reservation_date: draft.reservationDate,
-      reservation_time: draft.reservationTime,
-      special_requests: draft.specialRequests,
-      status: "requested",
-      whatsapp_message_body: messageBody,
-      whatsapp_message_id: null,
-      whatsapp_error: `Missing reservation fields: ${missingFields.join(", ")}`,
-    });
-
     return {
-      id: reservationId,
-      status: "requested",
+      id: null,
+      status: "missing_fields",
       whatsappMessageId: null,
       guestNotice: reservationNotice(language, "missingFields"),
     };
