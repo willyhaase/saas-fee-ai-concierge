@@ -256,15 +256,30 @@ export default function LandingPage({ locale }: LandingPageProps) {
               {copy.architecture.text}
             </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {copy.architecture.modules.map((module) => (
-              <div
-                className="rounded-lg border border-[#d8d8ce] bg-[#fffefa] px-4 py-4 text-sm font-semibold text-[#203029]"
-                key={module}
-              >
-                {module}
-              </div>
-            ))}
+          <div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {copy.architecture.modules.map((module) => (
+                <div
+                  className="rounded-lg border border-[#d8d8ce] bg-[#fffefa] px-4 py-4 text-sm font-semibold text-[#203029]"
+                  key={module}
+                >
+                  {module}
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <span className="mr-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#657168]">
+                {copy.architecture.techLabel}
+              </span>
+              {copy.architecture.techStack.map((item) => (
+                <span
+                  className="rounded-full border border-[#d8d8ce] bg-white px-3 py-1 text-xs font-semibold text-[#59665f]"
+                  key={item}
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>

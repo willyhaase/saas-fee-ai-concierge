@@ -52,6 +52,8 @@ type LandingCopy = {
     title: string;
     text: string;
     modules: string[];
+    techLabel: string;
+    techStack: string[];
   };
   contact: {
     eyebrow: string;
@@ -161,18 +163,19 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
     },
     architecture: {
-      eyebrow: "Architektur",
-      title:
-        "Next.js, OpenAI, Supabase und WhatsApp in einem einsatzbereiten Prototyp.",
-      text: "Die Anwendung speichert Dialoge, trennt allgemeines und objektbezogenes Wissen, arbeitet mit sicheren Gästelinks und ist für den Betrieb auf Vercel vorbereitet.",
+      eyebrow: "Betrieb",
+      title: "Zuverlässig, sicher und bereit für den Einsatz mit Gästen.",
+      text: "Der Concierge ist für den täglichen Gästekontakt ausgelegt: öffentliche Ortsinformationen bleiben von geschützten Objektinformationen getrennt, Anfragen werden nachvollziehbar protokolliert und wichtige Anliegen können direkt weitergeleitet werden.",
       modules: [
-        "KI-Chat auf der Website",
-        "Gästelinks mit Zugriffstoken",
-        "Supabase Wissensdatenbank",
-        "Dialogprotokolle und Analytics",
+        "Öffentlicher Saas-Fee Chat",
+        "Geschützte Informationen pro Objekt",
+        "Sichere Gästelinks",
+        "Dialogprotokolle und Statistiken",
         "Restaurantmenüs und Reservationen",
-        "Twilio WhatsApp Webhooks",
+        "WhatsApp-Hinweise bei wichtigen Anliegen",
       ],
+      techLabel: "Technische Basis",
+      techStack: ["Next.js", "OpenAI", "Supabase", "Twilio", "Vercel"],
     },
     contact: {
       eyebrow: "Kontakt",
@@ -280,18 +283,19 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
     },
     architecture: {
-      eyebrow: "Architecture",
-      title:
-        "Next.js, OpenAI, Supabase, and WhatsApp in a deployment-ready prototype.",
-      text: "The application stores conversations, separates general and property-specific knowledge, uses secure guest links, and is ready to run on Vercel.",
+      eyebrow: "Operations",
+      title: "Reliable, secure, and ready to use with guests.",
+      text: "The concierge is built for everyday guest communication: public destination information stays separate from protected property information, requests are logged clearly, and important issues can be forwarded directly.",
       modules: [
-        "AI chat on the website",
-        "Guest links with access tokens",
-        "Supabase knowledge base",
-        "Conversation logs and analytics",
+        "Public Saas-Fee chat",
+        "Protected information per property",
+        "Secure guest links",
+        "Conversation logs and statistics",
         "Restaurant menus and reservations",
-        "Twilio WhatsApp webhooks",
+        "WhatsApp alerts for important issues",
       ],
+      techLabel: "Technical foundation",
+      techStack: ["Next.js", "OpenAI", "Supabase", "Twilio", "Vercel"],
     },
     contact: {
       eyebrow: "Contact",
@@ -400,18 +404,19 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
     },
     architecture: {
-      eyebrow: "Architecture",
-      title:
-        "Next.js, OpenAI, Supabase et WhatsApp dans un prototype prêt au déploiement.",
-      text: "L'application conserve les conversations, sépare les connaissances générales et propres au logement, fonctionne avec des liens invités sécurisés et est prête pour Vercel.",
+      eyebrow: "Exploitation",
+      title: "Fiable, sécurisé et prêt à être utilisé avec les invités.",
+      text: "Le concierge est conçu pour la communication quotidienne avec les invités : les informations publiques de la destination restent séparées des informations protégées des hébergements, les demandes sont consignées clairement et les sujets importants peuvent être transmis directement.",
       modules: [
-        "Chat IA sur le site",
-        "Liens invités avec jetons d'accès",
-        "Base de connaissances Supabase",
-        "Historique des dialogues et analytics",
+        "Chat public Saas-Fee",
+        "Informations protégées par hébergement",
+        "Liens invités sécurisés",
+        "Historique des dialogues et statistiques",
         "Menus de restaurants et réservations",
-        "Webhooks WhatsApp Twilio",
+        "Alertes WhatsApp pour les sujets importants",
       ],
+      techLabel: "Base technique",
+      techStack: ["Next.js", "OpenAI", "Supabase", "Twilio", "Vercel"],
     },
     contact: {
       eyebrow: "Contact",
@@ -521,18 +526,19 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
     },
     architecture: {
-      eyebrow: "Architettura",
-      title:
-        "Next.js, OpenAI, Supabase e WhatsApp in un prototipo pronto per il deploy.",
-      text: "L'applicazione salva le conversazioni, separa conoscenze generali e informazioni specifiche dell'alloggio, usa link ospite sicuri ed è pronta per Vercel.",
+      eyebrow: "Operatività",
+      title: "Affidabile, sicuro e pronto per l'uso con gli ospiti.",
+      text: "Il concierge è pensato per la comunicazione quotidiana con gli ospiti: le informazioni pubbliche sulla destinazione restano separate da quelle protette della struttura, le richieste sono registrate in modo chiaro e i temi importanti possono essere inoltrati direttamente.",
       modules: [
-        "Chat IA sul sito",
-        "Link ospite con token di accesso",
-        "Base di conoscenza Supabase",
-        "Log delle conversazioni e analytics",
+        "Chat pubblica Saas-Fee",
+        "Informazioni protette per struttura",
+        "Link ospite sicuri",
+        "Log delle conversazioni e statistiche",
         "Menu dei ristoranti e prenotazioni",
-        "Webhook WhatsApp Twilio",
+        "Avvisi WhatsApp per temi importanti",
       ],
+      techLabel: "Base tecnica",
+      techStack: ["Next.js", "OpenAI", "Supabase", "Twilio", "Vercel"],
     },
     contact: {
       eyebrow: "Contatto",
