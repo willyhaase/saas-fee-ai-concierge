@@ -15,6 +15,7 @@ type LandingCopy = {
   nav: {
     product: string;
     modules: string;
+    pricing: string;
     contact: string;
     chat: string;
   };
@@ -54,6 +55,21 @@ type LandingCopy = {
     modules: string[];
     techLabel: string;
     techStack: string[];
+  };
+  pricing: {
+    eyebrow: string;
+    title: string;
+    text: string;
+    plans: Array<{
+      name: string;
+      price: string;
+      annual: string;
+      features: string[];
+      note: string;
+      featured?: boolean;
+    }>;
+    launchTitle: string;
+    launchText: string;
   };
   contact: {
     eyebrow: string;
@@ -108,6 +124,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     nav: {
       product: "Projekt",
       modules: "Module",
+      pricing: "Preise",
       contact: "Kontakt",
       chat: "Chat öffnen",
     },
@@ -177,6 +194,56 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       techLabel: "Technische Basis",
       techStack: ["Next.js", "OpenAI", "Supabase", "Twilio", "Vercel"],
     },
+    pricing: {
+      eyebrow: "Preise",
+      title: "Transparente Einstiegspakete für Gastgeber in Saas-Fee.",
+      text: "Die Pakete sind so aufgebaut, dass Eigentümer mit einer Wohnung risikoarm starten und später auf weitere Objekte erweitern können. Professional ist der empfohlene Standard für aktive Gastgeber.",
+      plans: [
+        {
+          name: "Pilot",
+          price: "CHF 89 / Monat",
+          annual: "Jährlich: CHF 890",
+          features: [
+            "1 Ferienwohnung",
+            "Gästelink und QR-Code",
+            "Objektbezogene Wissensbasis",
+            "Allgemeines Saas-Fee-Wissen",
+            "Grundauswertung der Fragen",
+          ],
+          note: "Einrichtung einmalig: CHF 490",
+        },
+        {
+          name: "Professional",
+          price: "CHF 249 / Monat",
+          annual: "Jährlich: CHF 2'490",
+          features: [
+            "Bis zu 3 Ferienwohnungen",
+            "Mehrsprachiges Gästeinterface",
+            "WhatsApp-Benachrichtigungen bei Vorfällen",
+            "Restaurant- und Aktivitätsfragen",
+            "Monatliche Optimierung der Wissensbasis",
+          ],
+          note: "Einrichtung einmalig: CHF 790. Weitere Wohnungen: CHF 59 / Monat pro Objekt.",
+          featured: true,
+        },
+        {
+          name: "Verwaltung",
+          price: "Ab CHF 590 / Monat",
+          annual: "Jährlich: ab CHF 5'900",
+          features: [
+            "Bis zu 10 Ferienwohnungen",
+            "Eigene Prozesse und Eskalationsregeln",
+            "Erweiterte Auswertungen",
+            "Individuelle Integrationen",
+            "Priorisierte Betreuung",
+          ],
+          note: "Einrichtung ab CHF 1'500. Weitere Wohnungen: CHF 39-49 / Monat pro Objekt.",
+        },
+      ],
+      launchTitle: "Einführungsangebot für Eigentümer in Saas-Fee",
+      launchText:
+        "Pilot für CHF 69 / Monat während der ersten 3 Monate, danach CHF 89 / Monat. Ideal, um den Concierge mit einer konkreten Wohnung und echten Gästeanfragen zu testen.",
+    },
     contact: {
       eyebrow: "Kontakt",
       title: "Möchten Sie den Saas-Fee AI Concierge für Gäste nutzen?",
@@ -230,6 +297,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     nav: {
       product: "Project",
       modules: "Modules",
+      pricing: "Pricing",
       contact: "Contact",
       chat: "Open chat",
     },
@@ -297,6 +365,56 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       techLabel: "Technical foundation",
       techStack: ["Next.js", "OpenAI", "Supabase", "Twilio", "Vercel"],
     },
+    pricing: {
+      eyebrow: "Pricing",
+      title: "Clear entry packages for hosts in Saas-Fee.",
+      text: "The packages let owners start safely with one apartment and expand to more properties later. Professional is the recommended standard for active hosts.",
+      plans: [
+        {
+          name: "Pilot",
+          price: "CHF 89 / month",
+          annual: "Annual: CHF 890",
+          features: [
+            "1 holiday apartment",
+            "Guest link and QR code",
+            "Property-specific knowledge base",
+            "General Saas-Fee knowledge",
+            "Basic question analytics",
+          ],
+          note: "One-time setup: CHF 490",
+        },
+        {
+          name: "Professional",
+          price: "CHF 249 / month",
+          annual: "Annual: CHF 2'490",
+          features: [
+            "Up to 3 holiday apartments",
+            "Multilingual guest interface",
+            "WhatsApp alerts for incidents",
+            "Restaurant and activity questions",
+            "Monthly knowledge-base optimization",
+          ],
+          note: "One-time setup: CHF 790. Additional apartments: CHF 59 / month per property.",
+          featured: true,
+        },
+        {
+          name: "Management",
+          price: "From CHF 590 / month",
+          annual: "Annual: from CHF 5'900",
+          features: [
+            "Up to 10 holiday apartments",
+            "Custom processes and escalation rules",
+            "Advanced analytics",
+            "Individual integrations",
+            "Priority support",
+          ],
+          note: "Setup from CHF 1'500. Additional apartments: CHF 39-49 / month per property.",
+        },
+      ],
+      launchTitle: "Introductory offer for owners in Saas-Fee",
+      launchText:
+        "Pilot for CHF 69 / month during the first 3 months, then CHF 89 / month. Ideal for testing the concierge with one real apartment and real guest questions.",
+    },
     contact: {
       eyebrow: "Contact",
       title: "Would you like to use the Saas-Fee AI Concierge for guests?",
@@ -349,6 +467,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     nav: {
       product: "Projet",
       modules: "Modules",
+      pricing: "Prix",
       contact: "Contact",
       chat: "Ouvrir le chat",
     },
@@ -418,6 +537,56 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       techLabel: "Base technique",
       techStack: ["Next.js", "OpenAI", "Supabase", "Twilio", "Vercel"],
     },
+    pricing: {
+      eyebrow: "Prix",
+      title: "Des formules claires pour les hôtes à Saas-Fee.",
+      text: "Les formules permettent de commencer avec un appartement, puis d'étendre le service à d'autres hébergements. Professional est la formule recommandée pour les hôtes actifs.",
+      plans: [
+        {
+          name: "Pilot",
+          price: "CHF 89 / mois",
+          annual: "Annuel : CHF 890",
+          features: [
+            "1 appartement de vacances",
+            "Lien invité et QR code",
+            "Base de connaissances propre au logement",
+            "Connaissance générale de Saas-Fee",
+            "Analyse de base des questions",
+          ],
+          note: "Configuration unique : CHF 490",
+        },
+        {
+          name: "Professional",
+          price: "CHF 249 / mois",
+          annual: "Annuel : CHF 2'490",
+          features: [
+            "Jusqu'à 3 appartements de vacances",
+            "Interface invités multilingue",
+            "Alertes WhatsApp en cas d'incident",
+            "Questions sur restaurants et activités",
+            "Optimisation mensuelle de la base de connaissances",
+          ],
+          note: "Configuration unique : CHF 790. Appartements supplémentaires : CHF 59 / mois par objet.",
+          featured: true,
+        },
+        {
+          name: "Gestion",
+          price: "Dès CHF 590 / mois",
+          annual: "Annuel : dès CHF 5'900",
+          features: [
+            "Jusqu'à 10 appartements de vacances",
+            "Processus et règles d'escalade personnalisés",
+            "Analyses avancées",
+            "Intégrations individuelles",
+            "Accompagnement prioritaire",
+          ],
+          note: "Configuration dès CHF 1'500. Appartements supplémentaires : CHF 39-49 / mois par objet.",
+        },
+      ],
+      launchTitle: "Offre de lancement pour propriétaires à Saas-Fee",
+      launchText:
+        "Pilot à CHF 69 / mois pendant les 3 premiers mois, puis CHF 89 / mois. Idéal pour tester le concierge avec un logement concret et de vraies questions d'invités.",
+    },
     contact: {
       eyebrow: "Contact",
       title: "Souhaitez-vous utiliser le Saas-Fee AI Concierge pour vos invités ?",
@@ -471,6 +640,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     nav: {
       product: "Progetto",
       modules: "Moduli",
+      pricing: "Prezzi",
       contact: "Contatto",
       chat: "Apri chat",
     },
@@ -539,6 +709,56 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
       techLabel: "Base tecnica",
       techStack: ["Next.js", "OpenAI", "Supabase", "Twilio", "Vercel"],
+    },
+    pricing: {
+      eyebrow: "Prezzi",
+      title: "Pacchetti chiari per host a Saas-Fee.",
+      text: "I pacchetti permettono di iniziare con un appartamento e poi estendere il servizio ad altre strutture. Professional è lo standard consigliato per host attivi.",
+      plans: [
+        {
+          name: "Pilot",
+          price: "CHF 89 / mese",
+          annual: "Annuale: CHF 890",
+          features: [
+            "1 appartamento vacanze",
+            "Link ospite e QR code",
+            "Base di conoscenza specifica della struttura",
+            "Conoscenza generale di Saas-Fee",
+            "Analisi base delle domande",
+          ],
+          note: "Configurazione una tantum: CHF 490",
+        },
+        {
+          name: "Professional",
+          price: "CHF 249 / mese",
+          annual: "Annuale: CHF 2'490",
+          features: [
+            "Fino a 3 appartamenti vacanze",
+            "Interfaccia ospiti multilingue",
+            "Avvisi WhatsApp per incidenti",
+            "Domande su ristoranti e attività",
+            "Ottimizzazione mensile della base di conoscenza",
+          ],
+          note: "Configurazione una tantum: CHF 790. Appartamenti aggiuntivi: CHF 59 / mese per struttura.",
+          featured: true,
+        },
+        {
+          name: "Gestione",
+          price: "Da CHF 590 / mese",
+          annual: "Annuale: da CHF 5'900",
+          features: [
+            "Fino a 10 appartamenti vacanze",
+            "Processi e regole di escalation personalizzati",
+            "Analisi avanzate",
+            "Integrazioni individuali",
+            "Supporto prioritario",
+          ],
+          note: "Configurazione da CHF 1'500. Appartamenti aggiuntivi: CHF 39-49 / mese per struttura.",
+        },
+      ],
+      launchTitle: "Offerta introduttiva per proprietari a Saas-Fee",
+      launchText:
+        "Pilot a CHF 69 / mese per i primi 3 mesi, poi CHF 89 / mese. Ideale per testare il concierge con un appartamento concreto e domande reali degli ospiti.",
     },
     contact: {
       eyebrow: "Contatto",

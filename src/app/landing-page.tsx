@@ -40,9 +40,12 @@ export default function LandingPage({ locale }: LandingPageProps) {
     },
     isAccessibleForFree: true,
     offers: {
-      "@type": "Offer",
+      "@type": "AggregateOffer",
       availability: "https://schema.org/InStock",
       priceCurrency: "CHF",
+      lowPrice: "69",
+      highPrice: "590",
+      offerCount: "3",
     },
   };
 
@@ -89,6 +92,12 @@ export default function LandingPage({ locale }: LandingPageProps) {
                 href={createSectionHref(locale, "architecture")}
               >
                 {copy.nav.modules}
+              </a>
+              <a
+                className="rounded-md px-3 py-2 font-medium text-white/82 transition hover:bg-white/12 hover:text-white"
+                href={createSectionHref(locale, "preise")}
+              >
+                {copy.nav.pricing}
               </a>
               <a
                 className="rounded-md px-3 py-2 font-medium text-white/82 transition hover:bg-white/12 hover:text-white"
@@ -280,6 +289,67 @@ export default function LandingPage({ locale }: LandingPageProps) {
                 </span>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="preise" className="bg-white px-5 py-20 sm:px-8 lg:px-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#3e6d5a]">
+                {copy.pricing.eyebrow}
+              </p>
+              <h2 className="mt-3 text-balance text-3xl font-semibold tracking-normal sm:text-4xl">
+                {copy.pricing.title}
+              </h2>
+            </div>
+            <p className="text-base leading-7 text-[#59665f]">
+              {copy.pricing.text}
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-4 lg:grid-cols-3">
+            {copy.pricing.plans.map((plan) => (
+              <article
+                className={`rounded-lg border p-5 shadow-sm ${
+                  plan.featured
+                    ? "border-[#1f654f] bg-[#f6fbf7]"
+                    : "border-[#d8d8ce] bg-[#fbfaf5]"
+                }`}
+                key={plan.name}
+              >
+                <h3 className="text-xl font-semibold text-[#203029]">
+                  {plan.name}
+                </h3>
+                <p className="mt-4 text-3xl font-semibold tracking-normal text-[#17362b]">
+                  {plan.price}
+                </p>
+                <p className="mt-2 text-sm font-semibold text-[#3e6d5a]">
+                  {plan.annual}
+                </p>
+                <ul className="mt-5 space-y-3 text-sm leading-6 text-[#3f4b45]">
+                  {plan.features.map((feature) => (
+                    <li className="flex gap-2" key={feature}>
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#3e6d5a]" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-5 border-t border-[#d8d8ce] pt-4 text-sm leading-6 text-[#59665f]">
+                  {plan.note}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-6 rounded-lg border border-[#d8d8ce] bg-[#f5f4ed] p-5 sm:p-6">
+            <p className="font-semibold text-[#203029]">
+              {copy.pricing.launchTitle}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-[#59665f]">
+              {copy.pricing.launchText}
+            </p>
           </div>
         </div>
       </section>
