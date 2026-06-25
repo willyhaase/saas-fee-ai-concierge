@@ -84,16 +84,19 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     label: "DE",
     path: "/",
     metadata: {
-      title: "Saas-Fee AI Concierge | KI-Gästeservice für Ferienwohnungen",
+      title: "Saas-Fee AI Concierge | Öffentlicher KI-Concierge für Gäste",
       description:
-        "KI-Concierge für Ferienwohnungen in Saas-Fee: beantwortet Gästeanfragen rund um die Uhr, nutzt objektbezogenes Wissen und informiert Teams per WhatsApp.",
+        "Öffentlicher KI-Concierge für Gäste und Besucher in Saas-Fee: Restaurants, Aktivitäten, Bergbahnen, Wetter, Events, Ortsinfos und Aufenthaltsservice rund um die Uhr.",
       keywords: [
         "Saas-Fee AI Concierge",
+        "Saas-Fee Concierge",
+        "AI Concierge Saas-Fee",
         "KI Concierge Saas-Fee",
-        "Gästeservice Ferienwohnungen",
-        "Ferienwohnung Saas-Fee",
-        "WhatsApp Gästeservice",
-        "Hotel KI Chatbot",
+        "Saas-Fee Chatbot",
+        "Saas-Fee Restaurants",
+        "Saas-Fee Aktivitäten",
+        "Saas-Fee Bergbahnen",
+        "Saas-Fee Wetter",
       ],
       locale: "de_CH",
     },
@@ -104,12 +107,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       chat: "Chat öffnen",
     },
     hero: {
-      eyebrow: "KI-Concierge für Ferienwohnungen und Gäste in Saas-Fee",
+      eyebrow: "Öffentlicher KI-Concierge für Saas-Fee",
       title:
-        "Ein Gästeservice, der umgehend reagiert und Gästen rund um die Uhr zur Seite steht.",
+        "Der digitale Concierge für Gäste, Besucher und Aufenthalte in Saas-Fee.",
       description:
-        "Die Lösung verbindet einen öffentlichen Saas-Fee-Chat, geschütztes Wissen pro Unterkunft, Auswertungen der Gästeanfragen und WhatsApp-Benachrichtigungen, wenn ein Mensch reagieren sollte.",
-      imageAlt: "Saas-Fee Bergpanorama mit Ferienwohnungen",
+        "Fragen Sie direkt nach Restaurants, Menüs, Aktivitäten, Bergbahnen, Live-Status, Wetter, Events, Anreise, Sicherheit und lokalen Services. Für Partnerunterkünfte können zusätzlich geschützte Gästeinformationen eingebunden werden.",
+      imageAlt: "Saas-Fee Bergpanorama",
     },
     metrics: {
       eyebrow: "Bereits verfügbar",
@@ -123,15 +126,15 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     product: {
       eyebrow: "Produkt",
       title:
-        "Ein Concierge für öffentliche Fragen und private Details der Unterkunft.",
+        "Ein Concierge für öffentliche Saas-Fee-Fragen und optionale Gästeinformationen.",
       features: [
         {
           title: "Antworten rund um die Uhr",
-          text: "Gäste erhalten sofort Hilfe zu Unterkunft, Restaurants, Bergbahnen, Wetter, Events und Hausregeln, ohne auf das Team warten zu müssen.",
+          text: "Gäste erhalten sofort Hilfe zu Restaurants, Bergbahnen, Wetter, Events, Anreise, Sicherheit, Einkauf, Apotheke und Aktivitäten.",
         },
         {
-          title: "Objektbezogenes Wissen",
-          text: "Persönliche Gästelinks öffnen geschützte Informationen zur jeweiligen Wohnung: Check-in, WLAN, Anleitungen, Kontakte und häufige Fragen.",
+          title: "Öffentlicher Saas-Fee-Wissensbereich",
+          text: "Der Chat trennt allgemeine Ortsinformationen von geschützten Informationen einzelner Unterkünfte und Hotels.",
         },
         {
           title: "Vorfälle und WhatsApp",
@@ -142,12 +145,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     useCases: {
       eyebrow: "Anwendungsfälle",
       title:
-        "Der Service beantwortet wiederkehrende Fragen und markiert dringende Anliegen.",
+        "Der Concierge beantwortet typische Gäste- und Besucherfragen direkt im Chat.",
       items: [
-        "Ein Gast fragt, wo die Schlüssel liegen und wie er sich mit dem WLAN verbindet.",
-        "Eine Familie sucht ein Restaurant und möchte Menüs mit Preisen sehen.",
-        "Der Eigentümer erhält eine dringende Meldung zu einem Problem in der Wohnung.",
-        "Das Betriebsteam sieht häufige Fragen und verbessert die Wissensbasis gezielt.",
+        "Ein Besucher fragt, welche Restaurants heute passen und möchte Menüs mit Preisen sehen.",
+        "Eine Familie sucht Aktivitäten, Spielplätze, Wanderwege oder Schlechtwetterideen.",
+        "Ein Gast fragt nach Bergbahnen, offenen Anlagen, Wetter, Bus, Apotheke oder Einkauf.",
+        "Partnerunterkünfte können zusätzlich Check-in, WLAN, Hausregeln und Vorfälle abdecken.",
       ],
     },
     architecture: {
@@ -166,7 +169,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     },
     contact: {
       eyebrow: "Kontakt",
-      title: "Möchten Sie den KI-Concierge für Ihre Unterkunft testen?",
+      title: "Möchten Sie den Saas-Fee AI Concierge für Gäste nutzen?",
       text: "Senden Sie eine kurze Nachricht. Die Anfrage wird direkt in HubSpot erfasst, damit sie sauber nachverfolgt werden kann.",
     },
     demo: {
@@ -199,16 +202,18 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     label: "EN",
     path: "/en",
     metadata: {
-      title: "Saas-Fee AI Concierge | AI Guest Service for Apartments",
+      title: "Saas-Fee AI Concierge | Public AI Concierge for Guests",
       description:
-        "AI concierge for holiday apartments in Saas-Fee: answers guest questions around the clock, uses property-specific knowledge, and alerts teams via WhatsApp.",
+        "Public AI concierge for guests and visitors in Saas-Fee: restaurants, activities, mountain railways, weather, events, local services, and stay support around the clock.",
       keywords: [
         "Saas-Fee AI Concierge",
+        "Saas-Fee concierge",
         "AI concierge Saas-Fee",
-        "guest service holiday apartments",
-        "Saas-Fee apartment",
-        "WhatsApp guest service",
-        "hotel AI chatbot",
+        "Saas-Fee chatbot",
+        "Saas-Fee restaurants",
+        "Saas-Fee activities",
+        "Saas-Fee mountain railways",
+        "Saas-Fee weather",
       ],
       locale: "en",
     },
@@ -219,12 +224,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       chat: "Open chat",
     },
     hero: {
-      eyebrow: "AI concierge for holiday apartments and guests in Saas-Fee",
+      eyebrow: "Public AI concierge for Saas-Fee",
       title:
-        "A guest service that responds immediately and supports guests around the clock.",
+        "The digital concierge for guests, visitors, and stays in Saas-Fee.",
       description:
-        "The solution combines a public Saas-Fee chat, protected knowledge for each property, guest request analytics, and WhatsApp notifications when a person should step in.",
-      imageAlt: "Saas-Fee mountain panorama with holiday apartments",
+        "Ask directly about restaurants, menus, activities, mountain railways, live status, weather, events, arrival, safety, and local services. Partner properties can add protected guest information.",
+      imageAlt: "Saas-Fee mountain panorama",
     },
     metrics: {
       eyebrow: "Already available",
@@ -237,15 +242,15 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     },
     product: {
       eyebrow: "Product",
-      title: "One concierge for public questions and private property details.",
+      title: "One concierge for public Saas-Fee questions and optional guest information.",
       features: [
         {
           title: "Answers around the clock",
-          text: "Guests get immediate help with accommodation, restaurants, mountain railways, weather, events, and house rules without waiting for the team.",
+          text: "Guests get immediate help with restaurants, mountain railways, weather, events, arrival, safety, groceries, pharmacy, and activities.",
         },
         {
-          title: "Property-specific knowledge",
-          text: "Personal guest links open protected information for the relevant apartment: check-in, Wi-Fi, instructions, contacts, and FAQs.",
+          title: "Public Saas-Fee knowledge",
+          text: "The chat separates general destination information from protected property and hotel information.",
         },
         {
           title: "Incidents and WhatsApp",
@@ -255,12 +260,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     },
     useCases: {
       eyebrow: "Use cases",
-      title: "The service answers recurring questions and highlights urgent issues.",
+      title: "The concierge answers typical guest and visitor questions directly in chat.",
       items: [
-        "A guest asks where the keys are and how to connect to Wi-Fi.",
-        "A family chooses a restaurant and wants to see menus with prices.",
-        "The owner receives an urgent alert about an issue in the apartment.",
-        "The operations team sees frequent questions and improves the knowledge base.",
+        "A visitor asks which restaurants fit today and wants menus with prices.",
+        "A family looks for activities, playgrounds, hiking routes, or rainy-day ideas.",
+        "A guest asks about cable cars, open facilities, weather, buses, pharmacy, or groceries.",
+        "Partner properties can also cover check-in, Wi-Fi, house rules, and incidents.",
       ],
     },
     architecture: {
@@ -279,7 +284,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     },
     contact: {
       eyebrow: "Contact",
-      title: "Would you like to test the AI concierge for your property?",
+      title: "Would you like to use the Saas-Fee AI Concierge for guests?",
       text: "Send a short message. The request is recorded directly in HubSpot for a clear follow-up.",
     },
     demo: {
@@ -311,16 +316,18 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     label: "FR",
     path: "/fr",
     metadata: {
-      title: "Saas-Fee AI Concierge | Service invités IA pour appartements",
+      title: "Saas-Fee AI Concierge | Concierge IA public pour les visiteurs",
       description:
-        "Concierge IA pour appartements de vacances à Saas-Fee : répond aux questions des invités 24 h/24, utilise les informations propres au logement et alerte les équipes via WhatsApp.",
+        "Concierge IA public pour les invités et visiteurs de Saas-Fee : restaurants, activités, remontées mécaniques, météo, événements, services locaux et aide au séjour 24 h/24.",
       keywords: [
         "Saas-Fee AI Concierge",
+        "concierge Saas-Fee",
         "concierge IA Saas-Fee",
-        "service invités appartements de vacances",
-        "appartement Saas-Fee",
-        "service invités WhatsApp",
-        "chatbot IA hôtel",
+        "chatbot Saas-Fee",
+        "restaurants Saas-Fee",
+        "activités Saas-Fee",
+        "remontées mécaniques Saas-Fee",
+        "météo Saas-Fee",
       ],
       locale: "fr",
     },
@@ -331,12 +338,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       chat: "Ouvrir le chat",
     },
     hero: {
-      eyebrow: "Concierge IA pour appartements de vacances et invités à Saas-Fee",
+      eyebrow: "Concierge IA public pour Saas-Fee",
       title:
-        "Un service invités qui répond immédiatement et accompagne les invités 24 h/24.",
+        "Le concierge numérique pour les invités, visiteurs et séjours à Saas-Fee.",
       description:
-        "La solution réunit un chat public pour Saas-Fee, des informations protégées par logement, l'analyse des demandes et des notifications WhatsApp lorsqu'une intervention humaine est nécessaire.",
-      imageAlt: "Panorama de montagne à Saas-Fee avec appartements de vacances",
+        "Posez vos questions sur les restaurants, menus, activités, remontées mécaniques, statuts en direct, météo, événements, arrivée, sécurité et services locaux. Les hébergements partenaires peuvent ajouter des informations protégées.",
+      imageAlt: "Panorama de montagne à Saas-Fee",
     },
     metrics: {
       eyebrow: "Déjà disponible",
@@ -350,15 +357,15 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     product: {
       eyebrow: "Produit",
       title:
-        "Un concierge pour les questions publiques et les détails privés du logement.",
+        "Un concierge pour les questions publiques sur Saas-Fee et les informations invités optionnelles.",
       features: [
         {
           title: "Réponses 24 h/24",
-          text: "Les invités obtiennent une aide immédiate sur le logement, les restaurants, les remontées mécaniques, la météo, les événements et les règles de la maison.",
+          text: "Les invités obtiennent une aide immédiate sur les restaurants, remontées mécaniques, météo, événements, arrivée, sécurité, courses, pharmacie et activités.",
         },
         {
-          title: "Connaissance propre au logement",
-          text: "Les liens invités personnels ouvrent les informations protégées du logement concerné : check-in, Wi-Fi, consignes, contacts et FAQ.",
+          title: "Connaissance publique de Saas-Fee",
+          text: "Le chat sépare les informations générales de la destination des informations protégées propres aux hébergements et hôtels.",
         },
         {
           title: "Incidents et WhatsApp",
@@ -369,12 +376,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     useCases: {
       eyebrow: "Cas d'utilisation",
       title:
-        "Le service répond aux questions récurrentes et signale les demandes urgentes.",
+        "Le concierge répond directement aux questions typiques des invités et visiteurs.",
       items: [
-        "Un invité demande où se trouvent les clés et comment se connecter au Wi-Fi.",
-        "Une famille choisit un restaurant et souhaite voir les menus avec les prix.",
-        "Le propriétaire reçoit une alerte urgente concernant un problème dans l'appartement.",
-        "L'équipe d'exploitation identifie les questions fréquentes et améliore la base de connaissances.",
+        "Un visiteur demande quels restaurants conviennent aujourd'hui et veut voir les menus avec prix.",
+        "Une famille cherche des activités, aires de jeux, itinéraires de randonnée ou idées par mauvais temps.",
+        "Un invité demande les remontées ouvertes, la météo, les bus, la pharmacie ou les magasins.",
+        "Les hébergements partenaires peuvent aussi couvrir check-in, Wi-Fi, règles de maison et incidents.",
       ],
     },
     architecture: {
@@ -393,7 +400,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     },
     contact: {
       eyebrow: "Contact",
-      title: "Souhaitez-vous tester le concierge IA pour votre logement ?",
+      title: "Souhaitez-vous utiliser le Saas-Fee AI Concierge pour vos invités ?",
       text: "Envoyez un court message. La demande est enregistrée directement dans HubSpot afin d'assurer un suivi clair.",
     },
     demo: {
@@ -426,16 +433,18 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     label: "IT",
     path: "/it",
     metadata: {
-      title: "Saas-Fee AI Concierge | Servizio ospiti IA per appartamenti",
+      title: "Saas-Fee AI Concierge | Concierge IA pubblico per ospiti",
       description:
-        "Concierge IA per appartamenti vacanza a Saas-Fee: risponde alle domande degli ospiti 24/7, usa conoscenze specifiche della proprietà e avvisa i team via WhatsApp.",
+        "Concierge IA pubblico per ospiti e visitatori a Saas-Fee: ristoranti, attività, impianti di risalita, meteo, eventi, servizi locali e supporto al soggiorno 24/7.",
       keywords: [
         "Saas-Fee AI Concierge",
+        "concierge Saas-Fee",
         "concierge IA Saas-Fee",
-        "servizio ospiti appartamenti vacanza",
-        "appartamento Saas-Fee",
-        "servizio ospiti WhatsApp",
-        "chatbot IA hotel",
+        "chatbot Saas-Fee",
+        "ristoranti Saas-Fee",
+        "attività Saas-Fee",
+        "impianti Saas-Fee",
+        "meteo Saas-Fee",
       ],
       locale: "it",
     },
@@ -446,12 +455,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       chat: "Apri chat",
     },
     hero: {
-      eyebrow: "Concierge IA per appartamenti vacanza e ospiti a Saas-Fee",
+      eyebrow: "Concierge IA pubblico per Saas-Fee",
       title:
-        "Un servizio ospiti che risponde subito e assiste gli ospiti 24 ore su 24.",
+        "Il concierge digitale per ospiti, visitatori e soggiorni a Saas-Fee.",
       description:
-        "La soluzione unisce una chat pubblica per Saas-Fee, informazioni protette per ogni alloggio, analisi delle richieste degli ospiti e notifiche WhatsApp quando serve un intervento umano.",
-      imageAlt: "Panorama montano di Saas-Fee con appartamenti vacanza",
+        "Chieda direttamente informazioni su ristoranti, menu, attività, impianti di risalita, stato live, meteo, eventi, arrivo, sicurezza e servizi locali. Le strutture partner possono aggiungere informazioni protette.",
+      imageAlt: "Panorama montano di Saas-Fee",
     },
     metrics: {
       eyebrow: "Già disponibile",
@@ -465,15 +474,15 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     product: {
       eyebrow: "Prodotto",
       title:
-        "Un concierge per domande pubbliche e dettagli privati dell'alloggio.",
+        "Un concierge per domande pubbliche su Saas-Fee e informazioni ospiti opzionali.",
       features: [
         {
           title: "Risposte 24/7",
-          text: "Gli ospiti ricevono subito aiuto su alloggio, ristoranti, impianti di risalita, meteo, eventi e regole della casa senza attendere il team.",
+          text: "Gli ospiti ricevono subito aiuto su ristoranti, impianti, meteo, eventi, arrivo, sicurezza, spesa, farmacia e attività.",
         },
         {
-          title: "Conoscenza specifica dell'alloggio",
-          text: "I link personali per gli ospiti aprono informazioni protette sull'appartamento: check-in, Wi-Fi, istruzioni, contatti e FAQ.",
+          title: "Conoscenza pubblica di Saas-Fee",
+          text: "La chat separa le informazioni generali della destinazione dalle informazioni protette di strutture e hotel.",
         },
         {
           title: "Incidenti e WhatsApp",
@@ -484,12 +493,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     useCases: {
       eyebrow: "Casi d'uso",
       title:
-        "Il servizio risponde alle domande ricorrenti e segnala le richieste urgenti.",
+        "Il concierge risponde direttamente alle domande tipiche di ospiti e visitatori.",
       items: [
-        "Un ospite chiede dove si trovano le chiavi e come collegarsi al Wi-Fi.",
-        "Una famiglia sceglie un ristorante e vuole vedere i menu con i prezzi.",
-        "Il proprietario riceve un avviso urgente per un problema nell'appartamento.",
-        "Il team operativo vede le domande frequenti e migliora la base di conoscenza.",
+        "Un visitatore chiede quali ristoranti sono adatti oggi e vuole vedere menu con prezzi.",
+        "Una famiglia cerca attività, parchi giochi, sentieri o idee per il maltempo.",
+        "Un ospite chiede impianti aperti, meteo, bus, farmacia o negozi alimentari.",
+        "Le strutture partner possono coprire anche check-in, Wi-Fi, regole della casa e incidenti.",
       ],
     },
     architecture: {
@@ -508,7 +517,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     },
     contact: {
       eyebrow: "Contatto",
-      title: "Vuole testare il concierge IA per il suo alloggio?",
+      title: "Vuole usare Saas-Fee AI Concierge per i suoi ospiti?",
       text: "Invii un breve messaggio. La richiesta viene registrata direttamente in HubSpot per un follow-up ordinato.",
     },
     demo: {

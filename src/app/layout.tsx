@@ -15,13 +15,13 @@ const geistMono = Geist_Mono({
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://willyhaase-saas-fee-ai-concierge.vercel.app"),
+  metadataBase: new URL("https://saas-fee-concierge.ch"),
   title: {
     default: "Saas-Fee AI Concierge",
     template: "%s",
   },
   description:
-    "KI-Concierge und Gästeservice für Ferienwohnungen in Saas-Fee.",
+    "Öffentlicher KI-Concierge für Gäste und Besucher in Saas-Fee mit Informationen zu Restaurants, Aktivitäten, Bergbahnen, Wetter, Events und Aufenthalten.",
   icons: {
     icon: [
       { url: "/icon.png", type: "image/png", sizes: "1024x1024" },

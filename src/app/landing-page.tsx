@@ -25,13 +25,20 @@ export default function LandingPage({ locale }: LandingPageProps) {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: "Saas-Fee AI Concierge",
-    applicationCategory: "BusinessApplication",
+    alternateName: "AI Concierge for Saas-Fee",
+    url: "https://saas-fee-concierge.ch",
+    applicationCategory: "TravelApplication",
     operatingSystem: "Web",
     description: copy.metadata.description,
     areaServed: {
       "@type": "Place",
       name: copy.structuredDataPlace,
     },
+    audience: {
+      "@type": "Audience",
+      audienceType: "Guests and visitors in Saas-Fee",
+    },
+    isAccessibleForFree: true,
     offers: {
       "@type": "Offer",
       availability: "https://schema.org/InStock",
