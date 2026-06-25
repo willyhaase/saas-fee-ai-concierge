@@ -70,6 +70,7 @@ type UiLanguage = "de" | "en" | "ru" | "fr" | "it";
 const UI_TEXT: Record<
   UiLanguage,
   {
+    titleFallback: string;
     welcome: (propertyName?: string | null) => string;
     temporaryUnavailable: string;
     unexpectedResponse: string;
@@ -116,6 +117,7 @@ const UI_TEXT: Record<
   }
 > = {
   de: {
+    titleFallback: "KI-Concierge",
     welcome: (propertyName) =>
       propertyName
         ? `Willkommen in ${propertyName}. Ich bin Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zur Unterkunft, zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.`
@@ -172,6 +174,7 @@ const UI_TEXT: Record<
     language: "Sprache",
   },
   en: {
+    titleFallback: "AI Concierge",
     welcome: (propertyName) =>
       propertyName
         ? `Welcome to ${propertyName}. I am your AI concierge for Saas-Fee. Ask me about the accommodation, restaurants, activities, mountain railways, weather, or anything you need during your stay.`
@@ -227,6 +230,7 @@ const UI_TEXT: Record<
     language: "Language",
   },
   ru: {
+    titleFallback: "Консьерж",
     welcome: (propertyName) =>
       propertyName
         ? `Добро пожаловать в ${propertyName}. Я ваш AI-консьерж по Saas-Fee. Спрашивайте про жильё, рестораны, активности, горные дороги, погоду и всё, что нужно во время проживания.`
@@ -282,6 +286,7 @@ const UI_TEXT: Record<
     language: "Язык",
   },
   fr: {
+    titleFallback: "Concierge IA",
     welcome: (propertyName) =>
       propertyName
         ? `Bienvenue à ${propertyName}. Je suis votre concierge IA pour Saas-Fee. Posez-moi vos questions sur le logement, les restaurants, les activités, les remontées mécaniques, la météo ou tout ce dont vous avez besoin pendant votre séjour.`
@@ -337,6 +342,7 @@ const UI_TEXT: Record<
     language: "Langue",
   },
   it: {
+    titleFallback: "Concierge IA",
     welcome: (propertyName) =>
       propertyName
         ? `Benvenuti a ${propertyName}. Sono il vostro concierge IA per Saas-Fee. Chiedetemi informazioni sull'alloggio, ristoranti, attività, impianti di risalita, meteo o qualsiasi cosa vi serva durante il soggiorno.`
@@ -1278,7 +1284,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
               Saas-Fee
             </p>
             <h1 className="mt-2 text-3xl font-semibold tracking-normal text-[#151815] sm:text-4xl">
-              {propertyName ? `${propertyName} Concierge` : "KI-Concierge"}
+              {propertyName ? `${propertyName} Concierge` : ui.titleFallback}
             </h1>
           </div>
           <div className="flex flex-col gap-3 sm:items-end">
