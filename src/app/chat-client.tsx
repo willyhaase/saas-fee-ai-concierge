@@ -901,6 +901,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
   const [isReservationSending, setIsReservationSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const identityRequiredHintId = "guest-identity-required-hint";
   const hasGuestAccessLink = hasLocalAccessMode(mode)
     ? Boolean(guestContext.guestAccessToken)
     : false;
@@ -1321,10 +1322,14 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                 <div className="mt-3 flex flex-wrap gap-2">
                   {quickActions.map((action) => (
                     <button
+                      aria-describedby={
+                        needsGuestIdentity ? identityRequiredHintId : undefined
+                      }
                       className="rounded-md border border-[#c8c8bc] bg-white px-3 py-2 text-sm font-medium text-[#1f2421] transition hover:border-[#2f7d59] hover:bg-[#eef3ed] disabled:cursor-not-allowed disabled:opacity-60"
                       disabled={isSending || needsGuestIdentity}
                       key={action.label}
                       onClick={() => sendChatMessage(action.prompt)}
+                      title={needsGuestIdentity ? ui.identityRequired : undefined}
                       type="button"
                     >
                       {action.label}
@@ -1357,6 +1362,11 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                       </div>
                       <div className="mt-3 flex gap-2">
                         <button
+                          aria-describedby={
+                            needsGuestIdentity
+                              ? identityRequiredHintId
+                              : undefined
+                          }
                           className="h-8 flex-1 rounded-md border border-[#c8c8bc] text-xs font-semibold text-[#1f5f46] transition hover:border-[#1f5f46] disabled:cursor-not-allowed disabled:opacity-60"
                           disabled={isSending || needsGuestIdentity}
                           onClick={() =>
@@ -1364,22 +1374,41 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                               `${ui.ask}: ${restaurant.name}`
                             )
                           }
+                          title={
+                            needsGuestIdentity ? ui.identityRequired : undefined
+                          }
                           type="button"
                         >
                           {ui.ask}
                         </button>
                         <button
+                          aria-describedby={
+                            needsGuestIdentity
+                              ? identityRequiredHintId
+                              : undefined
+                          }
                           className="h-8 flex-1 rounded-md border border-[#c8c8bc] text-xs font-semibold text-[#1f5f46] transition hover:border-[#1f5f46] disabled:cursor-not-allowed disabled:opacity-60"
                           disabled={isSending || needsGuestIdentity}
                           onClick={() => requestRestaurantMenu(restaurant.name)}
+                          title={
+                            needsGuestIdentity ? ui.identityRequired : undefined
+                          }
                           type="button"
                         >
                           {ui.showMenu}
                         </button>
                         <button
+                          aria-describedby={
+                            needsGuestIdentity
+                              ? identityRequiredHintId
+                              : undefined
+                          }
                           className="h-8 flex-1 rounded-md bg-[#1f5f46] text-xs font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
                           disabled={isSending || needsGuestIdentity}
                           onClick={() => openReservationForm(restaurant.name)}
+                          title={
+                            needsGuestIdentity ? ui.identityRequired : undefined
+                          }
                           type="button"
                         >
                           {ui.reserve}
@@ -1568,7 +1597,10 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                 </p>
               ) : null}
               {needsGuestIdentity ? (
-                <p className="mb-3 rounded-md border border-[#d8d8ce] bg-white px-3 py-2 text-sm text-[#5b6b5f]">
+                <p
+                  className="mb-3 rounded-md border border-[#d8d8ce] bg-white px-3 py-2 text-sm text-[#5b6b5f]"
+                  id={identityRequiredHintId}
+                >
                   {ui.identityRequired}
                 </p>
               ) : null}
