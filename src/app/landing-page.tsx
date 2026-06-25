@@ -165,26 +165,70 @@ export default function LandingPage({ locale }: LandingPageProps) {
               </div>
             </div>
 
-            <div className="hidden rounded-lg border border-white/22 bg-white/92 p-5 text-[#18211d] shadow-2xl shadow-black/20 backdrop-blur md:block">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#3e6d5a]">
-                {copy.metrics.eyebrow}
-              </p>
-              <dl className="mt-5 grid grid-cols-2 gap-4">
-                {copy.metrics.items.map((item) => (
-                  <div key={`${item.value}-${item.label}`}>
-                    <dt
-                      className={`font-semibold ${
-                        item.value.length > 4 ? "text-2xl" : "text-3xl"
-                      }`}
-                    >
-                      {item.value}
-                    </dt>
-                    <dd className="mt-1 text-sm text-[#53615a]">
-                      {item.label}
-                    </dd>
+            <div className="hidden overflow-hidden rounded-2xl shadow-2xl shadow-black/30 md:block">
+              {/* Chat header */}
+              <div className="flex items-center gap-3 bg-[#1a3020] px-4 py-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2f7d59] text-sm font-bold text-white">
+                  AI
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">Saas-Fee Concierge</p>
+                  <div className="mt-0.5 flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-[#4ade80]" />
+                    <span className="text-xs text-[#9fc5d8]">Online · antwortet sofort</span>
                   </div>
+                </div>
+              </div>
+              {/* Messages */}
+              <div className="flex flex-col gap-3 bg-[#f7f7f2] px-4 py-4">
+                {/* Guest */}
+                <div className="flex justify-start">
+                  <p className="max-w-[220px] rounded-xl rounded-tl-sm border border-[#e2e8e0] bg-white px-3 py-2 text-sm leading-relaxed text-[#1a2421]">
+                    Welche Restaurants empfehlen Sie heute?
+                  </p>
+                </div>
+                {/* AI */}
+                <div className="flex justify-end">
+                  <p className="max-w-[240px] rounded-xl rounded-tr-sm bg-[#1f5f46] px-3 py-2 text-sm leading-relaxed text-white">
+                    Guten Tag! Ich empfehle das{" "}
+                    <strong>Hannig</strong> — sonniger Berglunch ab{" "}
+                    <strong>CHF 35</strong>. Tisch reservieren?
+                  </p>
+                </div>
+                {/* Guest 2 */}
+                <div className="flex justify-start">
+                  <p className="max-w-[200px] rounded-xl rounded-tl-sm border border-[#e2e8e0] bg-white px-3 py-2 text-sm leading-relaxed text-[#1a2421]">
+                    Ja bitte, 2 Personen um 13:00!
+                  </p>
+                </div>
+                {/* AI 2 */}
+                <div className="flex justify-end">
+                  <div className="max-w-[240px] rounded-xl rounded-tr-sm bg-[#1f5f46] px-3 py-2 text-sm text-white">
+                    <p className="leading-relaxed">Reservierung wird gesendet ✓</p>
+                    <p className="mt-0.5 text-xs text-white/70">Hannig · 13:00 · 2 Personen</p>
+                  </div>
+                </div>
+              </div>
+              {/* Quick actions */}
+              <div className="flex flex-wrap gap-2 border-t border-[#e8ede6] bg-white px-4 py-3">
+                {["🍽 Restaurants", "🚡 Bergbahnen", "🌤 Wetter"].map((label) => (
+                  <span
+                    key={label}
+                    className="rounded-md border border-[#c8d8c4] bg-[#eef3ed] px-3 py-1.5 text-xs font-medium text-[#1f5f46]"
+                  >
+                    {label}
+                  </span>
                 ))}
-              </dl>
+              </div>
+              {/* Input */}
+              <div className="flex items-center gap-2 border-t border-[#e8ede6] bg-white px-4 py-3">
+                <div className="flex-1 rounded-lg border border-[#d0d8cc] bg-[#f7f7f2] px-3 py-2 text-sm text-[#9aaa96]">
+                  Ihre Nachricht...
+                </div>
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#1f5f46] text-base text-white">
+                  →
+                </div>
+              </div>
             </div>
           </div>
         </div>
