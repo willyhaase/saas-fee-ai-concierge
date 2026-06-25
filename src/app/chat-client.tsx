@@ -393,12 +393,16 @@ const UI_TEXT: Record<
   },
 };
 
-const LANGUAGE_OPTIONS: Array<{ code: UiLanguage; label: string }> = [
-  { code: "de", label: "DE" },
-  { code: "en", label: "EN" },
-  { code: "fr", label: "FR" },
-  { code: "it", label: "IT" },
-  { code: "ru", label: "RU" },
+const LANGUAGE_OPTIONS: Array<{
+  code: UiLanguage;
+  label: string;
+  ariaLabel: string;
+}> = [
+  { code: "de", label: "DE", ariaLabel: "Deutsch" },
+  { code: "en", label: "EN", ariaLabel: "English" },
+  { code: "fr", label: "FR", ariaLabel: "Français" },
+  { code: "it", label: "IT", ariaLabel: "Italiano" },
+  { code: "ru", label: "RU", ariaLabel: "Русский" },
 ];
 
 function getBrowserLanguage(): UiLanguage {
@@ -1289,6 +1293,8 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
             >
               {LANGUAGE_OPTIONS.map((option) => (
                 <button
+                  aria-label={option.ariaLabel}
+                  aria-pressed={option.code === language}
                   className={`h-8 min-w-9 rounded px-2 text-xs font-semibold transition ${
                     option.code === language
                       ? "bg-[#1f5f46] text-white"
