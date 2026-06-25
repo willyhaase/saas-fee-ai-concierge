@@ -1452,7 +1452,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                     {ui.cancel}
                   </button>
                 </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
                   <label className="block">
                     <span className="text-sm font-medium text-[#4f5b52]">
                       {ui.date}
@@ -1509,6 +1509,18 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                   </label>
                   <label className="block">
                     <span className="text-sm font-medium text-[#4f5b52]">
+                      {ui.name}
+                    </span>
+                    <input
+                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                      onChange={(event) => setCustomerName(event.target.value)}
+                      required
+                      type="text"
+                      value={customerName}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-medium text-[#4f5b52]">
                       {ui.phone}
                     </span>
                     <input
@@ -1546,7 +1558,9 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                       needsGuestIdentity ||
                       !reservationForm.reservationDate ||
                       !reservationForm.reservationTime ||
-                      !reservationForm.partySize
+                      !reservationForm.partySize ||
+                      !customerName.trim() ||
+                      !customerPhone.trim()
                     }
                     type="submit"
                   >
