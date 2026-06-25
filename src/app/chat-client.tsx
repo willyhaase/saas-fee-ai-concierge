@@ -580,6 +580,15 @@ function hasLocalAccessMode(mode: ChatMode) {
   return mode !== "public";
 }
 
+function resizeTextareaToContent(element: HTMLTextAreaElement | null) {
+  if (!element) {
+    return;
+  }
+
+  element.style.height = "auto";
+  element.style.height = `${Math.min(element.scrollHeight, 160)}px`;
+}
+
 function getGuestContextFromUrl(mode: ChatMode, propertySlug?: string) {
   if (typeof window === "undefined") {
     return { accessMode: mode, propertySlug };
@@ -902,6 +911,10 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    resizeTextareaToContent(textareaRef.current);
+  }, [message]);
 
   useEffect(() => {
     setMessages((current) =>
@@ -1558,8 +1571,11 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                   ref={textareaRef}
                   value={message}
                   onChange={(event) => setMessage(event.target.value)}
+                  onInput={(event) =>
+                    resizeTextareaToContent(event.currentTarget)
+                  }
                   rows={2}
-                  className="min-h-12 flex-1 resize-none rounded-md border border-[#c8c8bc] bg-white px-3 py-3 text-base text-[#1f2421] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                  className="min-h-12 max-h-40 flex-1 resize-none overflow-y-auto rounded-md border border-[#c8c8bc] bg-white px-3 py-3 text-base text-[#1f2421] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
                   placeholder={ui.placeholder}
                 />
                 <button
