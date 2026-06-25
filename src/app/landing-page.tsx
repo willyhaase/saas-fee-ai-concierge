@@ -137,6 +137,23 @@ export default function LandingPage({ locale }: LandingPageProps) {
               <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-white/86 sm:mt-6 sm:text-lg sm:leading-8">
                 {copy.hero.description}
               </p>
+              <p className="mt-4 max-w-2xl text-sm font-medium leading-6 text-[#d7e8d9] sm:text-base">
+                {copy.hero.audience}
+              </p>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  className="inline-flex items-center justify-center rounded-md bg-white px-5 py-3 text-sm font-semibold text-[#17362b] transition hover:bg-[#eef1e8]"
+                  href="/chat"
+                >
+                  {copy.hero.guestCta}
+                </Link>
+                <a
+                  className="inline-flex items-center justify-center rounded-md border border-white/45 px-5 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/12"
+                  href={createSectionHref(locale, "kontakt")}
+                >
+                  {copy.hero.ownerCta}
+                </a>
+              </div>
             </div>
 
             <div className="hidden rounded-lg border border-white/22 bg-white/92 p-5 text-[#18211d] shadow-2xl shadow-black/20 backdrop-blur md:block">

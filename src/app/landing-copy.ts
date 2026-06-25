@@ -22,6 +22,9 @@ type LandingCopy = {
     eyebrow: string;
     title: string;
     description: string;
+    audience: string;
+    guestCta: string;
+    ownerCta: string;
     imageAlt: string;
   };
   metrics: {
@@ -112,6 +115,10 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         "Der digitale Concierge für Gäste, Besucher und Aufenthalte in Saas-Fee.",
       description:
         "Fragen Sie direkt nach Restaurants, Menüs, Aktivitäten, Bergbahnen, Live-Status, Wetter, Events, Anreise, Sicherheit und lokalen Services. Für Partnerunterkünfte können zusätzlich geschützte Gästeinformationen eingebunden werden.",
+      audience:
+        "Für Gäste sofort nutzbar. Für Eigentümer, Ferienwohnungen und Hotels als Gästeservice integrierbar.",
+      guestCta: "Als Gast ausprobieren",
+      ownerCta: "Für mein Objekt verbinden",
       imageAlt: "Saas-Fee Bergpanorama",
     },
     metrics: {
@@ -229,6 +236,10 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         "The digital concierge for guests, visitors, and stays in Saas-Fee.",
       description:
         "Ask directly about restaurants, menus, activities, mountain railways, live status, weather, events, arrival, safety, and local services. Partner properties can add protected guest information.",
+      audience:
+        "Ready for guests now. Available for apartment owners and hotels as an integrated guest service.",
+      guestCta: "Try as a guest",
+      ownerCta: "Connect my property",
       imageAlt: "Saas-Fee mountain panorama",
     },
     metrics: {
@@ -343,6 +354,10 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         "Le concierge numérique pour les invités, visiteurs et séjours à Saas-Fee.",
       description:
         "Posez vos questions sur les restaurants, menus, activités, remontées mécaniques, statuts en direct, météo, événements, arrivée, sécurité et services locaux. Les hébergements partenaires peuvent ajouter des informations protégées.",
+      audience:
+        "Disponible dès maintenant pour les visiteurs. Intégrable pour propriétaires, appartements et hôtels comme service invités.",
+      guestCta: "Essayer comme invité",
+      ownerCta: "Connecter mon hébergement",
       imageAlt: "Panorama de montagne à Saas-Fee",
     },
     metrics: {
@@ -460,6 +475,10 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         "Il concierge digitale per ospiti, visitatori e soggiorni a Saas-Fee.",
       description:
         "Chieda direttamente informazioni su ristoranti, menu, attività, impianti di risalita, stato live, meteo, eventi, arrivo, sicurezza e servizi locali. Le strutture partner possono aggiungere informazioni protette.",
+      audience:
+        "Disponibile subito per gli ospiti. Integrabile per proprietari, appartamenti e hotel come servizio ospiti.",
+      guestCta: "Prova come ospite",
+      ownerCta: "Collega la mia struttura",
       imageAlt: "Panorama montano di Saas-Fee",
     },
     metrics: {
