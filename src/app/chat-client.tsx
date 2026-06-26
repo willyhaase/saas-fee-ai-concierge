@@ -913,6 +913,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
     : false;
   const needsGuestIdentity =
     hasGuestAccessLink && (!customerName.trim() || !customerPhone.trim());
+  const hasStayInfo = Boolean(checkIn || checkOut);
 
   const canSend = useMemo(
     () => message.trim().length > 0 && !isSending && !needsGuestIdentity,
@@ -1318,8 +1319,64 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
           </div>
         </header>
 
-        <section className="grid flex-1 gap-5 py-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <section
+          className={`grid flex-1 gap-5 py-5 ${
+            hasStayInfo ? "lg:grid-cols-[minmax(0,1fr)_320px]" : ""
+          }`}
+        >
           <div className="flex min-h-[66vh] flex-col overflow-hidden rounded-lg border border-[#d8d8ce] bg-white shadow-sm">
+            {needsGuestIdentity ? (
+              <div className="border-b border-[#ecece3] bg-[#f7faf6] px-4 py-4 sm:px-6">
+                <div className="grid gap-3 lg:grid-cols-[1fr_0.85fr_0.85fr_0.85fr] lg:items-end">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b6b5f]">
+                      {ui.guestData}
+                    </p>
+                    <p className="mt-1 text-sm leading-5 text-[#5b6b5f]">
+                      {ui.identityIntro}
+                    </p>
+                  </div>
+                  <label className="block">
+                    <span className="text-sm font-medium text-[#4f5b52]">
+                      {ui.name}
+                    </span>
+                    <input
+                      autoComplete="name"
+                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] bg-white px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                      onChange={(event) => setCustomerName(event.target.value)}
+                      value={customerName}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-medium text-[#4f5b52]">
+                      {ui.email}{" "}
+                      <span className="font-normal text-[#7a857d]">
+                        ({ui.optionalEmail})
+                      </span>
+                    </span>
+                    <input
+                      autoComplete="email"
+                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] bg-white px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                      onChange={(event) => setCustomerEmail(event.target.value)}
+                      type="email"
+                      value={customerEmail}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-medium text-[#4f5b52]">
+                      {ui.phone}
+                    </span>
+                    <input
+                      autoComplete="tel"
+                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] bg-white px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                      onChange={(event) => setCustomerPhone(event.target.value)}
+                      type="tel"
+                      value={customerPhone}
+                    />
+                  </label>
+                </div>
+              </div>
+            ) : null}
             <div className="border-b border-[#ecece3] bg-[#fbfbf7] px-4 py-4 sm:px-6">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b6b5f]">
@@ -1647,71 +1704,25 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
             </form>
           </div>
 
-          <aside className="rounded-lg border border-[#d8d8ce] bg-white p-4 shadow-sm lg:self-start">
-            <h2 className="text-base font-semibold text-[#151815]">
-              {ui.guestData}
-            </h2>
-            {hasGuestAccessLink ? (
-              <p className="mt-2 text-sm leading-5 text-[#5b6b5f]">
-                {ui.identityIntro}
-              </p>
-            ) : null}
-            <div className="mt-4 space-y-3">
-              <label className="block">
-                <span className="text-sm font-medium text-[#4f5b52]">
-                  {ui.name}
-                </span>
-                <input
-                  value={customerName}
-                  onChange={(event) => setCustomerName(event.target.value)}
-                  className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
-                  autoComplete="name"
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm font-medium text-[#4f5b52]">
-                  {ui.email}{" "}
-                  <span className="font-normal text-[#7a857d]">
-                    ({ui.optionalEmail})
-                  </span>
-                </span>
-                <input
-                  value={customerEmail}
-                  onChange={(event) => setCustomerEmail(event.target.value)}
-                  className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
-                  autoComplete="email"
-                  type="email"
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm font-medium text-[#4f5b52]">
-                  {ui.phone}
-                </span>
-                <input
-                  value={customerPhone}
-                  onChange={(event) => setCustomerPhone(event.target.value)}
-                  className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
-                  autoComplete="tel"
-                  type="tel"
-                />
-              </label>
-              {checkIn || checkOut ? (
-                <div className="rounded-md border border-[#d8d8ce] bg-[#fbfbf7] px-3 py-3 text-sm text-[#4f5b52]">
-                  <p className="font-medium text-[#151815]">{ui.stay}</p>
-                  {checkIn ? (
-                    <p className="mt-1">
-                      {ui.checkIn}: {formatStayDate(checkIn)}
-                    </p>
-                  ) : null}
-                  {checkOut ? (
-                    <p className="mt-1">
-                      {ui.checkOut}: {formatStayDate(checkOut)}
-                    </p>
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
-          </aside>
+          {hasStayInfo ? (
+            <aside className="rounded-lg border border-[#d8d8ce] bg-white p-4 shadow-sm lg:self-start">
+              <h2 className="text-base font-semibold text-[#151815]">
+                {ui.stay}
+              </h2>
+              <div className="mt-4 rounded-md border border-[#d8d8ce] bg-[#fbfbf7] px-3 py-3 text-sm text-[#4f5b52]">
+                {checkIn ? (
+                  <p>
+                    {ui.checkIn}: {formatStayDate(checkIn)}
+                  </p>
+                ) : null}
+                {checkOut ? (
+                  <p className="mt-1">
+                    {ui.checkOut}: {formatStayDate(checkOut)}
+                  </p>
+                ) : null}
+              </div>
+            </aside>
+          ) : null}
         </section>
 
         <footer className="border-t border-[#d8d8ce] py-4 text-sm text-[#5b6b5f]">
