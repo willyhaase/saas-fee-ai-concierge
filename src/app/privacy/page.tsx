@@ -2,23 +2,23 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Datenschutzerklärung | Saas-Fee AI Concierge",
+  title: "Datenschutzerklärung | Wil Concierge",
   description:
-    "Datenschutzerklärung für die Saas-Fee AI Concierge Anwendung.",
+    "Datenschutzerklärung für die Wil Concierge Anwendung.",
 };
 
 const sections = [
   {
     title: "1. Verantwortlicher",
     body: [
-      "Diese Datenschutzerklärung gilt für die Anwendung Saas-Fee AI Concierge. Verantwortlich für den Betrieb der Anwendung ist Willy Agency.",
+      "Diese Datenschutzerklärung gilt für die Anwendung Wil Concierge. Verantwortlich für den Betrieb der Anwendung ist Willy Agency.",
       "Kontakt für Datenschutzanfragen: privacy@willy-agency.com",
     ],
   },
   {
     title: "2. Zweck der Anwendung",
     body: [
-      "Saas-Fee AI Concierge unterstützt Gäste während ihres Aufenthalts mit Informationen zur Unterkunft, Restaurants, Aktivitäten, Bergbahnen, Wetter, lokalen Empfehlungen und Serviceanfragen.",
+      "Wil Concierge unterstützt Gäste während ihres Aufenthalts mit Informationen zur Unterkunft, Restaurants, Aktivitäten, Bergbahnen, Wetter, lokalen Empfehlungen und Serviceanfragen.",
       "Die Anwendung kann Gespräche protokollieren, Supportfälle erstellen und Reservierungsanfragen an Restaurants vorbereiten oder versenden.",
     ],
   },
@@ -100,14 +100,14 @@ export default function PrivacyPage() {
             Zurück zum Concierge
           </Link>
           <p className="mt-6 text-sm font-medium uppercase tracking-[0.16em] text-[#5b6b5f]">
-            Saas-Fee AI Concierge
+            Wil Concierge
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-normal text-[#151815] sm:text-4xl">
             Datenschutzerklärung
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-[#5b6b5f]">
             Diese Seite erklärt, wie personenbezogene Daten in der Anwendung
-            Saas-Fee AI Concierge verarbeitet werden.
+            Wil Concierge verarbeitet werden.
           </p>
         </header>
 

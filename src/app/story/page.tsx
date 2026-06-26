@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import styles from "./story.module.css";
 
 export const metadata: Metadata = {
-  title: "Saas-Fee AI Concierge Story",
-  description: "Animated story page for Saas-Fee AI Concierge.",
+  title: "Wil Concierge Story",
+  description: "Animated story page for Wil Concierge.",
 };
 
 export default function StoryPage() {
@@ -11,7 +11,7 @@ export default function StoryPage() {
     <main className={styles.page}>
       <section
         className={styles.story}
-        aria-label="Saas-Fee AI Concierge animated story"
+        aria-label="Wil Concierge animated story"
       >
         <div className={styles.bg} />
         <div className={styles.vignette} />
@@ -19,7 +19,7 @@ export default function StoryPage() {
 
         <section className={styles.brand}>
           <div className={styles.kicker}>Digitaler Gaesteservice</div>
-          <h1>Saas-Fee AI Concierge</h1>
+          <h1>Wil Concierge</h1>
           <p>Lokale Antworten fuer Gaeste. Direkt im Chat.</p>
         </section>
 
@@ -27,7 +27,7 @@ export default function StoryPage() {
           <div className={styles.assistant}>
             <div className={styles.avatar}>AI</div>
             <div>
-              <strong>Concierge</strong>
+              <strong>Wil</strong>
               <span>online in Saas-Fee</span>
             </div>
           </div>

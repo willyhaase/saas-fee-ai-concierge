@@ -24,6 +24,7 @@ type LandingCopy = {
     title: string;
     description: string;
     audience: string;
+    founderLine: string;
     guestCta: string;
     ownerCta: string;
     imageAlt: string;
@@ -105,11 +106,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     label: "DE",
     path: "/",
     metadata: {
-      title: "Saas-Fee AI Concierge | Öffentlicher KI-Concierge für Gäste",
+      title: "Wil Concierge | Der KI-Concierge für Saas-Fee",
       description:
-        "Öffentlicher KI-Concierge für Gäste und Besucher in Saas-Fee: Restaurants, Aktivitäten, Bergbahnen, Wetter, Events, Ortsinfos und Aufenthaltsservice rund um die Uhr.",
+        "Wil ist der KI-Concierge für Gäste und Besucher in Saas-Fee: Restaurants, Aktivitäten, Bergbahnen, Wetter, Events, Ortsinfos und Aufenthaltsservice rund um die Uhr.",
       keywords: [
-        "Saas-Fee AI Concierge",
+        "Wil Concierge",
+        "Wil Saas-Fee",
         "Saas-Fee Concierge",
         "AI Concierge Saas-Fee",
         "KI Concierge Saas-Fee",
@@ -126,17 +128,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       modules: "Module",
       pricing: "Preise",
       contact: "Kontakt",
-      chat: "Chat öffnen",
+      chat: "Frag Wil",
     },
     hero: {
-      eyebrow: "Öffentlicher KI-Concierge für Saas-Fee",
-      title:
-        "Der digitale Concierge für Gäste, Besucher und Aufenthalte in Saas-Fee.",
+      eyebrow: "Wil Concierge",
+      title: "Lerne Wil kennen - deinen KI-Concierge in Saas-Fee.",
       description:
-        "Fragen Sie direkt nach Restaurants, Menüs, Aktivitäten, Bergbahnen, Live-Status, Wetter, Events, Anreise, Sicherheit und lokalen Services. Für Partnerunterkünfte können zusätzlich geschützte Gästeinformationen eingebunden werden.",
+        "Sofortige Antworten zu Restaurants, Aktivitäten, Bergbahnen, Wetter, Events, Anreise, Sicherheit und deiner Unterkunft.",
       audience:
         "Für Gäste sofort nutzbar. Für Eigentümer, Ferienwohnungen und Hotels als Gästeservice integrierbar.",
-      guestCta: "Als Gast ausprobieren",
+      founderLine: "Entwickelt von Willy für Gäste und Gastgeber in Saas-Fee.",
+      guestCta: "Frag Wil",
       ownerCta: "Für mein Objekt verbinden",
       imageAlt: "Saas-Fee Bergpanorama",
     },
@@ -152,7 +154,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     product: {
       eyebrow: "Produkt",
       title:
-        "Ein Concierge für öffentliche Saas-Fee-Fragen und optionale Gästeinformationen.",
+        "Wil beantwortet öffentliche Saas-Fee-Fragen und optionale Gästeinformationen.",
       features: [
         {
           title: "Antworten rund um die Uhr",
@@ -164,14 +166,14 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         },
         {
           title: "Vorfälle und WhatsApp",
-          text: "Der Concierge erkennt dringende Anliegen, erstellt einen Vorgang und kann Eigentümer oder Betriebsteam per WhatsApp informieren.",
+          text: "Wil erkennt dringende Anliegen, erstellt einen Vorgang und kann Eigentümer oder Betriebsteam per WhatsApp informieren.",
         },
       ],
     },
     useCases: {
       eyebrow: "Anwendungsfälle",
       title:
-        "Der Concierge beantwortet typische Gäste- und Besucherfragen direkt im Chat.",
+        "Wil beantwortet typische Gäste- und Besucherfragen direkt im Chat.",
       items: [
         "Ein Besucher fragt, welche Restaurants heute passen und möchte Menüs mit Preisen sehen.",
         "Eine Familie sucht Aktivitäten, Spielplätze, Wanderwege oder Schlechtwetterideen.",
@@ -182,7 +184,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     architecture: {
       eyebrow: "Betrieb",
       title: "Zuverlässig, sicher und bereit für den Einsatz mit Gästen.",
-      text: "Der Concierge ist für den täglichen Gästekontakt ausgelegt: öffentliche Ortsinformationen bleiben von geschützten Objektinformationen getrennt, Anfragen werden nachvollziehbar protokolliert und wichtige Anliegen können direkt weitergeleitet werden.",
+      text: "Wil ist für den täglichen Gästekontakt ausgelegt: öffentliche Ortsinformationen bleiben von geschützten Objektinformationen getrennt, Anfragen werden nachvollziehbar protokolliert und wichtige Anliegen können direkt weitergeleitet werden.",
       modules: [
         "Öffentlicher Saas-Fee Chat",
         "Geschützte Informationen pro Objekt",
@@ -242,18 +244,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
       launchTitle: "Einführungsangebot für Eigentümer in Saas-Fee",
       launchText:
-        "Pilot für CHF 69 / Monat während der ersten 3 Monate, danach CHF 89 / Monat. Ideal, um den Concierge mit einer konkreten Wohnung und echten Gästeanfragen zu testen.",
+        "Pilot für CHF 69 / Monat während der ersten 3 Monate, danach CHF 89 / Monat. Ideal, um Wil mit einer konkreten Wohnung und echten Gästeanfragen zu testen.",
     },
     contact: {
       eyebrow: "Kontakt",
-      title: "Möchten Sie den Saas-Fee AI Concierge für Gäste nutzen?",
+      title: "Möchten Sie Wil Concierge für Gäste nutzen?",
       text: "Senden Sie eine kurze Nachricht. Die Anfrage wird direkt in HubSpot erfasst, damit sie sauber nachverfolgt werden kann.",
     },
     demo: {
       eyebrow: "Demo",
-      title:
-        "Testen Sie, wie der KI-Concierge im echten Gästeinterface antwortet.",
-      cta: "Chat starten",
+      title: "Testen Sie, wie Wil im echten Gästeinterface antwortet.",
+      cta: "Frag Wil",
     },
     form: {
       website: "Website",
@@ -279,11 +280,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     label: "EN",
     path: "/en",
     metadata: {
-      title: "Saas-Fee AI Concierge | Public AI Concierge for Guests",
+      title: "Wil Concierge | The AI Concierge for Saas-Fee",
       description:
-        "Public AI concierge for guests and visitors in Saas-Fee: restaurants, activities, mountain railways, weather, events, local services, and stay support around the clock.",
+        "Wil is the AI concierge for guests and visitors in Saas-Fee: restaurants, activities, mountain railways, weather, events, local services, and stay support around the clock.",
       keywords: [
-        "Saas-Fee AI Concierge",
+        "Wil Concierge",
+        "Wil Saas-Fee",
         "Saas-Fee concierge",
         "AI concierge Saas-Fee",
         "Saas-Fee chatbot",
@@ -299,17 +301,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       modules: "Modules",
       pricing: "Pricing",
       contact: "Contact",
-      chat: "Open chat",
+      chat: "Ask Wil",
     },
     hero: {
-      eyebrow: "Public AI concierge for Saas-Fee",
-      title:
-        "The digital concierge for guests, visitors, and stays in Saas-Fee.",
+      eyebrow: "Wil Concierge",
+      title: "Meet Wil, your AI concierge in Saas-Fee.",
       description:
-        "Ask directly about restaurants, menus, activities, mountain railways, live status, weather, events, arrival, safety, and local services. Partner properties can add protected guest information.",
+        "Instant answers about restaurants, activities, lifts, weather, events, arrival, safety, and your accommodation.",
       audience:
         "Ready for guests now. Available for apartment owners and hotels as an integrated guest service.",
-      guestCta: "Try as a guest",
+      founderLine: "Created by Willy for Saas-Fee guests and hosts.",
+      guestCta: "Ask Wil",
       ownerCta: "Connect my property",
       imageAlt: "Saas-Fee mountain panorama",
     },
@@ -324,7 +326,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     },
     product: {
       eyebrow: "Product",
-      title: "One concierge for public Saas-Fee questions and optional guest information.",
+      title: "Wil answers public Saas-Fee questions and optional guest information.",
       features: [
         {
           title: "Answers around the clock",
@@ -336,13 +338,13 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         },
         {
           title: "Incidents and WhatsApp",
-          text: "The concierge detects urgent requests, creates a case, and can notify the owner or operations team via WhatsApp.",
+          text: "Wil detects urgent requests, creates a case, and can notify the owner or operations team via WhatsApp.",
         },
       ],
     },
     useCases: {
       eyebrow: "Use cases",
-      title: "The concierge answers typical guest and visitor questions directly in chat.",
+      title: "Wil answers typical guest and visitor questions directly in chat.",
       items: [
         "A visitor asks which restaurants fit today and wants menus with prices.",
         "A family looks for activities, playgrounds, hiking routes, or rainy-day ideas.",
@@ -353,7 +355,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     architecture: {
       eyebrow: "Operations",
       title: "Reliable, secure, and ready to use with guests.",
-      text: "The concierge is built for everyday guest communication: public destination information stays separate from protected property information, requests are logged clearly, and important issues can be forwarded directly.",
+      text: "Wil is built for everyday guest communication: public destination information stays separate from protected property information, requests are logged clearly, and important issues can be forwarded directly.",
       modules: [
         "Public Saas-Fee chat",
         "Protected information per property",
@@ -413,17 +415,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
       launchTitle: "Introductory offer for owners in Saas-Fee",
       launchText:
-        "Pilot for CHF 69 / month during the first 3 months, then CHF 89 / month. Ideal for testing the concierge with one real apartment and real guest questions.",
+        "Pilot for CHF 69 / month during the first 3 months, then CHF 89 / month. Ideal for testing Wil with one real apartment and real guest questions.",
     },
     contact: {
       eyebrow: "Contact",
-      title: "Would you like to use the Saas-Fee AI Concierge for guests?",
+      title: "Would you like to use Wil Concierge for guests?",
       text: "Send a short message. The request is recorded directly in HubSpot for a clear follow-up.",
     },
     demo: {
       eyebrow: "Demo",
-      title: "Test how the AI concierge responds in the real guest interface.",
-      cta: "Start chat",
+      title: "Test how Wil responds in the real guest interface.",
+      cta: "Ask Wil",
     },
     form: {
       website: "Website",
@@ -449,11 +451,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     label: "FR",
     path: "/fr",
     metadata: {
-      title: "Saas-Fee AI Concierge | Concierge IA public pour les visiteurs",
+      title: "Wil Concierge | Le concierge IA pour Saas-Fee",
       description:
-        "Concierge IA public pour les invités et visiteurs de Saas-Fee : restaurants, activités, remontées mécaniques, météo, événements, services locaux et aide au séjour 24 h/24.",
+        "Wil est le concierge IA pour les invités et visiteurs de Saas-Fee : restaurants, activités, remontées mécaniques, météo, événements, services locaux et aide au séjour 24 h/24.",
       keywords: [
-        "Saas-Fee AI Concierge",
+        "Wil Concierge",
+        "Wil Saas-Fee",
         "concierge Saas-Fee",
         "concierge IA Saas-Fee",
         "chatbot Saas-Fee",
@@ -469,17 +472,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       modules: "Modules",
       pricing: "Prix",
       contact: "Contact",
-      chat: "Ouvrir le chat",
+      chat: "Demander à Wil",
     },
     hero: {
-      eyebrow: "Concierge IA public pour Saas-Fee",
-      title:
-        "Le concierge numérique pour les invités, visiteurs et séjours à Saas-Fee.",
+      eyebrow: "Wil Concierge",
+      title: "Découvrez Wil, votre concierge IA à Saas-Fee.",
       description:
-        "Posez vos questions sur les restaurants, menus, activités, remontées mécaniques, statuts en direct, météo, événements, arrivée, sécurité et services locaux. Les hébergements partenaires peuvent ajouter des informations protégées.",
+        "Des réponses immédiates sur les restaurants, activités, remontées mécaniques, météo, événements, arrivée, sécurité et votre hébergement.",
       audience:
         "Disponible dès maintenant pour les visiteurs. Intégrable pour propriétaires, appartements et hôtels comme service invités.",
-      guestCta: "Essayer comme invité",
+      founderLine: "Créé par Willy pour les invités et hôtes de Saas-Fee.",
+      guestCta: "Demander à Wil",
       ownerCta: "Connecter mon hébergement",
       imageAlt: "Panorama de montagne à Saas-Fee",
     },
@@ -495,7 +498,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     product: {
       eyebrow: "Produit",
       title:
-        "Un concierge pour les questions publiques sur Saas-Fee et les informations invités optionnelles.",
+        "Wil répond aux questions publiques sur Saas-Fee et aux informations invités optionnelles.",
       features: [
         {
           title: "Réponses 24 h/24",
@@ -507,14 +510,14 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         },
         {
           title: "Incidents et WhatsApp",
-          text: "Le concierge détecte les demandes urgentes, crée un dossier et peut informer le propriétaire ou l'équipe d'exploitation via WhatsApp.",
+          text: "Wil détecte les demandes urgentes, crée un dossier et peut informer le propriétaire ou l'équipe d'exploitation via WhatsApp.",
         },
       ],
     },
     useCases: {
       eyebrow: "Cas d'utilisation",
       title:
-        "Le concierge répond directement aux questions typiques des invités et visiteurs.",
+        "Wil répond directement aux questions typiques des invités et visiteurs.",
       items: [
         "Un visiteur demande quels restaurants conviennent aujourd'hui et veut voir les menus avec prix.",
         "Une famille cherche des activités, aires de jeux, itinéraires de randonnée ou idées par mauvais temps.",
@@ -525,7 +528,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     architecture: {
       eyebrow: "Exploitation",
       title: "Fiable, sécurisé et prêt à être utilisé avec les invités.",
-      text: "Le concierge est conçu pour la communication quotidienne avec les invités : les informations publiques de la destination restent séparées des informations protégées des hébergements, les demandes sont consignées clairement et les sujets importants peuvent être transmis directement.",
+      text: "Wil est conçu pour la communication quotidienne avec les invités : les informations publiques de la destination restent séparées des informations protégées des hébergements, les demandes sont consignées clairement et les sujets importants peuvent être transmis directement.",
       modules: [
         "Chat public Saas-Fee",
         "Informations protégées par hébergement",
@@ -585,18 +588,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
       launchTitle: "Offre de lancement pour propriétaires à Saas-Fee",
       launchText:
-        "Pilot à CHF 69 / mois pendant les 3 premiers mois, puis CHF 89 / mois. Idéal pour tester le concierge avec un logement concret et de vraies questions d'invités.",
+        "Pilot à CHF 69 / mois pendant les 3 premiers mois, puis CHF 89 / mois. Idéal pour tester Wil avec un logement concret et de vraies questions d'invités.",
     },
     contact: {
       eyebrow: "Contact",
-      title: "Souhaitez-vous utiliser le Saas-Fee AI Concierge pour vos invités ?",
+      title: "Souhaitez-vous utiliser Wil Concierge pour vos invités ?",
       text: "Envoyez un court message. La demande est enregistrée directement dans HubSpot afin d'assurer un suivi clair.",
     },
     demo: {
       eyebrow: "Démo",
-      title:
-        "Testez la manière dont le concierge IA répond dans l'interface dédiée aux invités.",
-      cta: "Lancer le chat",
+      title: "Testez la manière dont Wil répond dans l'interface dédiée aux invités.",
+      cta: "Demander à Wil",
     },
     form: {
       website: "Site web",
@@ -622,11 +624,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     label: "IT",
     path: "/it",
     metadata: {
-      title: "Saas-Fee AI Concierge | Concierge IA pubblico per ospiti",
+      title: "Wil Concierge | Il concierge IA per Saas-Fee",
       description:
-        "Concierge IA pubblico per ospiti e visitatori a Saas-Fee: ristoranti, attività, impianti di risalita, meteo, eventi, servizi locali e supporto al soggiorno 24/7.",
+        "Wil è il concierge IA per ospiti e visitatori a Saas-Fee: ristoranti, attività, impianti di risalita, meteo, eventi, servizi locali e supporto al soggiorno 24/7.",
       keywords: [
-        "Saas-Fee AI Concierge",
+        "Wil Concierge",
+        "Wil Saas-Fee",
         "concierge Saas-Fee",
         "concierge IA Saas-Fee",
         "chatbot Saas-Fee",
@@ -642,17 +645,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       modules: "Moduli",
       pricing: "Prezzi",
       contact: "Contatto",
-      chat: "Apri chat",
+      chat: "Chiedi a Wil",
     },
     hero: {
-      eyebrow: "Concierge IA pubblico per Saas-Fee",
-      title:
-        "Il concierge digitale per ospiti, visitatori e soggiorni a Saas-Fee.",
+      eyebrow: "Wil Concierge",
+      title: "Conosci Wil, il tuo concierge IA a Saas-Fee.",
       description:
-        "Chieda direttamente informazioni su ristoranti, menu, attività, impianti di risalita, stato live, meteo, eventi, arrivo, sicurezza e servizi locali. Le strutture partner possono aggiungere informazioni protette.",
+        "Risposte immediate su ristoranti, attività, impianti, meteo, eventi, arrivo, sicurezza e il tuo alloggio.",
       audience:
         "Disponibile subito per gli ospiti. Integrabile per proprietari, appartamenti e hotel come servizio ospiti.",
-      guestCta: "Prova come ospite",
+      founderLine: "Creato da Willy per ospiti e host di Saas-Fee.",
+      guestCta: "Chiedi a Wil",
       ownerCta: "Collega la mia struttura",
       imageAlt: "Panorama montano di Saas-Fee",
     },
@@ -668,7 +671,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     product: {
       eyebrow: "Prodotto",
       title:
-        "Un concierge per domande pubbliche su Saas-Fee e informazioni ospiti opzionali.",
+        "Wil risponde alle domande pubbliche su Saas-Fee e alle informazioni ospiti opzionali.",
       features: [
         {
           title: "Risposte 24/7",
@@ -680,14 +683,14 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         },
         {
           title: "Incidenti e WhatsApp",
-          text: "Il concierge riconosce le richieste urgenti, crea un caso e può avvisare il proprietario o il team operativo via WhatsApp.",
+          text: "Wil riconosce le richieste urgenti, crea un caso e può avvisare il proprietario o il team operativo via WhatsApp.",
         },
       ],
     },
     useCases: {
       eyebrow: "Casi d'uso",
       title:
-        "Il concierge risponde direttamente alle domande tipiche di ospiti e visitatori.",
+        "Wil risponde direttamente alle domande tipiche di ospiti e visitatori.",
       items: [
         "Un visitatore chiede quali ristoranti sono adatti oggi e vuole vedere menu con prezzi.",
         "Una famiglia cerca attività, parchi giochi, sentieri o idee per il maltempo.",
@@ -698,7 +701,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     architecture: {
       eyebrow: "Operatività",
       title: "Affidabile, sicuro e pronto per l'uso con gli ospiti.",
-      text: "Il concierge è pensato per la comunicazione quotidiana con gli ospiti: le informazioni pubbliche sulla destinazione restano separate da quelle protette della struttura, le richieste sono registrate in modo chiaro e i temi importanti possono essere inoltrati direttamente.",
+      text: "Wil è pensato per la comunicazione quotidiana con gli ospiti: le informazioni pubbliche sulla destinazione restano separate da quelle protette della struttura, le richieste sono registrate in modo chiaro e i temi importanti possono essere inoltrati direttamente.",
       modules: [
         "Chat pubblica Saas-Fee",
         "Informazioni protette per struttura",
@@ -758,18 +761,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
       launchTitle: "Offerta introduttiva per proprietari a Saas-Fee",
       launchText:
-        "Pilot a CHF 69 / mese per i primi 3 mesi, poi CHF 89 / mese. Ideale per testare il concierge con un appartamento concreto e domande reali degli ospiti.",
+        "Pilot a CHF 69 / mese per i primi 3 mesi, poi CHF 89 / mese. Ideale per testare Wil con un appartamento concreto e domande reali degli ospiti.",
     },
     contact: {
       eyebrow: "Contatto",
-      title: "Vuole usare Saas-Fee AI Concierge per i suoi ospiti?",
+      title: "Vuole usare Wil Concierge per i suoi ospiti?",
       text: "Invii un breve messaggio. La richiesta viene registrata direttamente in HubSpot per un follow-up ordinato.",
     },
     demo: {
       eyebrow: "Demo",
-      title:
-        "Provi come il concierge IA risponde nell'interfaccia dedicata agli ospiti.",
-      cta: "Avvia chat",
+      title: "Provi come Wil risponde nell'interfaccia dedicata agli ospiti.",
+      cta: "Chiedi a Wil",
     },
     form: {
       website: "Sito web",
@@ -819,7 +821,7 @@ export function getLandingMetadata(locale: LandingLocale): Metadata {
       title: copy.metadata.title,
       description: copy.metadata.description,
       url: copy.path,
-      siteName: "Saas-Fee AI Concierge",
+      siteName: "Wil Concierge",
       locale: copy.metadata.locale,
       type: "website",
       images: [

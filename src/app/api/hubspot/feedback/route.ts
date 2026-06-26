@@ -105,7 +105,7 @@ export async function POST(request: Request) {
     createField("phone", phone),
     createField(messageFieldName, message),
     sourceFieldName
-      ? createField(sourceFieldName, "Saas-Fee AI Concierge Landingpage")
+      ? createField(sourceFieldName, "Wil Concierge Landingpage")
       : null,
   ].filter((field): field is HubSpotField => Boolean(field));
 
@@ -121,7 +121,7 @@ export async function POST(request: Request) {
         context: {
           hutk: hutk || undefined,
           pageUri: pageUri || undefined,
-          pageName: pageName || "Saas-Fee AI Concierge",
+          pageName: pageName || "Wil Concierge",
         },
         legalConsentOptions: {
           consent: {

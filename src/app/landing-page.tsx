@@ -24,8 +24,8 @@ export default function LandingPage({ locale }: LandingPageProps) {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Saas-Fee AI Concierge",
-    alternateName: "AI Concierge for Saas-Fee",
+    name: "Wil Concierge",
+    alternateName: "The AI Concierge for Saas-Fee",
     url: "https://saas-fee-concierge.ch",
     applicationCategory: "TravelApplication",
     operatingSystem: "Web",
@@ -67,13 +67,13 @@ export default function LandingPage({ locale }: LandingPageProps) {
         <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-5 py-6 sm:px-8 lg:px-10">
           <header className="flex flex-col items-start justify-between gap-4 text-white sm:flex-row sm:items-center">
             <Link
-              aria-label="Saas-Fee AI Concierge"
+              aria-label="Wil Concierge"
               className="flex shrink-0 items-center transition hover:opacity-90"
               href={copy.path}
             >
               <Image
                 src="/saas-fee-logo.png"
-                alt="Saas-Fee AI Concierge"
+                alt="Wil Concierge"
                 width={160}
                 height={160}
                 className="h-24 w-24 drop-shadow-[0_14px_24px_rgba(0,0,0,0.28)] sm:h-32 sm:w-32 lg:h-36 lg:w-36"
@@ -148,6 +148,9 @@ export default function LandingPage({ locale }: LandingPageProps) {
               </p>
               <p className="mt-4 max-w-2xl text-sm font-medium leading-6 text-[#d7e8d9] sm:text-base">
                 {copy.hero.audience}
+              </p>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-white/75">
+                {copy.hero.founderLine}
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link
