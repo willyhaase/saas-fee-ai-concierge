@@ -907,6 +907,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
   const [isReservationSending, setIsReservationSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const identityRequiredHintId = "guest-identity-required-hint";
   const hasGuestAccessLink = hasLocalAccessMode(mode)
     ? Boolean(guestContext.guestAccessToken)
@@ -923,6 +924,10 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ block: "end" });
+  }, [isSending, messages, reservationForm.isOpen]);
 
   useEffect(() => {
     resizeTextareaToContent(textareaRef.current);
@@ -1482,150 +1487,6 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                 </div>
               </div>
             </div>
-            {reservationForm.isOpen ? (
-              <form
-                className="border-b border-[#ecece3] bg-white px-4 py-4 sm:px-6"
-                onSubmit={sendReservationRequest}
-              >
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b6b5f]">
-                      {ui.reservationTitle}
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-[#151815]">
-                      {reservationForm.restaurantName}
-                    </p>
-                  </div>
-                  <button
-                    className="self-start text-sm font-medium text-[#5b6b5f] underline-offset-4 hover:underline sm:self-auto"
-                    onClick={() =>
-                      setReservationForm((current) => ({
-                        ...current,
-                        isOpen: false,
-                      }))
-                    }
-                    type="button"
-                  >
-                    {ui.cancel}
-                  </button>
-                </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-                  <label className="block">
-                    <span className="text-sm font-medium text-[#4f5b52]">
-                      {ui.date}
-                    </span>
-                    <input
-                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
-                      min={new Date().toISOString().slice(0, 10)}
-                      onChange={(event) =>
-                        setReservationForm((current) => ({
-                          ...current,
-                          reservationDate: event.target.value,
-                        }))
-                      }
-                      required
-                      type="date"
-                      value={reservationForm.reservationDate}
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-sm font-medium text-[#4f5b52]">
-                      {ui.time}
-                    </span>
-                    <input
-                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
-                      onChange={(event) =>
-                        setReservationForm((current) => ({
-                          ...current,
-                          reservationTime: event.target.value,
-                        }))
-                      }
-                      required
-                      type="time"
-                      value={reservationForm.reservationTime}
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-sm font-medium text-[#4f5b52]">
-                      {ui.partySize}
-                    </span>
-                    <input
-                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
-                      max={30}
-                      min={1}
-                      onChange={(event) =>
-                        setReservationForm((current) => ({
-                          ...current,
-                          partySize: event.target.value,
-                        }))
-                      }
-                      required
-                      type="number"
-                      value={reservationForm.partySize}
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-sm font-medium text-[#4f5b52]">
-                      {ui.name}
-                    </span>
-                    <input
-                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
-                      onChange={(event) => setCustomerName(event.target.value)}
-                      required
-                      type="text"
-                      value={customerName}
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-sm font-medium text-[#4f5b52]">
-                      {ui.phone}
-                    </span>
-                    <input
-                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
-                      onChange={(event) => setCustomerPhone(event.target.value)}
-                      required
-                      type="tel"
-                      value={customerPhone}
-                    />
-                  </label>
-                </div>
-                <label className="mt-3 block">
-                  <span className="text-sm font-medium text-[#4f5b52]">
-                    {ui.specialRequests}{" "}
-                    <span className="font-normal text-[#7a857d]">
-                      ({ui.optionalEmail})
-                    </span>
-                  </span>
-                  <textarea
-                    className="mt-1 min-h-20 w-full resize-none rounded-md border border-[#c8c8bc] px-3 py-2 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
-                    onChange={(event) =>
-                      setReservationForm((current) => ({
-                        ...current,
-                        specialRequests: event.target.value,
-                      }))
-                    }
-                    value={reservationForm.specialRequests}
-                  />
-                </label>
-                <div className="mt-4 flex justify-end">
-                  <button
-                    className="h-11 rounded-md bg-[#1f5f46] px-4 text-sm font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
-                    disabled={
-                      isReservationSending ||
-                      needsGuestIdentity ||
-                      !reservationForm.reservationDate ||
-                      !reservationForm.reservationTime ||
-                      !reservationForm.partySize ||
-                      !customerName.trim() ||
-                      !customerPhone.trim()
-                    }
-                    type="submit"
-                  >
-                    {isReservationSending ? ui.sending : ui.sendReservation}
-                  </button>
-                </div>
-              </form>
-            ) : null}
             <div className="flex-1 space-y-4 overflow-y-auto px-4 py-5 sm:px-6">
               {messages.map((item) => (
                 <div
@@ -1655,6 +1516,156 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                   </div>
                 </div>
               ))}
+              {reservationForm.isOpen ? (
+                <div className="flex justify-start">
+                  <form
+                    className="w-full max-w-4xl rounded-lg border border-[#d8d8ce] bg-white px-4 py-4 shadow-sm"
+                    onSubmit={sendReservationRequest}
+                  >
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b6b5f]">
+                          {ui.reservationTitle}
+                        </p>
+                        <p className="mt-1 text-sm font-semibold text-[#151815]">
+                          {reservationForm.restaurantName}
+                        </p>
+                      </div>
+                      <button
+                        className="self-start text-sm font-medium text-[#5b6b5f] underline-offset-4 hover:underline sm:self-auto"
+                        onClick={() =>
+                          setReservationForm((current) => ({
+                            ...current,
+                            isOpen: false,
+                          }))
+                        }
+                        type="button"
+                      >
+                        {ui.cancel}
+                      </button>
+                    </div>
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                      <label className="block">
+                        <span className="text-sm font-medium text-[#4f5b52]">
+                          {ui.date}
+                        </span>
+                        <input
+                          className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                          min={new Date().toISOString().slice(0, 10)}
+                          onChange={(event) =>
+                            setReservationForm((current) => ({
+                              ...current,
+                              reservationDate: event.target.value,
+                            }))
+                          }
+                          required
+                          type="date"
+                          value={reservationForm.reservationDate}
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-sm font-medium text-[#4f5b52]">
+                          {ui.time}
+                        </span>
+                        <input
+                          className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                          onChange={(event) =>
+                            setReservationForm((current) => ({
+                              ...current,
+                              reservationTime: event.target.value,
+                            }))
+                          }
+                          required
+                          type="time"
+                          value={reservationForm.reservationTime}
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-sm font-medium text-[#4f5b52]">
+                          {ui.partySize}
+                        </span>
+                        <input
+                          className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                          max={30}
+                          min={1}
+                          onChange={(event) =>
+                            setReservationForm((current) => ({
+                              ...current,
+                              partySize: event.target.value,
+                            }))
+                          }
+                          required
+                          type="number"
+                          value={reservationForm.partySize}
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-sm font-medium text-[#4f5b52]">
+                          {ui.name}
+                        </span>
+                        <input
+                          className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                          onChange={(event) =>
+                            setCustomerName(event.target.value)
+                          }
+                          required
+                          type="text"
+                          value={customerName}
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-sm font-medium text-[#4f5b52]">
+                          {ui.phone}
+                        </span>
+                        <input
+                          className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                          onChange={(event) =>
+                            setCustomerPhone(event.target.value)
+                          }
+                          required
+                          type="tel"
+                          value={customerPhone}
+                        />
+                      </label>
+                    </div>
+                    <label className="mt-3 block">
+                      <span className="text-sm font-medium text-[#4f5b52]">
+                        {ui.specialRequests}{" "}
+                        <span className="font-normal text-[#7a857d]">
+                          ({ui.optionalEmail})
+                        </span>
+                      </span>
+                      <textarea
+                        className="mt-1 min-h-20 w-full resize-none rounded-md border border-[#c8c8bc] px-3 py-2 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                        onChange={(event) =>
+                          setReservationForm((current) => ({
+                            ...current,
+                            specialRequests: event.target.value,
+                          }))
+                        }
+                        value={reservationForm.specialRequests}
+                      />
+                    </label>
+                    <div className="mt-4 flex justify-end">
+                      <button
+                        className="h-11 rounded-md bg-[#1f5f46] px-4 text-sm font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
+                        disabled={
+                          isReservationSending ||
+                          needsGuestIdentity ||
+                          !reservationForm.reservationDate ||
+                          !reservationForm.reservationTime ||
+                          !reservationForm.partySize ||
+                          !customerName.trim() ||
+                          !customerPhone.trim()
+                        }
+                        type="submit"
+                      >
+                        {isReservationSending ? ui.sending : ui.sendReservation}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              ) : null}
               {isSending ? (
                 <div className="flex justify-start">
                   <div className="rounded-lg border border-[#d8d8ce] bg-[#fbfbf7] px-4 py-3 text-sm text-[#5b6b5f]">
@@ -1662,6 +1673,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                   </div>
                 </div>
               ) : null}
+              <div ref={messagesEndRef} />
             </div>
 
             <form

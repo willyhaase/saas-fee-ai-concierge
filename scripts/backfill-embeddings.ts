@@ -120,7 +120,7 @@ async function backfillTable(cfg: TableConfig) {
     if (error) { console.error("  Fetch error:", error.message); break; }
     if (!data || data.length === 0) break;
 
-    for (const row of data as Record<string, unknown>[]) {
+    for (const row of data as unknown as Record<string, unknown>[]) {
       const text = cfg.textFn(row);
       const lbl  = cfg.label(row);
 
