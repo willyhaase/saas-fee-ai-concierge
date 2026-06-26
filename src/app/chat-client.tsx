@@ -759,7 +759,7 @@ function renderAssistantInline(
 
       nodes.push(
         <button
-          className="inline rounded-sm font-semibold text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d] disabled:cursor-wait disabled:opacity-60"
+          className="inline rounded-sm font-semibold text-[#2E4A3A] underline decoration-[#E89B6F] underline-offset-2 transition hover:text-[#C2552F] disabled:cursor-wait disabled:opacity-60"
           disabled={isSending}
           key={`${keyPrefix}-restaurant-${tokenIndex++}`}
           onClick={() => onRestaurantClick(restaurant.name)}
@@ -796,8 +796,8 @@ function renderAssistantInline(
         <a
           className={
             isMapLink
-              ? "my-1 inline-flex items-center rounded-md bg-[#1f5f46] px-3 py-1.5 text-sm font-semibold text-white no-underline transition hover:bg-[#184936]"
-              : "font-semibold text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d]"
+              ? "my-1 inline-flex items-center rounded-md bg-[#2E4A3A] px-3 py-1.5 text-sm font-semibold text-[#F6F1E8] no-underline transition hover:bg-[#1F3D33]"
+              : "font-semibold text-[#2E4A3A] underline decoration-[#E89B6F] underline-offset-2 transition hover:text-[#C2552F]"
           }
           href={linkUrl}
           key={`${keyPrefix}-link-${tokenIndex++}`}
@@ -810,7 +810,7 @@ function renderAssistantInline(
     } else if (boldText) {
       nodes.push(
         <strong
-          className="font-semibold text-[#151815]"
+          className="font-semibold text-[#211E18]"
           key={`${keyPrefix}-bold-${tokenIndex++}`}
         >
           {boldText}
@@ -1274,27 +1274,27 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f7f2] text-[#1f2421]">
+    <main className="min-h-screen bg-[#F6F1E8] text-[#211E18]">
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-5 sm:px-6 lg:px-8">
-        <header className="flex flex-col gap-3 border-b border-[#d8d8ce] pb-5 sm:flex-row sm:items-end sm:justify-between">
+        <header className="flex flex-col gap-3 border-b border-[#211E18]/14 pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-medium uppercase tracking-[0.16em] text-[#5b6b5f]">
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#DC6B43]">
               Saas-Fee
             </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-normal text-[#151815] sm:text-4xl">
+            <h1 className="mt-2 text-3xl font-bold tracking-normal text-[#211E18] sm:text-4xl">
               {propertyName ? `${propertyName} Wil Concierge` : ui.titleFallback}
             </h1>
           </div>
           <div className="flex flex-col gap-3 sm:items-end">
-            <div className="flex items-center gap-2 text-sm text-[#5b6b5f]">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#2f7d59]" />
+            <div className="flex items-center gap-2 text-sm font-medium text-[#5C5648]">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#DC6B43]" />
               {hasLocalAccessMode(mode) && guestContext.guestAccessToken
                 ? ui.guestLinkActive
                 : ui.online}
             </div>
             <div
               aria-label={ui.language}
-              className="flex rounded-md border border-[#c8c8bc] bg-white p-1"
+              className="flex rounded-md border border-[#211E18]/14 bg-[#FCFAF4] p-1"
             >
               {LANGUAGE_OPTIONS.map((option) => (
                 <button
@@ -1302,8 +1302,8 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                   aria-pressed={option.code === language}
                   className={`h-8 min-w-9 rounded px-2 text-xs font-semibold transition ${
                     option.code === language
-                      ? "bg-[#1f5f46] text-white"
-                      : "text-[#4f5b52] hover:bg-[#eef3ed]"
+                      ? "bg-[#2E4A3A] text-[#F6F1E8]"
+                      : "text-[#5C5648] hover:bg-[#F6F1E8]"
                   }`}
                   key={option.code}
                   onClick={() => setLanguage(option.code)}
@@ -1321,51 +1321,51 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
             hasStayInfo ? "lg:grid-cols-[minmax(0,1fr)_320px]" : ""
           }`}
         >
-          <div className="flex min-h-[66vh] flex-col overflow-hidden rounded-lg border border-[#d8d8ce] bg-white shadow-sm">
+          <div className="flex min-h-[66vh] flex-col overflow-hidden rounded-lg border border-[#211E18]/14 bg-[#FCFAF4] shadow-sm shadow-[#211E18]/8">
             {needsGuestIdentity ? (
-              <div className="border-b border-[#ecece3] bg-[#f7faf6] px-4 py-4 sm:px-6">
+              <div className="border-b border-[#211E18]/10 bg-[#F6F1E8] px-4 py-4 sm:px-6">
                 <div className="grid gap-3 lg:grid-cols-[1fr_0.85fr_0.85fr_0.85fr] lg:items-end">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b6b5f]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#DC6B43]">
                       {ui.guestData}
                     </p>
-                    <p className="mt-1 text-sm leading-5 text-[#5b6b5f]">
+                    <p className="mt-1 text-sm leading-5 text-[#5C5648]">
                       {ui.identityIntro}
                     </p>
                   </div>
                   <label className="block">
-                    <span className="text-sm font-medium text-[#4f5b52]">
+                    <span className="text-sm font-medium text-[#5C5648]">
                       {ui.name}
                     </span>
                     <input
                       autoComplete="name"
-                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] bg-white px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                      className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-[#FCFAF4] px-3 text-sm outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#E89B6F]/35"
                       onChange={(event) => setCustomerName(event.target.value)}
                       value={customerName}
                     />
                   </label>
                   <label className="block">
-                    <span className="text-sm font-medium text-[#4f5b52]">
+                    <span className="text-sm font-medium text-[#5C5648]">
                       {ui.email}{" "}
-                      <span className="font-normal text-[#7a857d]">
+                      <span className="font-normal text-[#8A8170]">
                         ({ui.optionalEmail})
                       </span>
                     </span>
                     <input
                       autoComplete="email"
-                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] bg-white px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                      className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-[#FCFAF4] px-3 text-sm outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#E89B6F]/35"
                       onChange={(event) => setCustomerEmail(event.target.value)}
                       type="email"
                       value={customerEmail}
                     />
                   </label>
                   <label className="block">
-                    <span className="text-sm font-medium text-[#4f5b52]">
+                    <span className="text-sm font-medium text-[#5C5648]">
                       {ui.phone}
                     </span>
                     <input
                       autoComplete="tel"
-                      className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] bg-white px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                      className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-[#FCFAF4] px-3 text-sm outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#E89B6F]/35"
                       onChange={(event) => setCustomerPhone(event.target.value)}
                       type="tel"
                       value={customerPhone}
@@ -1374,9 +1374,9 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                 </div>
               </div>
             ) : null}
-            <div className="border-b border-[#ecece3] bg-[#fbfbf7] px-4 py-4 sm:px-6">
+            <div className="border-b border-[#211E18]/10 bg-[#FCFAF4] px-4 py-4 sm:px-6">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b6b5f]">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#DC6B43]">
                   {ui.quickActions}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -1385,7 +1385,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                       aria-describedby={
                         needsGuestIdentity ? identityRequiredHintId : undefined
                       }
-                      className="rounded-md border border-[#c8c8bc] bg-white px-3 py-2 text-sm font-medium text-[#1f2421] transition hover:border-[#2f7d59] hover:bg-[#eef3ed] disabled:cursor-not-allowed disabled:opacity-60"
+                      className="rounded-md border border-[#211E18]/14 bg-[#F6F1E8] px-3 py-2 text-sm font-medium text-[#211E18] transition hover:border-[#DC6B43] hover:bg-[#FCFAF4] disabled:cursor-not-allowed disabled:opacity-60"
                       disabled={isSending || needsGuestIdentity}
                       key={action.label}
                       onClick={() => sendChatMessage(action.prompt)}
@@ -1398,25 +1398,25 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                 </div>
               </div>
               <div className="mt-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b6b5f]">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#DC6B43]">
                   {ui.restaurantShortcuts}
                 </p>
                 <div className="mt-3 grid gap-2 md:grid-cols-3">
                   {RESTAURANT_CARDS.map((restaurant) => (
                     <div
-                      className="rounded-md border border-[#d8d8ce] bg-white p-3"
+                      className="rounded-lg border border-[#211E18]/14 bg-[#F6F1E8] p-3"
                       key={restaurant.name}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <p className="text-sm font-semibold text-[#151815]">
+                          <p className="text-sm font-semibold text-[#211E18]">
                             {restaurant.name}
                           </p>
-                          <p className="mt-1 text-xs leading-5 text-[#5b6b5f]">
+                          <p className="mt-1 text-xs leading-5 text-[#5C5648]">
                             {restaurant.note}
                           </p>
                         </div>
-                        <span className="shrink-0 rounded bg-[#eef3ed] px-2 py-1 text-xs font-semibold text-[#1f5f46]">
+                        <span className="shrink-0 rounded-md bg-[#FCFAF4] px-2 py-1 text-xs font-semibold text-[#2E4A3A]">
                           {restaurant.price}
                         </span>
                       </div>
@@ -1427,7 +1427,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                               ? identityRequiredHintId
                               : undefined
                           }
-                          className="h-8 flex-1 rounded-md border border-[#c8c8bc] text-xs font-semibold text-[#1f5f46] transition hover:border-[#1f5f46] disabled:cursor-not-allowed disabled:opacity-60"
+                          className="h-8 flex-1 rounded-md border border-[#211E18]/14 text-xs font-semibold text-[#2E4A3A] transition hover:border-[#DC6B43] hover:text-[#C2552F] disabled:cursor-not-allowed disabled:opacity-60"
                           disabled={isSending || needsGuestIdentity}
                           onClick={() =>
                             sendChatMessage(
@@ -1447,7 +1447,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                               ? identityRequiredHintId
                               : undefined
                           }
-                          className="h-8 flex-1 rounded-md border border-[#c8c8bc] text-xs font-semibold text-[#1f5f46] transition hover:border-[#1f5f46] disabled:cursor-not-allowed disabled:opacity-60"
+                          className="h-8 flex-1 rounded-md border border-[#211E18]/14 text-xs font-semibold text-[#2E4A3A] transition hover:border-[#DC6B43] hover:text-[#C2552F] disabled:cursor-not-allowed disabled:opacity-60"
                           disabled={isSending || needsGuestIdentity}
                           onClick={() => requestRestaurantMenu(restaurant.name)}
                           title={
@@ -1463,7 +1463,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                               ? identityRequiredHintId
                               : undefined
                           }
-                          className="h-8 flex-1 rounded-md bg-[#1f5f46] text-xs font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
+                          className="h-8 flex-1 rounded-md bg-[#2E4A3A] text-xs font-semibold text-[#F6F1E8] transition hover:bg-[#1F3D33] disabled:cursor-not-allowed disabled:bg-[#C3B9A6]"
                           disabled={isSending || needsGuestIdentity}
                           onClick={() => openReservationForm(restaurant.name)}
                           title={
@@ -1490,8 +1490,8 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                   <div
                     className={`max-w-[88%] rounded-lg px-4 py-3 text-sm leading-6 sm:max-w-[76%] ${
                       item.role === "user"
-                        ? "bg-[#1f5f46] text-white"
-                        : "border border-[#d8d8ce] bg-[#fbfbf7] text-[#1f2421]"
+                        ? "bg-[#2E4A3A] text-[#F6F1E8]"
+                        : "border border-[#211E18]/14 bg-[#F6F1E8] text-[#211E18]"
                     }`}
                   >
                     <MessageContent
@@ -1511,20 +1511,20 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
               {reservationForm.isOpen ? (
                 <div className="flex justify-start">
                   <form
-                    className="w-full max-w-4xl rounded-lg border border-[#d8d8ce] bg-white px-4 py-4 shadow-sm"
+                    className="w-full max-w-4xl rounded-lg border border-[#211E18]/14 bg-[#FCFAF4] px-4 py-4 shadow-sm shadow-[#211E18]/8"
                     onSubmit={sendReservationRequest}
                   >
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b6b5f]">
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#DC6B43]">
                           {ui.reservationTitle}
                         </p>
-                        <p className="mt-1 text-sm font-semibold text-[#151815]">
+                        <p className="mt-1 text-sm font-semibold text-[#211E18]">
                           {reservationForm.restaurantName || "-"}
                         </p>
                       </div>
                       <button
-                        className="self-start text-sm font-medium text-[#5b6b5f] underline-offset-4 hover:underline sm:self-auto"
+                        className="self-start text-sm font-medium text-[#5C5648] underline-offset-4 hover:text-[#C2552F] hover:underline sm:self-auto"
                         onClick={() =>
                           setReservationForm((current) => ({
                             ...current,
@@ -1538,11 +1538,11 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                     </div>
                     <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
                       <label className="block">
-                        <span className="text-sm font-medium text-[#4f5b52]">
+                        <span className="text-sm font-medium text-[#5C5648]">
                           {ui.restaurant}
                         </span>
                         <input
-                          className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                          className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-[#FCFAF4] px-3 text-sm outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#E89B6F]/35"
                           onChange={(event) =>
                             setReservationForm((current) => ({
                               ...current,
@@ -1555,11 +1555,11 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                         />
                       </label>
                       <label className="block">
-                        <span className="text-sm font-medium text-[#4f5b52]">
+                        <span className="text-sm font-medium text-[#5C5648]">
                           {ui.date}
                         </span>
                         <input
-                          className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                          className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-[#FCFAF4] px-3 text-sm outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#E89B6F]/35"
                           min={new Date().toISOString().slice(0, 10)}
                           onChange={(event) =>
                             setReservationForm((current) => ({
@@ -1573,11 +1573,11 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                         />
                       </label>
                       <label className="block">
-                        <span className="text-sm font-medium text-[#4f5b52]">
+                        <span className="text-sm font-medium text-[#5C5648]">
                           {ui.time}
                         </span>
                         <input
-                          className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                          className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-[#FCFAF4] px-3 text-sm outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#E89B6F]/35"
                           onChange={(event) =>
                             setReservationForm((current) => ({
                               ...current,
@@ -1590,11 +1590,11 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                         />
                       </label>
                       <label className="block">
-                        <span className="text-sm font-medium text-[#4f5b52]">
+                        <span className="text-sm font-medium text-[#5C5648]">
                           {ui.partySize}
                         </span>
                         <input
-                          className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                          className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-[#FCFAF4] px-3 text-sm outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#E89B6F]/35"
                           max={30}
                           min={1}
                           onChange={(event) =>
@@ -1609,11 +1609,11 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                         />
                       </label>
                       <label className="block">
-                        <span className="text-sm font-medium text-[#4f5b52]">
+                        <span className="text-sm font-medium text-[#5C5648]">
                           {ui.name}
                         </span>
                         <input
-                          className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                          className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-[#FCFAF4] px-3 text-sm outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#E89B6F]/35"
                           onChange={(event) =>
                             setCustomerName(event.target.value)
                           }
@@ -1623,11 +1623,11 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                         />
                       </label>
                       <label className="block">
-                        <span className="text-sm font-medium text-[#4f5b52]">
+                        <span className="text-sm font-medium text-[#5C5648]">
                           {ui.phone}
                         </span>
                         <input
-                          className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                          className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-[#FCFAF4] px-3 text-sm outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#E89B6F]/35"
                           onChange={(event) =>
                             setCustomerPhone(event.target.value)
                           }
@@ -1638,14 +1638,14 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                       </label>
                     </div>
                     <label className="mt-3 block">
-                      <span className="text-sm font-medium text-[#4f5b52]">
+                      <span className="text-sm font-medium text-[#5C5648]">
                         {ui.specialRequests}{" "}
-                        <span className="font-normal text-[#7a857d]">
+                        <span className="font-normal text-[#8A8170]">
                           ({ui.optionalEmail})
                         </span>
                       </span>
                       <textarea
-                        className="mt-1 min-h-20 w-full resize-none rounded-md border border-[#c8c8bc] px-3 py-2 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                        className="mt-1 min-h-20 w-full resize-none rounded-md border border-[#211E18]/16 bg-[#FCFAF4] px-3 py-2 text-sm outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#E89B6F]/35"
                         onChange={(event) =>
                           setReservationForm((current) => ({
                             ...current,
@@ -1657,7 +1657,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                     </label>
                     <div className="mt-4 flex justify-end">
                       <button
-                        className="h-11 rounded-md bg-[#1f5f46] px-4 text-sm font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
+                        className="h-11 rounded-md bg-[#2E4A3A] px-4 text-sm font-semibold text-[#F6F1E8] transition hover:bg-[#1F3D33] disabled:cursor-not-allowed disabled:bg-[#C3B9A6]"
                         disabled={isReservationSending}
                         type="submit"
                       >
@@ -1669,7 +1669,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
               ) : null}
               {isSending ? (
                 <div className="flex justify-start">
-                  <div className="rounded-lg border border-[#d8d8ce] bg-[#fbfbf7] px-4 py-3 text-sm text-[#5b6b5f]">
+                  <div className="rounded-lg border border-[#211E18]/14 bg-[#F6F1E8] px-4 py-3 text-sm text-[#5C5648]">
                     {ui.thinking}
                   </div>
                 </div>
@@ -1679,16 +1679,16 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
 
             <form
               onSubmit={sendMessage}
-              className="border-t border-[#d8d8ce] bg-[#fbfbf7] p-3 sm:p-4"
+              className="border-t border-[#211E18]/14 bg-[#F6F1E8] p-3 sm:p-4"
             >
               {error ? (
-                <p className="mb-3 rounded-md border border-[#d56f5b] bg-[#fff5f2] px-3 py-2 text-sm text-[#8c2f20]">
+                <p className="mb-3 rounded-md border border-[#DC6B43] bg-[#FCFAF4] px-3 py-2 text-sm text-[#8A4A3E]">
                   {error}
                 </p>
               ) : null}
               {needsGuestIdentity ? (
                 <p
-                  className="mb-3 rounded-md border border-[#d8d8ce] bg-white px-3 py-2 text-sm text-[#5b6b5f]"
+                  className="mb-3 rounded-md border border-[#211E18]/14 bg-[#FCFAF4] px-3 py-2 text-sm text-[#5C5648]"
                   id={identityRequiredHintId}
                 >
                   {ui.identityRequired}
@@ -1703,13 +1703,13 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                     resizeTextareaToContent(event.currentTarget)
                   }
                   rows={2}
-                  className="min-h-12 max-h-40 flex-1 resize-none overflow-y-auto rounded-md border border-[#c8c8bc] bg-white px-3 py-3 text-base text-[#1f2421] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                  className="min-h-12 max-h-40 flex-1 resize-none overflow-y-auto rounded-md border border-[#211E18]/16 bg-[#FCFAF4] px-3 py-3 text-base text-[#211E18] outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#E89B6F]/35"
                   placeholder={ui.placeholder}
                 />
                 <button
                   type="submit"
                   disabled={!canSend}
-                  className="h-12 shrink-0 rounded-md bg-[#1f5f46] px-5 text-sm font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
+                  className="h-12 shrink-0 rounded-md bg-[#2E4A3A] px-5 text-sm font-semibold text-[#F6F1E8] transition hover:bg-[#1F3D33] disabled:cursor-not-allowed disabled:bg-[#C3B9A6]"
                 >
                   {isSending ? ui.sending : ui.send}
                 </button>
@@ -1718,11 +1718,11 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
           </div>
 
           {hasStayInfo ? (
-            <aside className="rounded-lg border border-[#d8d8ce] bg-white p-4 shadow-sm lg:self-start">
-              <h2 className="text-base font-semibold text-[#151815]">
+            <aside className="rounded-lg border border-[#211E18]/14 bg-[#FCFAF4] p-4 shadow-sm shadow-[#211E18]/8 lg:self-start">
+              <h2 className="text-base font-semibold text-[#211E18]">
                 {ui.stay}
               </h2>
-              <div className="mt-4 rounded-md border border-[#d8d8ce] bg-[#fbfbf7] px-3 py-3 text-sm text-[#4f5b52]">
+              <div className="mt-4 rounded-md border border-[#211E18]/14 bg-[#F6F1E8] px-3 py-3 text-sm text-[#5C5648]">
                 {checkIn ? (
                   <p>
                     {ui.checkIn}: {formatStayDate(checkIn)}
@@ -1738,9 +1738,9 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
           ) : null}
         </section>
 
-        <footer className="border-t border-[#d8d8ce] py-4 text-sm text-[#5b6b5f]">
+        <footer className="border-t border-[#211E18]/14 py-4 text-sm text-[#5C5648]">
           <a
-            className="font-medium text-[#1f5f46] underline decoration-[#9db8a9] underline-offset-2 transition hover:text-[#123d2d]"
+            className="font-medium text-[#2E4A3A] underline decoration-[#E89B6F] underline-offset-2 transition hover:text-[#C2552F]"
             href="/privacy"
           >
             {ui.privacy}

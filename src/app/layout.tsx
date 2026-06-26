@@ -1,10 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {
+  Geist_Mono,
+  Newsreader,
+  Schibsted_Grotesk,
+} from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const schibsted = Schibsted_Grotesk({
+  variable: "--font-schibsted",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin", "latin-ext"],
+  style: ["normal", "italic"],
+  weight: ["400", "500", "600"],
 });
 
 const geistMono = Geist_Mono({
@@ -39,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="de-CH"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${schibsted.variable} ${newsreader.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
         {gaMeasurementId ? (
