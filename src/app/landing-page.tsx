@@ -62,7 +62,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
           className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-[#0f1b17]/58" />
-        <div className="absolute inset-x-0 bottom-0 h-36 bg-[#f5f4ed]" />
+        <div className="absolute inset-x-0 bottom-0 hidden h-36 bg-[#f5f4ed] sm:block" />
 
         <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-5 py-6 sm:px-8 lg:px-10">
           <header className="flex flex-col items-start justify-between gap-4 text-white sm:flex-row sm:items-center">
@@ -76,7 +76,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
                 alt="Saas-Fee AI Concierge"
                 width={160}
                 height={160}
-                className="h-24 w-24 drop-shadow-[0_14px_24px_rgba(0,0,0,0.28)] sm:h-32 sm:w-32 lg:h-36 lg:w-36"
+                className="h-16 w-16 drop-shadow-[0_14px_24px_rgba(0,0,0,0.28)] sm:h-32 sm:w-32 lg:h-36 lg:w-36"
                 priority
               />
             </Link>
