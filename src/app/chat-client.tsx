@@ -920,17 +920,6 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
     () => message.trim().length > 0 && !isSending && !needsGuestIdentity,
     [isSending, message, needsGuestIdentity]
   );
-  const reservationPartySize = Number(reservationForm.partySize);
-  const canSendReservation =
-    !isReservationSending &&
-    Boolean(reservationForm.restaurantName.trim()) &&
-    Boolean(reservationForm.reservationDate) &&
-    Boolean(reservationForm.reservationTime) &&
-    Number.isFinite(reservationPartySize) &&
-    reservationPartySize >= 1 &&
-    Boolean(customerName.trim()) &&
-    Boolean(customerPhone.trim());
-
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
@@ -1087,7 +1076,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
       return;
     }
 
-    if (!canSendReservation) {
+    if (needsGuestIdentity) {
       setError(ui.identityRequired);
       return;
     }
@@ -1226,11 +1215,6 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
 
   async function sendReservationRequest(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    if (needsGuestIdentity) {
-      setError(ui.identityRequired);
-      return;
-    }
 
     setError(null);
     setIsReservationSending(true);
@@ -1674,7 +1658,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                     <div className="mt-4 flex justify-end">
                       <button
                         className="h-11 rounded-md bg-[#1f5f46] px-4 text-sm font-semibold text-white transition hover:bg-[#184936] disabled:cursor-not-allowed disabled:bg-[#a9b5ad]"
-                        disabled={!canSendReservation}
+                        disabled={isReservationSending}
                         type="submit"
                       >
                         {isReservationSending ? ui.sending : ui.sendReservation}
