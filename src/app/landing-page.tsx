@@ -24,8 +24,8 @@ export default function LandingPage({ locale }: LandingPageProps) {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Wil Concierge",
-    alternateName: "The AI Concierge for Saas-Fee",
+    name: "Saas-Fee AI Concierge",
+    alternateName: "AI Concierge for Saas-Fee",
     url: "https://saas-fee-concierge.ch",
     applicationCategory: "TravelApplication",
     operatingSystem: "Web",
@@ -67,13 +67,13 @@ export default function LandingPage({ locale }: LandingPageProps) {
         <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-5 py-6 sm:px-8 lg:px-10">
           <header className="flex flex-col items-start justify-between gap-4 text-white sm:flex-row sm:items-center">
             <Link
-              aria-label="Wil Concierge"
+              aria-label="Saas-Fee AI Concierge"
               className="flex shrink-0 items-center transition hover:opacity-90"
               href={copy.path}
             >
               <Image
                 src="/saas-fee-logo.png"
-                alt="Wil Concierge"
+                alt="Saas-Fee AI Concierge"
                 width={160}
                 height={160}
                 className="h-24 w-24 drop-shadow-[0_14px_24px_rgba(0,0,0,0.28)] sm:h-32 sm:w-32 lg:h-36 lg:w-36"
@@ -137,22 +137,19 @@ export default function LandingPage({ locale }: LandingPageProps) {
 
           <div className="grid flex-1 items-center gap-8 pb-6 pt-6 md:gap-10 md:pb-20 md:pt-10 lg:grid-cols-[minmax(0,1.2fr)_340px] lg:pb-28 lg:pt-4">
             <div className="max-w-5xl text-white lg:-translate-y-6">
-              <p className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-[#d7e8d9] sm:mb-5 sm:tracking-[0.2em]">
+              <p className="mb-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#d7e8d9] sm:mb-5 sm:tracking-[0.2em]">
                 {copy.hero.eyebrow}
               </p>
               <h1 className="max-w-5xl text-balance text-3xl font-semibold leading-[1.05] tracking-normal sm:text-5xl lg:text-6xl">
                 {copy.hero.title}
               </h1>
-              <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-white/86 sm:mt-6 sm:text-lg sm:leading-8">
+              <p className="mt-3 max-w-2xl text-pretty text-sm leading-6 text-white/86 sm:mt-6 sm:text-lg sm:leading-8">
                 {copy.hero.description}
               </p>
-              <p className="mt-4 max-w-2xl text-sm font-medium leading-6 text-[#d7e8d9] sm:text-base">
+              <p className="mt-3 hidden max-w-2xl text-sm font-medium leading-6 text-[#d7e8d9] sm:block sm:text-base">
                 {copy.hero.audience}
               </p>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-white/75">
-                {copy.hero.founderLine}
-              </p>
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-5 flex flex-row flex-wrap gap-3">
                 <Link
                   className="inline-flex items-center justify-center rounded-md bg-white px-5 py-3 text-sm font-semibold text-[#17362b] transition hover:bg-[#eef1e8]"
                   href="/chat"
