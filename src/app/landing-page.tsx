@@ -52,7 +52,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
   return (
     <main className="min-h-screen bg-[#f5f4ed] text-[#18211d]">
       <HtmlLang lang={copy.lang} />
-      <section className="relative flex min-h-[88vh] overflow-hidden sm:min-h-[92vh]">
+      <section className="relative flex min-h-screen overflow-hidden sm:min-h-[92vh]">
         <Image
           src="/story/saas-fee-story-bg-clean.png"
           alt={copy.hero.imageAlt}
@@ -135,12 +135,12 @@ export default function LandingPage({ locale }: LandingPageProps) {
             </nav>
           </header>
 
-          <div className="grid flex-1 items-center gap-8 pb-20 pt-10 md:gap-10 lg:grid-cols-[minmax(0,1.2fr)_340px] lg:pb-28 lg:pt-4">
+          <div className="grid flex-1 items-center gap-8 pb-6 pt-6 md:gap-10 md:pb-20 md:pt-10 lg:grid-cols-[minmax(0,1.2fr)_340px] lg:pb-28 lg:pt-4">
             <div className="max-w-5xl text-white lg:-translate-y-6">
               <p className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-[#d7e8d9] sm:mb-5 sm:tracking-[0.2em]">
                 {copy.hero.eyebrow}
               </p>
-              <h1 className="max-w-5xl text-balance text-4xl font-semibold leading-[1.05] tracking-normal sm:text-5xl lg:text-6xl">
+              <h1 className="max-w-5xl text-balance text-3xl font-semibold leading-[1.05] tracking-normal sm:text-5xl lg:text-6xl">
                 {copy.hero.title}
               </h1>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-white/86 sm:mt-6 sm:text-lg sm:leading-8">
