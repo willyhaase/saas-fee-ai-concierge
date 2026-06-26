@@ -5,6 +5,7 @@ import {
   getLiveSaasFeeOpenFacilities,
   type LiveFacilities,
 } from "@/lib/saas-fee-live-status";
+import { searchKnowledge } from "@/lib/knowledge-search";
 
 type ChatRequest = {
   message?: unknown;
@@ -1136,9 +1137,10 @@ async function getPropertyContext(
   requestedPropertyId: string | null,
   requestedPropertySlug: string | null,
   guestAccessToken: string | null,
-  accessMode: AccessMode
+  accessMode: AccessMode,
+  question?: string | null
 ): Promise<PropertyContext | null> {
-  const globalKnowledge = await getGlobalKnowledge(supabase);
+  const globalKnowledge = await getGlobalKnowledge(supabase, question);
   const localRecommendations = await getLocalRecommendations(supabase);
   const localEvents = await getLocalEvents(supabase);
   const restaurantMenus = await getRestaurantMenus(supabase);
@@ -1213,8 +1215,8 @@ async function getPropertyContext(
     ? (contactsValue[0] as Record<string, unknown> | undefined)
     : (contactsValue as Record<string, unknown> | null);
   const [instructions, faq] = await Promise.all([
-    getPropertyInstructions(supabase, resolvedAccess.propertyId),
-    getPropertyFaq(supabase, resolvedAccess.propertyId),
+    getPropertyInstructions(supabase, resolvedAccess.propertyId, question),
+    getPropertyFaq(supabase, resolvedAccess.propertyId, question),
   ]);
 
   return {
@@ -1324,8 +1326,28 @@ async function resolvePropertyId(
 
 async function getPropertyInstructions(
   supabase: SupabaseClient,
-  propertyId: string
+  propertyId: string,
+  question?: string | null
 ) {
+  if (question) {
+    try {
+      const chunks = await searchKnowledge(question, propertyId, { threshold: 0.68, count: 6 });
+      const semantic = chunks
+        .filter((c) => c.source === "property_instructions")
+        .map((c) => {
+          const [titleLine, ...rest] = c.content.split("\n");
+          return {
+            category: null as string | null,
+            title: titleLine ?? null,
+            content: rest.join("\n") || c.content,
+          };
+        });
+      if (semantic.length > 0) return semantic;
+    } catch (err) {
+      console.error("Semantic property_instructions search failed, falling back:", err);
+    }
+  }
+
   const { data, error } = await supabase
     .from("property_instructions")
     .select("category, title, content")
@@ -1343,7 +1365,28 @@ async function getPropertyInstructions(
   }));
 }
 
-async function getPropertyFaq(supabase: SupabaseClient, propertyId: string) {
+async function getPropertyFaq(
+  supabase: SupabaseClient,
+  propertyId: string,
+  question?: string | null
+) {
+  if (question) {
+    try {
+      const chunks = await searchKnowledge(question, propertyId, { threshold: 0.68, count: 4 });
+      const semantic = chunks
+        .filter((c) => c.source === "property_faq")
+        .map((c) => {
+          const lines = c.content.split("\n");
+          const qLine = lines.find((l) => l.startsWith("Q: "))?.slice(3) ?? null;
+          const aLine = lines.find((l) => l.startsWith("A: "))?.slice(3) ?? c.content;
+          return { question: qLine, answer: aLine };
+        });
+      if (semantic.length > 0) return semantic;
+    } catch (err) {
+      console.error("Semantic property_faq search failed, falling back:", err);
+    }
+  }
+
   const { data, error } = await supabase
     .from("property_faq")
     .select("question, answer")
@@ -1378,7 +1421,29 @@ async function getLocalRecommendations(supabase: SupabaseClient) {
   }));
 }
 
-async function getGlobalKnowledge(supabase: SupabaseClient) {
+async function getGlobalKnowledge(
+  supabase: SupabaseClient,
+  question?: string | null
+) {
+  if (question) {
+    try {
+      const chunks = await searchKnowledge(question, null, { threshold: 0.68, count: 8 });
+      const semantic = chunks
+        .filter((c) => c.source === "global_knowledge")
+        .map((c) => {
+          const [titleLine, ...rest] = c.content.split("\n");
+          return {
+            category: null as string | null,
+            title: titleLine ?? null,
+            content: rest.join("\n") || c.content,
+          };
+        });
+      if (semantic.length > 0) return semantic;
+    } catch (err) {
+      console.error("Semantic global_knowledge search failed, falling back:", err);
+    }
+  }
+
   const { data, error } = await supabase
     .from("global_knowledge")
     .select("category, title, content")
@@ -2825,7 +2890,8 @@ export async function POST(req: Request) {
       requestPropertyId,
       requestPropertySlug,
       guestAccessToken,
-      accessMode
+      accessMode,
+      message
     );
     const customerName = submittedCustomerName ?? propertyContext?.guestName ?? null;
     const customerEmail =
