@@ -1169,9 +1169,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
           data.reservationDraft?.restaurantName ??
           inferReservationRestaurant(text, messages);
 
-        if (restaurantName) {
-          openReservationForm(restaurantName, data.reservationDraft);
-        }
+        openReservationForm(restaurantName ?? "", data.reservationDraft);
       }
     } catch (sendError) {
       const errorMessage =
@@ -1538,7 +1536,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                           {ui.reservationTitle}
                         </p>
                         <p className="mt-1 text-sm font-semibold text-[#151815]">
-                          {reservationForm.restaurantName}
+                          {reservationForm.restaurantName || "-"}
                         </p>
                       </div>
                       <button
@@ -1554,7 +1552,24 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
                         {ui.cancel}
                       </button>
                     </div>
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
+                      <label className="block">
+                        <span className="text-sm font-medium text-[#4f5b52]">
+                          {ui.restaurant}
+                        </span>
+                        <input
+                          className="mt-1 h-11 w-full rounded-md border border-[#c8c8bc] px-3 text-sm outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+                          onChange={(event) =>
+                            setReservationForm((current) => ({
+                              ...current,
+                              restaurantName: event.target.value,
+                            }))
+                          }
+                          required
+                          type="text"
+                          value={reservationForm.restaurantName}
+                        />
+                      </label>
                       <label className="block">
                         <span className="text-sm font-medium text-[#4f5b52]">
                           {ui.date}
