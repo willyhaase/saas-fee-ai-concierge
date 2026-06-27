@@ -114,22 +114,22 @@ export default function FeedbackForm({ copy }: { copy: FeedbackFormCopy }) {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-semibold text-[#2d3c35]">
+          <span className="text-sm font-semibold text-[#211E18]">
             {copy.firstName}
           </span>
           <input
-            className="mt-1 h-11 w-full rounded-md border border-[#cfd3c6] bg-white px-3 text-sm text-[#18211d] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+            className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-white px-3 text-sm text-[#211E18] outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#DC6B43]/20"
             name="firstname"
             required
             autoComplete="given-name"
           />
         </label>
         <label className="block">
-          <span className="text-sm font-semibold text-[#2d3c35]">
+          <span className="text-sm font-semibold text-[#211E18]">
             {copy.lastName}
           </span>
           <input
-            className="mt-1 h-11 w-full rounded-md border border-[#cfd3c6] bg-white px-3 text-sm text-[#18211d] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+            className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-white px-3 text-sm text-[#211E18] outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#DC6B43]/20"
             name="lastname"
             autoComplete="family-name"
           />
@@ -138,11 +138,11 @@ export default function FeedbackForm({ copy }: { copy: FeedbackFormCopy }) {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-semibold text-[#2d3c35]">
+          <span className="text-sm font-semibold text-[#211E18]">
             {copy.email}
           </span>
           <input
-            className="mt-1 h-11 w-full rounded-md border border-[#cfd3c6] bg-white px-3 text-sm text-[#18211d] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+            className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-white px-3 text-sm text-[#211E18] outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#DC6B43]/20"
             name="email"
             required
             type="email"
@@ -150,11 +150,11 @@ export default function FeedbackForm({ copy }: { copy: FeedbackFormCopy }) {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-semibold text-[#2d3c35]">
+          <span className="text-sm font-semibold text-[#211E18]">
             {copy.phone}
           </span>
           <input
-            className="mt-1 h-11 w-full rounded-md border border-[#cfd3c6] bg-white px-3 text-sm text-[#18211d] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+            className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-white px-3 text-sm text-[#211E18] outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#DC6B43]/20"
             name="phone"
             type="tel"
             autoComplete="tel"
@@ -163,31 +163,31 @@ export default function FeedbackForm({ copy }: { copy: FeedbackFormCopy }) {
       </div>
 
       <label className="block">
-        <span className="text-sm font-semibold text-[#2d3c35]">
+        <span className="text-sm font-semibold text-[#211E18]">
           {copy.company}
         </span>
         <input
-          className="mt-1 h-11 w-full rounded-md border border-[#cfd3c6] bg-white px-3 text-sm text-[#18211d] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+          className="mt-1 h-11 w-full rounded-md border border-[#211E18]/16 bg-white px-3 text-sm text-[#211E18] outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#DC6B43]/20"
           name="company"
           autoComplete="organization"
         />
       </label>
 
       <label className="block">
-        <span className="text-sm font-semibold text-[#2d3c35]">
+        <span className="text-sm font-semibold text-[#211E18]">
           {copy.message}
         </span>
         <textarea
-          className="mt-1 min-h-32 w-full resize-y rounded-md border border-[#cfd3c6] bg-white px-3 py-3 text-sm text-[#18211d] outline-none transition focus:border-[#2f7d59] focus:ring-2 focus:ring-[#2f7d59]/20"
+          className="mt-1 min-h-32 w-full resize-y rounded-md border border-[#211E18]/16 bg-white px-3 py-3 text-sm text-[#211E18] outline-none transition focus:border-[#DC6B43] focus:ring-2 focus:ring-[#DC6B43]/20"
           name="message"
           required
           placeholder={copy.messagePlaceholder}
         />
       </label>
 
-      <label className="flex gap-3 text-sm leading-6 text-[#526159]">
+      <label className="flex gap-3 text-sm leading-6 text-[#5C5648]">
         <input
-          className="mt-1 h-4 w-4 rounded border-[#bfc5b8] text-[#244d40]"
+          className="mt-1 h-4 w-4 rounded border-[#211E18]/20 text-[#2E4A3A]"
           name="consent"
           required
           type="checkbox"
@@ -199,7 +199,7 @@ export default function FeedbackForm({ copy }: { copy: FeedbackFormCopy }) {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
-          className="inline-flex h-11 w-fit items-center justify-center rounded-md bg-[#244d40] px-5 text-sm font-bold text-white transition hover:bg-[#1b3d32] disabled:cursor-wait disabled:bg-[#9aa79f]"
+          className="inline-flex h-11 w-fit items-center justify-center rounded-md bg-[#DC6B43] px-5 text-sm font-bold text-[#211E18] transition hover:bg-[#C2552F] disabled:cursor-wait disabled:bg-[#5C5648]/40"
           disabled={isSubmitting}
           type="submit"
         >
@@ -209,7 +209,7 @@ export default function FeedbackForm({ copy }: { copy: FeedbackFormCopy }) {
           <p
             aria-live="polite"
             className={`text-sm ${
-              status.type === "success" ? "text-[#1f6f4e]" : "text-[#9b3f35]"
+              status.type === "success" ? "text-[#2E4A3A]" : "text-[#C2552F]"
             }`}
           >
             {status.message}

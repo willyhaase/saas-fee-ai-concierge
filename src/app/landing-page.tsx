@@ -140,7 +140,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
               <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-[#E89B6F] sm:mb-5 sm:tracking-[0.24em]">
                 {copy.hero.eyebrow}
               </p>
-              <h1 className="max-w-5xl text-balance text-3xl font-bold leading-[1.05] tracking-normal text-[#F6F1E8] sm:text-5xl lg:text-6xl">
+              <h1 className="font-accent max-w-5xl text-balance text-3xl font-bold leading-[1.05] tracking-normal text-[#F6F1E8] sm:text-5xl lg:text-6xl">
                 {copy.hero.title}
               </h1>
               <p className="mt-3 max-w-2xl text-pretty text-sm leading-6 text-[#F6F1E8]/86 sm:mt-6 sm:text-lg sm:leading-8">
@@ -167,7 +167,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
 
             <div className="hidden overflow-hidden rounded-lg border border-[#F6F1E8]/18 shadow-2xl shadow-black/30 md:block">
               {/* Chat header */}
-              <div className="flex items-center gap-3 bg-[#211E18] px-4 py-3">
+              <div className="flex items-center gap-3 bg-[#2E4A3A] px-4 py-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#2E4A3A] text-sm font-bold text-[#F6F1E8]">
                   W
                 </div>
