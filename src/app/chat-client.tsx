@@ -117,16 +117,16 @@ const UI_TEXT: Record<
   }
 > = {
   de: {
-    titleFallback: "Wil Concierge",
+    titleFallback: "Lena Concierge",
     welcome: (propertyName) =>
       propertyName
-        ? `Willkommen in ${propertyName}. Ich bin Wil, Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zur Unterkunft, zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.`
-        : "Guten Tag, ich bin Wil, Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.",
+        ? `Willkommen in ${propertyName}. Ich bin Lena, Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zur Unterkunft, zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.`
+        : "Guten Tag, ich bin Lena, Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.",
     temporaryUnavailable:
-      "Wil ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.",
+      "Lena ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.",
     unexpectedResponse:
-      "Wil hat eine unerwartete Antwort zurückgegeben. Bitte versuchen Sie es erneut.",
-    unavailable: "Wil ist im Moment nicht verfügbar.",
+      "Lena hat eine unerwartete Antwort zurückgegeben. Bitte versuchen Sie es erneut.",
+    unavailable: "Lena ist im Moment nicht verfügbar.",
     fallbackReply:
       "Danke. Ich habe Ihre Nachricht aufgenommen und das Team wird sie in Kürze prüfen.",
     sendFailed:
@@ -134,7 +134,7 @@ const UI_TEXT: Record<
     identityRequired:
       "Bitte geben Sie zuerst Ihren Namen und Ihre Telefon-/WhatsApp-Nummer ein.",
     identityIntro:
-      "Bitte identifizieren Sie sich einmalig mit Name und Telefon. So kann Wil Sie bei Anfragen und Restaurantreservierungen korrekt zuordnen.",
+      "Bitte identifizieren Sie sich einmalig mit Name und Telefon. So kann Lena Sie bei Anfragen und Restaurantreservierungen korrekt zuordnen.",
     optionalEmail: "Optional",
     menuPrompt: (restaurantName) =>
       `Zeige mir das Menü von ${restaurantName} mit Preisen.`,
@@ -158,7 +158,7 @@ const UI_TEXT: Record<
     priority: "Priorität",
     quickActions: "Schnell fragen",
     restaurantShortcuts: "Restaurants",
-    ask: "Frag Wil",
+    ask: "Frag Lena",
     showMenu: "Menü",
     reserve: "Reservieren",
     reservationTitle: "Tischreservierung",
@@ -174,23 +174,23 @@ const UI_TEXT: Record<
     language: "Sprache",
   },
   en: {
-    titleFallback: "Wil Concierge",
+    titleFallback: "Lena Concierge",
     welcome: (propertyName) =>
       propertyName
-        ? `Welcome to ${propertyName}. I am Wil, your AI concierge for Saas-Fee. Ask me about the accommodation, restaurants, activities, mountain railways, weather, or anything you need during your stay.`
-        : "Hello, I am Wil, your AI concierge for Saas-Fee. Ask me about restaurants, activities, mountain railways, weather, or anything you need during your stay.",
+        ? `Welcome to ${propertyName}. I am Lena, your AI concierge for Saas-Fee. Ask me about the accommodation, restaurants, activities, mountain railways, weather, or anything you need during your stay.`
+        : "Hello, I am Lena, your AI concierge for Saas-Fee. Ask me about restaurants, activities, mountain railways, weather, or anything you need during your stay.",
     temporaryUnavailable:
-      "Wil is temporarily unavailable. Please try again later.",
+      "Lena is temporarily unavailable. Please try again later.",
     unexpectedResponse:
-      "Wil returned an unexpected response. Please try again.",
-    unavailable: "Wil is not available right now.",
+      "Lena returned an unexpected response. Please try again.",
+    unavailable: "Lena is not available right now.",
     fallbackReply:
       "Thank you. I have received your message and the team will review it shortly.",
     sendFailed: "I could not send this message. Please try again.",
     identityRequired:
       "Please enter your name and phone/WhatsApp number first.",
     identityIntro:
-      "Please identify yourself once with your name and phone. This lets Wil assign requests and restaurant reservations correctly.",
+      "Please identify yourself once with your name and phone. This lets Lena assign requests and restaurant reservations correctly.",
     optionalEmail: "Optional",
     menuPrompt: (restaurantName) =>
       `Show me the menu of ${restaurantName} with prices.`,
@@ -214,7 +214,7 @@ const UI_TEXT: Record<
     priority: "Priority",
     quickActions: "Quick questions",
     restaurantShortcuts: "Restaurants",
-    ask: "Ask Wil",
+    ask: "Ask Lena",
     showMenu: "Menu",
     reserve: "Reserve",
     reservationTitle: "Table reservation",
@@ -230,23 +230,23 @@ const UI_TEXT: Record<
     language: "Language",
   },
   ru: {
-    titleFallback: "Wil Concierge",
+    titleFallback: "Lena Concierge",
     welcome: (propertyName) =>
       propertyName
-        ? `Добро пожаловать в ${propertyName}. Я Wil, ваш AI-консьерж по Saas-Fee. Спрашивайте про жильё, рестораны, активности, горные дороги, погоду и всё, что нужно во время проживания.`
-        : "Здравствуйте, я Wil, ваш AI-консьерж по Saas-Fee. Спрашивайте про рестораны, активности, горные дороги, погоду и всё, что нужно во время проживания.",
+        ? `Добро пожаловать в ${propertyName}. Я Lena, ваш AI-консьерж по Saas-Fee. Спрашивайте про жильё, рестораны, активности, горные дороги, погоду и всё, что нужно во время проживания.`
+        : "Здравствуйте, я Lena, ваш AI-консьерж по Saas-Fee. Спрашивайте про рестораны, активности, горные дороги, погоду и всё, что нужно во время проживания.",
     temporaryUnavailable:
-      "Wil временно недоступен. Пожалуйста, попробуйте позже.",
+      "Lena временно недоступен. Пожалуйста, попробуйте позже.",
     unexpectedResponse:
-      "Wil вернул неожиданный ответ. Пожалуйста, попробуйте ещё раз.",
-    unavailable: "Wil сейчас недоступен.",
+      "Lena вернул неожиданный ответ. Пожалуйста, попробуйте ещё раз.",
+    unavailable: "Lena сейчас недоступен.",
     fallbackReply:
       "Спасибо. Я получил ваше сообщение, команда скоро его проверит.",
     sendFailed: "Не удалось отправить сообщение. Пожалуйста, попробуйте ещё раз.",
     identityRequired:
       "Сначала введите имя и номер телефона / WhatsApp.",
     identityIntro:
-      "Пожалуйста, один раз укажите имя и телефон. Так Wil сможет правильно привязать запросы и бронирования ресторанов к вам.",
+      "Пожалуйста, один раз укажите имя и телефон. Так Lena сможет правильно привязать запросы и бронирования ресторанов к вам.",
     optionalEmail: "Необязательно",
     menuPrompt: (restaurantName) =>
       `Покажи меню ресторана ${restaurantName} с ценами.`,
@@ -270,7 +270,7 @@ const UI_TEXT: Record<
     priority: "Приоритет",
     quickActions: "Быстрые вопросы",
     restaurantShortcuts: "Рестораны",
-    ask: "Спросить Wil",
+    ask: "Спросить Lena",
     showMenu: "Меню",
     reserve: "Забронировать",
     reservationTitle: "Бронирование столика",
@@ -286,23 +286,23 @@ const UI_TEXT: Record<
     language: "Язык",
   },
   fr: {
-    titleFallback: "Wil Concierge",
+    titleFallback: "Lena Concierge",
     welcome: (propertyName) =>
       propertyName
-        ? `Bienvenue à ${propertyName}. Je suis Wil, votre concierge IA pour Saas-Fee. Posez-moi vos questions sur le logement, les restaurants, les activités, les remontées mécaniques, la météo ou tout ce dont vous avez besoin pendant votre séjour.`
-        : "Bonjour, je suis Wil, votre concierge IA pour Saas-Fee. Posez-moi vos questions sur les restaurants, les activités, les remontées mécaniques, la météo ou tout ce dont vous avez besoin pendant votre séjour.",
+        ? `Bienvenue à ${propertyName}. Je suis Lena, votre concierge IA pour Saas-Fee. Posez-moi vos questions sur le logement, les restaurants, les activités, les remontées mécaniques, la météo ou tout ce dont vous avez besoin pendant votre séjour.`
+        : "Bonjour, je suis Lena, votre concierge IA pour Saas-Fee. Posez-moi vos questions sur les restaurants, les activités, les remontées mécaniques, la météo ou tout ce dont vous avez besoin pendant votre séjour.",
     temporaryUnavailable:
-      "Wil est temporairement indisponible. Veuillez réessayer plus tard.",
+      "Lena est temporairement indisponible. Veuillez réessayer plus tard.",
     unexpectedResponse:
-      "Wil a renvoyé une réponse inattendue. Veuillez réessayer.",
-    unavailable: "Wil n'est pas disponible pour le moment.",
+      "Lena a renvoyé une réponse inattendue. Veuillez réessayer.",
+    unavailable: "Lena n'est pas disponible pour le moment.",
     fallbackReply:
       "Merci. J'ai bien reçu votre message et l'équipe va l'examiner sous peu.",
     sendFailed: "Je n'ai pas pu envoyer ce message. Veuillez réessayer.",
     identityRequired:
       "Veuillez d'abord saisir votre nom et votre numéro de téléphone / WhatsApp.",
     identityIntro:
-      "Veuillez vous identifier une seule fois avec votre nom et votre téléphone. Wil pourra ainsi associer correctement les demandes et réservations.",
+      "Veuillez vous identifier une seule fois avec votre nom et votre téléphone. Lena pourra ainsi associer correctement les demandes et réservations.",
     optionalEmail: "Optionnel",
     menuPrompt: (restaurantName) =>
       `Montrez-moi le menu de ${restaurantName} avec les prix.`,
@@ -326,7 +326,7 @@ const UI_TEXT: Record<
     priority: "Priorité",
     quickActions: "Questions rapides",
     restaurantShortcuts: "Restaurants",
-    ask: "Demander à Wil",
+    ask: "Demander à Lena",
     showMenu: "Menu",
     reserve: "Réserver",
     reservationTitle: "Réservation de table",
@@ -342,23 +342,23 @@ const UI_TEXT: Record<
     language: "Langue",
   },
   it: {
-    titleFallback: "Wil Concierge",
+    titleFallback: "Lena Concierge",
     welcome: (propertyName) =>
       propertyName
-        ? `Benvenuti a ${propertyName}. Sono Wil, il vostro concierge IA per Saas-Fee. Chiedetemi informazioni sull'alloggio, ristoranti, attività, impianti di risalita, meteo o qualsiasi cosa vi serva durante il soggiorno.`
-        : "Buongiorno, sono Wil, il vostro concierge IA per Saas-Fee. Chiedetemi informazioni su ristoranti, attività, impianti di risalita, meteo o qualsiasi cosa vi serva durante il soggiorno.",
+        ? `Benvenuti a ${propertyName}. Sono Lena, il vostro concierge IA per Saas-Fee. Chiedetemi informazioni sull'alloggio, ristoranti, attività, impianti di risalita, meteo o qualsiasi cosa vi serva durante il soggiorno.`
+        : "Buongiorno, sono Lena, il vostro concierge IA per Saas-Fee. Chiedetemi informazioni su ristoranti, attività, impianti di risalita, meteo o qualsiasi cosa vi serva durante il soggiorno.",
     temporaryUnavailable:
-      "Wil è temporaneamente non disponibile. Riprova più tardi.",
+      "Lena è temporaneamente non disponibile. Riprova più tardi.",
     unexpectedResponse:
-      "Wil ha restituito una risposta inattesa. Riprova.",
-    unavailable: "Wil non è disponibile al momento.",
+      "Lena ha restituito una risposta inattesa. Riprova.",
+    unavailable: "Lena non è disponibile al momento.",
     fallbackReply:
       "Grazie. Ho ricevuto il tuo messaggio e il team lo controllerà a breve.",
     sendFailed: "Non sono riuscito a inviare questo messaggio. Riprova.",
     identityRequired:
       "Inserisci prima il tuo nome e numero di telefono / WhatsApp.",
     identityIntro:
-      "Identificati una sola volta con nome e telefono. Così Wil può associare correttamente richieste e prenotazioni.",
+      "Identificati una sola volta con nome e telefono. Così Lena può associare correttamente richieste e prenotazioni.",
     optionalEmail: "Opzionale",
     menuPrompt: (restaurantName) =>
       `Mostrami il menu di ${restaurantName} con i prezzi.`,
@@ -382,7 +382,7 @@ const UI_TEXT: Record<
     priority: "Priorità",
     quickActions: "Domande rapide",
     restaurantShortcuts: "Ristoranti",
-    ask: "Chiedi a Wil",
+    ask: "Chiedi a Lena",
     showMenu: "Menu",
     reserve: "Prenota",
     reservationTitle: "Prenotazione tavolo",
@@ -1282,7 +1282,7 @@ export default function ChatClient({ mode, propertySlug }: ChatClientProps) {
               Saas-Fee
             </p>
             <h1 className="mt-2 text-3xl font-bold tracking-normal text-[#211E18] sm:text-4xl">
-              {propertyName ? `${propertyName} Wil Concierge` : ui.titleFallback}
+              {propertyName ? `${propertyName} Lena Concierge` : ui.titleFallback}
             </h1>
           </div>
           <div className="flex flex-col gap-3 sm:items-end">
