@@ -29,11 +29,11 @@ const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 export const metadata: Metadata = {
   metadataBase: new URL("https://saas-fee-concierge.ch"),
   title: {
-    default: "Wil Concierge",
+    default: "Lena Concierge",
     template: "%s",
   },
   description:
-    "Wil ist der KI-Concierge für Gäste und Besucher in Saas-Fee mit Informationen zu Restaurants, Aktivitäten, Bergbahnen, Wetter, Events und Aufenthalten.",
+    "Lena ist der KI-Concierge für Gäste und Besucher in Saas-Fee mit Informationen zu Restaurants, Aktivitäten, Bergbahnen, Wetter, Events und Aufenthalten.",
   icons: {
     icon: [
       { url: "/icon.png", type: "image/png", sizes: "1024x1024" },

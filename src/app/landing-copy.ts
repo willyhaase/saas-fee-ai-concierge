@@ -106,12 +106,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     label: "DE",
     path: "/",
     metadata: {
-      title: "Wil Concierge | Der KI-Concierge für Saas-Fee",
+      title: "Lena Concierge | Der KI-Concierge für Saas-Fee",
       description:
-        "Wil ist der KI-Concierge für Gäste und Besucher in Saas-Fee: Restaurants, Aktivitäten, Bergbahnen, Wetter, Events, Ortsinfos und Aufenthaltsservice rund um die Uhr.",
+        "Lena ist die KI-Concierge für Gäste und Besucher in Saas-Fee: Restaurants, Aktivitäten, Bergbahnen, Wetter, Events, Ortsinfos und Aufenthaltsservice rund um die Uhr.",
       keywords: [
-        "Wil Concierge",
-        "Wil Saas-Fee",
+        "Lena Concierge",
+        "Lena Saas-Fee",
         "Saas-Fee Concierge",
         "AI Concierge Saas-Fee",
         "KI Concierge Saas-Fee",
@@ -128,17 +128,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       modules: "Module",
       pricing: "Preise",
       contact: "Kontakt",
-      chat: "Frag Wil",
+      chat: "Frag Lena",
     },
     hero: {
-      eyebrow: "Wil Concierge",
-      title: "Lerne Wil kennen - deinen KI-Concierge in Saas-Fee.",
+      eyebrow: "Lena Concierge",
+      title: "Lerne Lena kennen - deine KI-Concierge in Saas-Fee.",
       description:
         "Sofortige Antworten zu Restaurants, Aktivitäten, Bergbahnen, Wetter, Events, Anreise, Sicherheit und deiner Unterkunft.",
       audience:
         "Für Gäste sofort nutzbar. Für Eigentümer, Ferienwohnungen und Hotels als Gästeservice integrierbar.",
       founderLine: "Entwickelt von Willy für Gäste und Gastgeber in Saas-Fee.",
-      guestCta: "Frag Wil",
+      guestCta: "Frag Lena",
       ownerCta: "Für mein Objekt verbinden",
       imageAlt: "Saas-Fee Bergpanorama",
     },
@@ -154,7 +154,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     product: {
       eyebrow: "Produkt",
       title:
-        "Wil beantwortet öffentliche Saas-Fee-Fragen und optionale Gästeinformationen.",
+        "Lena beantwortet öffentliche Saas-Fee-Fragen und optionale Gästeinformationen.",
       features: [
         {
           title: "Antworten rund um die Uhr",
@@ -166,14 +166,14 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         },
         {
           title: "Vorfälle und WhatsApp",
-          text: "Wil erkennt dringende Anliegen, erstellt einen Vorgang und kann Eigentümer oder Betriebsteam per WhatsApp informieren.",
+          text: "Lena erkennt dringende Anliegen, erstellt einen Vorgang und kann Eigentümer oder Betriebsteam per WhatsApp informieren.",
         },
       ],
     },
     useCases: {
       eyebrow: "Anwendungsfälle",
       title:
-        "Wil beantwortet typische Gäste- und Besucherfragen direkt im Chat.",
+        "Lena beantwortet typische Gäste- und Besucherfragen direkt im Chat.",
       items: [
         "Ein Besucher fragt, welche Restaurants heute passen und möchte Menüs mit Preisen sehen.",
         "Eine Familie sucht Aktivitäten, Spielplätze, Wanderwege oder Schlechtwetterideen.",
@@ -184,7 +184,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     architecture: {
       eyebrow: "Betrieb",
       title: "Zuverlässig, sicher und bereit für den Einsatz mit Gästen.",
-      text: "Wil ist für den täglichen Gästekontakt ausgelegt: öffentliche Ortsinformationen bleiben von geschützten Objektinformationen getrennt, Anfragen werden nachvollziehbar protokolliert und wichtige Anliegen können direkt weitergeleitet werden.",
+      text: "Lena ist für den täglichen Gästekontakt ausgelegt: öffentliche Ortsinformationen bleiben von geschützten Objektinformationen getrennt, Anfragen werden nachvollziehbar protokolliert und wichtige Anliegen können direkt weitergeleitet werden.",
       modules: [
         "Öffentlicher Saas-Fee Chat",
         "Geschützte Informationen pro Objekt",
@@ -244,17 +244,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
       launchTitle: "Einführungsangebot für Eigentümer in Saas-Fee",
       launchText:
-        "Pilot für CHF 69 / Monat während der ersten 3 Monate, danach CHF 89 / Monat. Ideal, um Wil mit einer konkreten Wohnung und echten Gästeanfragen zu testen.",
+        "Pilot für CHF 69 / Monat während der ersten 3 Monate, danach CHF 89 / Monat. Ideal, um Lena mit einer konkreten Wohnung und echten Gästeanfragen zu testen.",
     },
     contact: {
       eyebrow: "Kontakt",
-      title: "Möchten Sie Wil Concierge für Gäste nutzen?",
+      title: "Möchten Sie Lena Concierge für Gäste nutzen?",
       text: "Senden Sie eine kurze Nachricht. Die Anfrage wird direkt in HubSpot erfasst, damit sie sauber nachverfolgt werden kann.",
     },
     demo: {
       eyebrow: "Demo",
-      title: "Testen Sie, wie Wil im echten Gästeinterface antwortet.",
-      cta: "Frag Wil",
+      title: "Testen Sie, wie Lena im echten Gästeinterface antwortet.",
+      cta: "Frag Lena",
     },
     form: {
       website: "Website",
@@ -280,12 +280,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     label: "EN",
     path: "/en",
     metadata: {
-      title: "Wil Concierge | The AI Concierge for Saas-Fee",
+      title: "Lena Concierge | The AI Concierge for Saas-Fee",
       description:
-        "Wil is the AI concierge for guests and visitors in Saas-Fee: restaurants, activities, mountain railways, weather, events, local services, and stay support around the clock.",
+        "Lena is the AI concierge for guests and visitors in Saas-Fee: restaurants, activities, mountain railways, weather, events, local services, and stay support around the clock.",
       keywords: [
-        "Wil Concierge",
-        "Wil Saas-Fee",
+        "Lena Concierge",
+        "Lena Saas-Fee",
         "Saas-Fee concierge",
         "AI concierge Saas-Fee",
         "Saas-Fee chatbot",
@@ -301,17 +301,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       modules: "Modules",
       pricing: "Pricing",
       contact: "Contact",
-      chat: "Ask Wil",
+      chat: "Ask Lena",
     },
     hero: {
-      eyebrow: "Wil Concierge",
-      title: "Meet Wil, your AI concierge in Saas-Fee.",
+      eyebrow: "Lena Concierge",
+      title: "Meet Lena, your AI concierge in Saas-Fee.",
       description:
         "Instant answers about restaurants, activities, lifts, weather, events, arrival, safety, and your accommodation.",
       audience:
         "Ready for guests now. Available for apartment owners and hotels as an integrated guest service.",
       founderLine: "Created by Willy for Saas-Fee guests and hosts.",
-      guestCta: "Ask Wil",
+      guestCta: "Ask Lena",
       ownerCta: "Connect my property",
       imageAlt: "Saas-Fee mountain panorama",
     },
@@ -326,7 +326,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     },
     product: {
       eyebrow: "Product",
-      title: "Wil answers public Saas-Fee questions and optional guest information.",
+      title: "Lena answers public Saas-Fee questions and optional guest information.",
       features: [
         {
           title: "Answers around the clock",
@@ -338,13 +338,13 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         },
         {
           title: "Incidents and WhatsApp",
-          text: "Wil detects urgent requests, creates a case, and can notify the owner or operations team via WhatsApp.",
+          text: "Lena detects urgent requests, creates a case, and can notify the owner or operations team via WhatsApp.",
         },
       ],
     },
     useCases: {
       eyebrow: "Use cases",
-      title: "Wil answers typical guest and visitor questions directly in chat.",
+      title: "Lena answers typical guest and visitor questions directly in chat.",
       items: [
         "A visitor asks which restaurants fit today and wants menus with prices.",
         "A family looks for activities, playgrounds, hiking routes, or rainy-day ideas.",
@@ -355,7 +355,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     architecture: {
       eyebrow: "Operations",
       title: "Reliable, secure, and ready to use with guests.",
-      text: "Wil is built for everyday guest communication: public destination information stays separate from protected property information, requests are logged clearly, and important issues can be forwarded directly.",
+      text: "Lena is built for everyday guest communication: public destination information stays separate from protected property information, requests are logged clearly, and important issues can be forwarded directly.",
       modules: [
         "Public Saas-Fee chat",
         "Protected information per property",
@@ -415,17 +415,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
       launchTitle: "Introductory offer for owners in Saas-Fee",
       launchText:
-        "Pilot for CHF 69 / month during the first 3 months, then CHF 89 / month. Ideal for testing Wil with one real apartment and real guest questions.",
+        "Pilot for CHF 69 / month during the first 3 months, then CHF 89 / month. Ideal for testing Lena with one real apartment and real guest questions.",
     },
     contact: {
       eyebrow: "Contact",
-      title: "Would you like to use Wil Concierge for guests?",
+      title: "Would you like to use Lena Concierge for guests?",
       text: "Send a short message. The request is recorded directly in HubSpot for a clear follow-up.",
     },
     demo: {
       eyebrow: "Demo",
-      title: "Test how Wil responds in the real guest interface.",
-      cta: "Ask Wil",
+      title: "Test how Lena responds in the real guest interface.",
+      cta: "Ask Lena",
     },
     form: {
       website: "Website",
@@ -451,12 +451,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     label: "FR",
     path: "/fr",
     metadata: {
-      title: "Wil Concierge | Le concierge IA pour Saas-Fee",
+      title: "Lena Concierge | Le concierge IA pour Saas-Fee",
       description:
-        "Wil est le concierge IA pour les invités et visiteurs de Saas-Fee : restaurants, activités, remontées mécaniques, météo, événements, services locaux et aide au séjour 24 h/24.",
+        "Lena est la concierge IA pour les invités et visiteurs de Saas-Fee : restaurants, activités, remontées mécaniques, météo, événements, services locaux et aide au séjour 24 h/24.",
       keywords: [
-        "Wil Concierge",
-        "Wil Saas-Fee",
+        "Lena Concierge",
+        "Lena Saas-Fee",
         "concierge Saas-Fee",
         "concierge IA Saas-Fee",
         "chatbot Saas-Fee",
@@ -472,17 +472,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       modules: "Modules",
       pricing: "Prix",
       contact: "Contact",
-      chat: "Demander à Wil",
+      chat: "Demander à Lena",
     },
     hero: {
-      eyebrow: "Wil Concierge",
-      title: "Découvrez Wil, votre concierge IA à Saas-Fee.",
+      eyebrow: "Lena Concierge",
+      title: "Découvrez Lena, votre concierge IA à Saas-Fee.",
       description:
         "Des réponses immédiates sur les restaurants, activités, remontées mécaniques, météo, événements, arrivée, sécurité et votre hébergement.",
       audience:
         "Disponible dès maintenant pour les visiteurs. Intégrable pour propriétaires, appartements et hôtels comme service invités.",
       founderLine: "Créé par Willy pour les invités et hôtes de Saas-Fee.",
-      guestCta: "Demander à Wil",
+      guestCta: "Demander à Lena",
       ownerCta: "Connecter mon hébergement",
       imageAlt: "Panorama de montagne à Saas-Fee",
     },
@@ -498,7 +498,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     product: {
       eyebrow: "Produit",
       title:
-        "Wil répond aux questions publiques sur Saas-Fee et aux informations invités optionnelles.",
+        "Lena répond aux questions publiques sur Saas-Fee et aux informations invités optionnelles.",
       features: [
         {
           title: "Réponses 24 h/24",
@@ -510,14 +510,14 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         },
         {
           title: "Incidents et WhatsApp",
-          text: "Wil détecte les demandes urgentes, crée un dossier et peut informer le propriétaire ou l'équipe d'exploitation via WhatsApp.",
+          text: "Lena détecte les demandes urgentes, crée un dossier et peut informer le propriétaire ou l'équipe d'exploitation via WhatsApp.",
         },
       ],
     },
     useCases: {
       eyebrow: "Cas d'utilisation",
       title:
-        "Wil répond directement aux questions typiques des invités et visiteurs.",
+        "Lena répond directement aux questions typiques des invités et visiteurs.",
       items: [
         "Un visiteur demande quels restaurants conviennent aujourd'hui et veut voir les menus avec prix.",
         "Une famille cherche des activités, aires de jeux, itinéraires de randonnée ou idées par mauvais temps.",
@@ -528,7 +528,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     architecture: {
       eyebrow: "Exploitation",
       title: "Fiable, sécurisé et prêt à être utilisé avec les invités.",
-      text: "Wil est conçu pour la communication quotidienne avec les invités : les informations publiques de la destination restent séparées des informations protégées des hébergements, les demandes sont consignées clairement et les sujets importants peuvent être transmis directement.",
+      text: "Lena est conçue pour la communication quotidienne avec les invités : les informations publiques de la destination restent séparées des informations protégées des hébergements, les demandes sont consignées clairement et les sujets importants peuvent être transmis directement.",
       modules: [
         "Chat public Saas-Fee",
         "Informations protégées par hébergement",
@@ -588,17 +588,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
       launchTitle: "Offre de lancement pour propriétaires à Saas-Fee",
       launchText:
-        "Pilot à CHF 69 / mois pendant les 3 premiers mois, puis CHF 89 / mois. Idéal pour tester Wil avec un logement concret et de vraies questions d'invités.",
+        "Pilot à CHF 69 / mois pendant les 3 premiers mois, puis CHF 89 / mois. Idéal pour tester Lena avec un logement concret et de vraies questions d'invités.",
     },
     contact: {
       eyebrow: "Contact",
-      title: "Souhaitez-vous utiliser Wil Concierge pour vos invités ?",
+      title: "Souhaitez-vous utiliser Lena Concierge pour vos invités ?",
       text: "Envoyez un court message. La demande est enregistrée directement dans HubSpot afin d'assurer un suivi clair.",
     },
     demo: {
       eyebrow: "Démo",
-      title: "Testez la manière dont Wil répond dans l'interface dédiée aux invités.",
-      cta: "Demander à Wil",
+      title: "Testez la manière dont Lena répond dans l'interface dédiée aux invités.",
+      cta: "Demander à Lena",
     },
     form: {
       website: "Site web",
@@ -624,12 +624,12 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     label: "IT",
     path: "/it",
     metadata: {
-      title: "Wil Concierge | Il concierge IA per Saas-Fee",
+      title: "Lena Concierge | Il concierge IA per Saas-Fee",
       description:
-        "Wil è il concierge IA per ospiti e visitatori a Saas-Fee: ristoranti, attività, impianti di risalita, meteo, eventi, servizi locali e supporto al soggiorno 24/7.",
+        "Lena è la concierge IA per ospiti e visitatori a Saas-Fee: ristoranti, attività, impianti di risalita, meteo, eventi, servizi locali e supporto al soggiorno 24/7.",
       keywords: [
-        "Wil Concierge",
-        "Wil Saas-Fee",
+        "Lena Concierge",
+        "Lena Saas-Fee",
         "concierge Saas-Fee",
         "concierge IA Saas-Fee",
         "chatbot Saas-Fee",
@@ -645,17 +645,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       modules: "Moduli",
       pricing: "Prezzi",
       contact: "Contatto",
-      chat: "Chiedi a Wil",
+      chat: "Chiedi a Lena",
     },
     hero: {
-      eyebrow: "Wil Concierge",
-      title: "Conosci Wil, il tuo concierge IA a Saas-Fee.",
+      eyebrow: "Lena Concierge",
+      title: "Conosci Lena, la tua concierge IA a Saas-Fee.",
       description:
         "Risposte immediate su ristoranti, attività, impianti, meteo, eventi, arrivo, sicurezza e il tuo alloggio.",
       audience:
         "Disponibile subito per gli ospiti. Integrabile per proprietari, appartamenti e hotel come servizio ospiti.",
       founderLine: "Creato da Willy per ospiti e host di Saas-Fee.",
-      guestCta: "Chiedi a Wil",
+      guestCta: "Chiedi a Lena",
       ownerCta: "Collega la mia struttura",
       imageAlt: "Panorama montano di Saas-Fee",
     },
@@ -671,7 +671,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     product: {
       eyebrow: "Prodotto",
       title:
-        "Wil risponde alle domande pubbliche su Saas-Fee e alle informazioni ospiti opzionali.",
+        "Lena risponde alle domande pubbliche su Saas-Fee e alle informazioni ospiti opzionali.",
       features: [
         {
           title: "Risposte 24/7",
@@ -683,14 +683,14 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
         },
         {
           title: "Incidenti e WhatsApp",
-          text: "Wil riconosce le richieste urgenti, crea un caso e può avvisare il proprietario o il team operativo via WhatsApp.",
+          text: "Lena riconosce le richieste urgenti, crea un caso e può avvisare il proprietario o il team operativo via WhatsApp.",
         },
       ],
     },
     useCases: {
       eyebrow: "Casi d'uso",
       title:
-        "Wil risponde direttamente alle domande tipiche di ospiti e visitatori.",
+        "Lena risponde direttamente alle domande tipiche di ospiti e visitatori.",
       items: [
         "Un visitatore chiede quali ristoranti sono adatti oggi e vuole vedere menu con prezzi.",
         "Una famiglia cerca attività, parchi giochi, sentieri o idee per il maltempo.",
@@ -701,7 +701,7 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
     architecture: {
       eyebrow: "Operatività",
       title: "Affidabile, sicuro e pronto per l'uso con gli ospiti.",
-      text: "Wil è pensato per la comunicazione quotidiana con gli ospiti: le informazioni pubbliche sulla destinazione restano separate da quelle protette della struttura, le richieste sono registrate in modo chiaro e i temi importanti possono essere inoltrati direttamente.",
+      text: "Lena è pensata per la comunicazione quotidiana con gli ospiti: le informazioni pubbliche sulla destinazione restano separate da quelle protette della struttura, le richieste sono registrate in modo chiaro e i temi importanti possono essere inoltrati direttamente.",
       modules: [
         "Chat pubblica Saas-Fee",
         "Informazioni protette per struttura",
@@ -761,17 +761,17 @@ export const landingCopies: Record<LandingLocale, LandingCopy> = {
       ],
       launchTitle: "Offerta introduttiva per proprietari a Saas-Fee",
       launchText:
-        "Pilot a CHF 69 / mese per i primi 3 mesi, poi CHF 89 / mese. Ideale per testare Wil con un appartamento concreto e domande reali degli ospiti.",
+        "Pilot a CHF 69 / mese per i primi 3 mesi, poi CHF 89 / mese. Ideale per testare Lena con un appartamento concreto e domande reali degli ospiti.",
     },
     contact: {
       eyebrow: "Contatto",
-      title: "Vuole usare Wil Concierge per i suoi ospiti?",
+      title: "Vuole usare Lena Concierge per i suoi ospiti?",
       text: "Invii un breve messaggio. La richiesta viene registrata direttamente in HubSpot per un follow-up ordinato.",
     },
     demo: {
       eyebrow: "Demo",
-      title: "Provi come Wil risponde nell'interfaccia dedicata agli ospiti.",
-      cta: "Chiedi a Wil",
+      title: "Provi come Lena risponde nell'interfaccia dedicata agli ospiti.",
+      cta: "Chiedi a Lena",
     },
     form: {
       website: "Sito web",
@@ -821,7 +821,7 @@ export function getLandingMetadata(locale: LandingLocale): Metadata {
       title: copy.metadata.title,
       description: copy.metadata.description,
       url: copy.path,
-      siteName: "Wil Concierge",
+      siteName: "Lena Concierge",
       locale: copy.metadata.locale,
       type: "website",
       images: [

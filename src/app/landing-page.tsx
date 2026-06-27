@@ -172,7 +172,7 @@ export default function LandingPage({ locale }: LandingPageProps) {
                   W
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-[#F6F1E8]">Wil Concierge</p>
+                  <p className="text-sm font-semibold text-[#F6F1E8]">Lena Concierge</p>
                   <div className="mt-0.5 flex items-center gap-1.5">
                     <span className="h-2 w-2 rounded-full bg-[#E89B6F]" />
                     <span className="text-xs text-[#F6F1E8]/68">Online · antwortet sofort</span>
