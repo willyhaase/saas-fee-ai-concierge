@@ -1,6 +1,12 @@
 import { createHash } from "crypto";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+type RateLimitEntry = { count: number; resetAt: number };
+
+const reservationRateLimitStore = globalThis as typeof globalThis & {
+  __reservationRateLimitStore?: Map<string, RateLimitEntry>;
+};
+
 type ReservationPayload = {
   restaurantName?: unknown;
   reservationDate?: unknown;
@@ -28,6 +34,57 @@ export const runtime = "nodejs";
 
 function getEnv(name: string, fallback?: string) {
   return process.env[name] || (fallback ? process.env[fallback] : undefined);
+}
+
+function getClientIp(req: Request) {
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  const firstIp = forwardedFor?.split(",")[0]?.trim();
+
+  return (
+    firstIp ||
+    req.headers.get("x-real-ip") ||
+    req.headers.get("cf-connecting-ip") ||
+    req.headers.get("x-vercel-forwarded-for") ||
+    "unknown"
+  );
+}
+
+function checkReservationRateLimit(req: Request) {
+  const limit = 5;
+  const windowSeconds = 600;
+  const key = `reservation:${createHash("sha256").update(getClientIp(req)).digest("hex")}`;
+  const now = Date.now();
+  const resetAt = now + windowSeconds * 1000;
+  const store =
+    reservationRateLimitStore.__reservationRateLimitStore ??
+    new Map<string, RateLimitEntry>();
+  reservationRateLimitStore.__reservationRateLimitStore = store;
+
+  for (const [storedKey, entry] of store.entries()) {
+    if (entry.resetAt <= now) {
+      store.delete(storedKey);
+    }
+  }
+
+  const existing = store.get(key);
+
+  if (!existing || existing.resetAt <= now) {
+    store.set(key, { count: 1, resetAt });
+
+    return { allowed: true, retryAfter: 0 };
+  }
+
+  existing.count += 1;
+  store.set(key, existing);
+
+  if (existing.count > limit) {
+    return {
+      allowed: false,
+      retryAfter: Math.max(1, Math.ceil((existing.resetAt - now) / 1000)),
+    };
+  }
+
+  return { allowed: true, retryAfter: 0 };
 }
 
 function getSupabase() {
@@ -401,6 +458,18 @@ async function updateReservation(
 }
 
 export async function POST(req: Request) {
+  const rateLimit = checkReservationRateLimit(req);
+
+  if (!rateLimit.allowed) {
+    return Response.json(
+      { error: "Too many requests. Please try again later." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rateLimit.retryAfter) },
+      }
+    );
+  }
+
   try {
     const payload = (await req.json()) as ReservationPayload;
     const restaurantName = asOptionalString(payload.restaurantName);
@@ -429,6 +498,13 @@ export async function POST(req: Request) {
     const supabase = getSupabase();
     const context = getPayloadContext(payload);
     const propertyContext = await resolvePropertyContext(supabase, context);
+
+    if (!propertyContext.propertyId) {
+      return Response.json(
+        { error: "A valid guest access token is required." },
+        { status: 401 }
+      );
+    }
     const contact = await getRestaurantContact(supabase, restaurantName);
     const restaurantWhatsapp = normalizeWhatsAppPhone(contact?.whatsapp_phone);
     const body = buildReservationMessage({
@@ -553,12 +629,15 @@ export async function POST(req: Request) {
       });
     }
   } catch (error) {
-    const message =
+    console.error(
       error instanceof Error
         ? error.message
-        : "Could not create restaurant reservation.";
-    console.error(message);
+        : "Could not create restaurant reservation."
+    );
 
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json(
+      { error: "An unexpected error occurred. Please try again." },
+      { status: 500 }
+    );
   }
 }

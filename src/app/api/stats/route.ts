@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 
 type AnalyticsRow = {
@@ -47,14 +48,22 @@ function isAuthorized(req: Request) {
   const expected = process.env.STATS_ACCESS_TOKEN;
 
   if (!expected) {
-    return true;
+    return false;
   }
 
   const url = new URL(req.url);
-  const token = url.searchParams.get("token");
-  const authorization = req.headers.get("authorization");
+  const queryToken = url.searchParams.get("token") ?? "";
+  const authHeader = req.headers.get("authorization") ?? "";
+  const bearerToken = authHeader.startsWith("Bearer ")
+    ? authHeader.slice(7)
+    : "";
+  const provided = queryToken || bearerToken;
 
-  return token === expected || authorization === `Bearer ${expected}`;
+  if (!provided || provided.length !== expected.length) {
+    return false;
+  }
+
+  return timingSafeEqual(Buffer.from(provided), Buffer.from(expected));
 }
 
 function increment(map: Map<string, number>, key: string | null | undefined) {
@@ -275,10 +284,13 @@ export async function GET(req: Request) {
       properties,
     });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Unexpected stats route error.";
-    console.error(message);
+    console.error(
+      error instanceof Error ? error.message : "Unexpected stats route error."
+    );
 
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json(
+      { error: "An unexpected error occurred. Please try again." },
+      { status: 500 }
+    );
   }
 }
