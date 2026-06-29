@@ -373,13 +373,11 @@ function getRateLimitHeaders(result: RateLimitResult) {
 function getSupabase() {
   const url = getEnv("SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL");
   const key =
-    getEnv("SUPABASE_SERVICE_ROLE_KEY") ||
-    getEnv("SUPABASE_SERVICE_KEY") ||
-    getEnv("SUPABASE_ANON_KEY", "NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    getEnv("SUPABASE_SERVICE_ROLE_KEY") || getEnv("SUPABASE_SERVICE_KEY");
 
   if (!url || !key) {
     throw new Error(
-      "Missing Supabase env vars. Set SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL, plus SUPABASE_SERVICE_ROLE_KEY."
+      "Missing Supabase env vars. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY."
     );
   }
 

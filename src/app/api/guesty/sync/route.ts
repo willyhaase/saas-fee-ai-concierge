@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import { syncGuestyReservations } from "@/lib/guesty";
 
@@ -10,12 +11,12 @@ function getEnv(name: string, fallback?: string) {
 function getSupabase() {
   const url = getEnv("SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL");
   const key =
-    getEnv("SUPABASE_SERVICE_ROLE_KEY") ||
-    getEnv("SUPABASE_SERVICE_KEY") ||
-    getEnv("SUPABASE_ANON_KEY", "NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    getEnv("SUPABASE_SERVICE_ROLE_KEY") || getEnv("SUPABASE_SERVICE_KEY");
 
   if (!url || !key) {
-    throw new Error("Missing Supabase env vars.");
+    throw new Error(
+      "Missing Supabase env vars. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY."
+    );
   }
 
   return createClient(url, key, {
@@ -45,9 +46,13 @@ function isAuthorized(request: Request) {
 
   const url = new URL(request.url);
   const provided =
-    getBearerToken(request) || url.searchParams.get("token") || null;
+    getBearerToken(request) || url.searchParams.get("token") || "";
 
-  return provided === expected;
+  if (!provided || provided.length !== expected.length) {
+    return false;
+  }
+
+  return timingSafeEqual(Buffer.from(provided), Buffer.from(expected));
 }
 
 function isDryRun(request: Request) {

@@ -24,7 +24,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const rawGaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const gaMeasurementId =
+  rawGaId && /^G-[A-Z0-9]+$/.test(rawGaId) ? rawGaId : undefined;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://saas-fee-concierge.ch"),

@@ -90,12 +90,12 @@ function checkReservationRateLimit(req: Request) {
 function getSupabase() {
   const url = getEnv("SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL");
   const key =
-    getEnv("SUPABASE_SERVICE_ROLE_KEY") ||
-    getEnv("SUPABASE_SERVICE_KEY") ||
-    getEnv("SUPABASE_ANON_KEY", "NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    getEnv("SUPABASE_SERVICE_ROLE_KEY") || getEnv("SUPABASE_SERVICE_KEY");
 
   if (!url || !key) {
-    throw new Error("Missing Supabase env vars.");
+    throw new Error(
+      "Missing Supabase env vars. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY."
+    );
   }
 
   return createClient(url, key, {
