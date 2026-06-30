@@ -120,8 +120,8 @@ const UI_TEXT: Record<
     titleFallback: "Lena Concierge",
     welcome: (propertyName) =>
       propertyName
-        ? `Willkommen in ${propertyName}. Ich bin Lena, Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zur Unterkunft, zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.`
-        : "Guten Tag, ich bin Lena, Ihr KI-Concierge für Saas-Fee. Fragen Sie mich gerne zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was Sie während Ihres Aufenthalts brauchen.",
+        ? `Hallo! Ich bin Lena, deine Concierge in Saas-Fee. Frag mich gerne zur Unterkunft, zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was du während deines Aufenthalts in ${propertyName} brauchst.`
+        : "Hallo! Ich bin Lena, deine Concierge in Saas-Fee. Frag mich gerne zu Restaurants, Aktivitäten, Bergbahnen, Wetter oder allem, was du hier brauchst.",
     temporaryUnavailable:
       "Lena ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.",
     unexpectedResponse:
@@ -233,20 +233,20 @@ const UI_TEXT: Record<
     titleFallback: "Lena Concierge",
     welcome: (propertyName) =>
       propertyName
-        ? `Добро пожаловать в ${propertyName}. Я Lena, ваш AI-консьерж по Saas-Fee. Спрашивайте про жильё, рестораны, активности, горные дороги, погоду и всё, что нужно во время проживания.`
-        : "Здравствуйте, я Lena, ваш AI-консьерж по Saas-Fee. Спрашивайте про рестораны, активности, горные дороги, погоду и всё, что нужно во время проживания.",
+        ? `Привет! Я Лена, консьерж в Saas-Fee. Спрашивай про жильё, рестораны, трассы, погоду — всё что нужно во время проживания в ${propertyName}.`
+        : "Привет! Я Лена, консьерж в Saas-Fee. Спрашивай про рестораны, трассы, активности, погоду или что угодно — помогу разобраться.",
     temporaryUnavailable:
-      "Lena временно недоступен. Пожалуйста, попробуйте позже.",
+      "Лена временно недоступна. Пожалуйста, попробуйте позже.",
     unexpectedResponse:
-      "Lena вернул неожиданный ответ. Пожалуйста, попробуйте ещё раз.",
-    unavailable: "Lena сейчас недоступен.",
+      "Лена вернула неожиданный ответ. Пожалуйста, попробуйте ещё раз.",
+    unavailable: "Лена сейчас недоступна.",
     fallbackReply:
       "Спасибо. Я получил ваше сообщение, команда скоро его проверит.",
     sendFailed: "Не удалось отправить сообщение. Пожалуйста, попробуйте ещё раз.",
     identityRequired:
       "Сначала введите имя и номер телефона / WhatsApp.",
     identityIntro:
-      "Пожалуйста, один раз укажите имя и телефон. Так Lena сможет правильно привязать запросы и бронирования ресторанов к вам.",
+      "Пожалуйста, один раз укажи имя и телефон. Так Лена сможет правильно привязать запросы и бронирования ресторанов к тебе.",
     optionalEmail: "Необязательно",
     menuPrompt: (restaurantName) =>
       `Покажи меню ресторана ${restaurantName} с ценами.`,
@@ -270,7 +270,7 @@ const UI_TEXT: Record<
     priority: "Приоритет",
     quickActions: "Быстрые вопросы",
     restaurantShortcuts: "Рестораны",
-    ask: "Спросить Lena",
+    ask: "Спросить Лену",
     showMenu: "Меню",
     reserve: "Забронировать",
     reservationTitle: "Бронирование столика",
